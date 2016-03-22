@@ -14,7 +14,10 @@ Game.prototype = {
 		this.timeOfHit = this.stageTimer.ms;
 		this.difference = this.timeOfBeat - this.timeOfHit;
 	},	
-	
+	add_controls: function(){
+		controls.chop.onDown.add(this.compare_timing, this)
+		controls.mince.onDown.add(this.compare_timing, this)
+	},
 	preload: function () {
 		music.stop()
 		game.load.image('chickenLeg', '../assets/img/chicken_leg.png')
@@ -23,9 +26,7 @@ Game.prototype = {
     create: function () {
 		make_sky_bg();
 
-		chop = game.input.keyboard.addKey(Phaser.Keyboard.W);
-		chop.onDown.add(this.compare_timing, this)
-		mince.onDown.add(this.compare_timing, this)
+		this.add_controls();
 		
 		// BEAT LOOP
 		this.stageTimer = game.time.create(false);

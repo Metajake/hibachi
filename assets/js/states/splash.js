@@ -1,7 +1,8 @@
 var Splash = function(){},
 	playSound = true,
 	playMusic = true,
-	music, mince;
+	controls = {},
+	music;
 
 Splash.prototype = {
 	loadScripts: function(){
@@ -54,6 +55,13 @@ Splash.prototype = {
 		utils.centerGameObjects([this.logo, this.loadStatus]);
 	},
 	
+	add_controls: function (){
+		controls.chop = game.input.keyboard.addKey(Phaser.Keyboard.W);
+		controls.mince = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+		controls.chop.onDown.addOnce(function(){game.state.start('Game');});
+		controls.mince.onDown.addOnce(function(){game.state.start('Game');});
+	},
+	
 	preload: function(){
 		make_sky_bg();
 		game.add.existing(this.logo).scale.setTo(0.75);
@@ -69,17 +77,12 @@ Splash.prototype = {
 	
 	create: function(){
 		this.loadStatus.setText('Ready!');
-		this.start = game.make.text(game.world.centerX, 450, 'Press R or UP', {fill: 'white'});
+		this.start = game.make.text(game.world.centerX, 450, 'Press W or UP', {fill: 'white'});
 		utils.centerGameObjects([this.start]);
 		game.add.existing(this.start);
 		
-		this.addGameStates()
-		this.addGameMusic()
-		
-		mince = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-		mince.onDown.addOnce(function(){
-			game.state.start('Game');
-		});
-// 		}
+		this.addGameStates();
+		this.addGameMusic();
+		this.add_controls();
 	}
 }
