@@ -10,8 +10,3 @@ var utils = {
 function log(toLog){
 	console.log(toLog)
 }
-
-function signal (signaling) {
-	log("hello");
-	document.getElementById('signal').innerHTML = signaling;
-}
