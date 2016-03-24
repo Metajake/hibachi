@@ -9,13 +9,15 @@ Game.prototype = {
 		this.nextBeatPrediction = music.bpm;
 		this.midBeat = music.bpm / 2;
 		this.quarterMidBeat = 0;
-		this.beatList = [1000,2000,3000,4000,5000,6000]
+		this.beatList = [1000,2000,3000,4000,5000,6000];
+		this.indicator = {};
 	},
 	update_counter: function(){
 		this.beatCount ++
 		this.nextBeat = this.quarterBeatTimer.ms + music.bpm;
 	},	
 	predict_next_beat: function(){
+		this.indicator.flash.start()
 		this.quarterMidBeat = this.stageTimer.ms;
 		this.nextBeatPrediction = this.stageTimer.ms + (music.bpm / 2);
 	},
@@ -45,6 +47,13 @@ Game.prototype = {
 		controls.slice.onDown.add(this.compare_timing, this)
 		controls.mix.onDown.add(this.compare_timing, this)
 		controls.flip.onDown.add(this.compare_timing, this)
+	},
+	
+	add_graphics: function(){
+		sky_bg();
+		this.indicator.sprite = game.add.sprite(220,180,'chickenLeg')
+		this.indicator.sprite.alpha = 0;
+		this.indicator.flash = make_flash(this.indicator.sprite);
 	},
 
 	begin_rhythm: function(){
@@ -79,26 +88,26 @@ Game.prototype = {
 	
     create: function () {
 		game.stage.disableVisibilityChange = true;
-		make_sky_bg();
-		this.indicator = game.add.sprite(200,200,'chickenLeg')
-		this.indicator.alpha = 0;
+		
+		this.add_graphics();
+		
 		this.add_controls();
 		
 		this.begin_rhythm();
 	},
 	
 	update: function(){
-		// this.compare_timing() //FOR DEBUGGING
+//		this.compare_timing() //FOR DEBUGGING
 	},
 	
 	render: function(){
 		game.debug.text('Elapsed seconds: ' + this.stageTimer.ms, 32, 32);
-		game.debug.text('Beat Count: ' + this.beatCount, 32, 64);
-		game.debug.text('Time of Beat: ' + this.nextBeat, 32, 96);
-		game.debug.text('Quarter Mid (beat): ' + this.quarterMidBeat, 32, 128);
-		game.debug.text('Next Beat Prediction: ' + this.nextBeatPrediction, 32, 160);
-		game.debug.text('My Time of Beat: ' + this.myBeatTime, 32, 192);
-		game.debug.text('Difference: ' + this.difference, 32, 224);
+		game.debug.text('Time of Beat: ' + this.nextBeat, 32, 64);
+		game.debug.text('Quarter Mid (beat): ' + this.quarterMidBeat, 32, 96);
+		game.debug.text('Next Beat Prediction: ' + this.nextBeatPrediction, 32, 128);
+		game.debug.text('My Time of Beat: ' + this.myBeatTime, 32, 160);
+		game.debug.text('Difference: ' + this.difference, 32, 192);
+		game.debug.text('Beat Count: ' + this.beatCount, 32, 224);
 		game.debug.text('My Beat Quality: ' + this.timeQuality, 32, 256);
 	}
 };

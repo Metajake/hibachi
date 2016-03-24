@@ -1,4 +1,4 @@
-function make_sky_bg(){
+function sky_bg(){
 	var out = [];
     var sky = game.add.bitmapData(800, 600);
     sky.addToWorld();
@@ -9,4 +9,11 @@ function make_sky_bg(){
         out.push(Phaser.Color.getWebRGB(c));
         skyY += 2;
     }
+}
+
+function make_flash(toFlash){
+	f1 = game.add.tween(toFlash)
+	f1.to({alpha:1},music.bpm/2,Phaser.Easing.Linear.None);
+	f1.onComplete.add(function(){toFlash.alpha=0;});
+	return f1;
 }

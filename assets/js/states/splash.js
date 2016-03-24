@@ -44,7 +44,7 @@ Splash.prototype = {
 	
 	addGameMusic: function(){
 		music.track = game.add.audio('rattrap');
-		music.bpm = 800;
+		music.bpm = 800*2; //quarterNotes = 800;
 		// music.loop = true;
 		music.track.play();
 	},
@@ -71,7 +71,7 @@ Splash.prototype = {
 	},
 	
 	preload: function(){
-		make_sky_bg();
+		sky_bg();
 		game.add.existing(this.logo).scale.setTo(0.75);
 		game.add.existing(this.loadingBar).scale.setTo(1,0.75);
 		game.add.existing(this.loadStatus);
