@@ -1,6 +1,6 @@
 var Game = function () {},
 	timeObj = {
-		bpm: 857*2
+		bpm: 800
 	}
 
 Game.prototype = {
@@ -40,21 +40,14 @@ Game.prototype = {
 		}
 	},	
 	add_controls: function(){
-		controls.dice = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-		controls.slice = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-		controls.mix = game.input.keyboard.addKey(Phaser.Keyboard.A);
-		controls.flip = game.input.keyboard.addKey(Phaser.Keyboard.D);
-		controls.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-		controls.step = game.input.keyboard.addKey(Phaser.Keyboard.F);
-		
+		controls.space.onDown.add(pause_game);
+		controls.step.onDown.add(step_game);
 		controls.chop.onDown.add(this.compare_timing, this)
 		controls.mince.onDown.add(this.compare_timing, this)
 		controls.dice.onDown.add(this.compare_timing, this)
 		controls.slice.onDown.add(this.compare_timing, this)
 		controls.mix.onDown.add(this.compare_timing, this)
 		controls.flip.onDown.add(this.compare_timing, this)
-		controls.space.onDown.add(pause_game);
-		controls.step.onDown.add(step_game);
 		
 	},
 
@@ -67,6 +60,7 @@ Game.prototype = {
 		// this.predict_next_beat()
 		
 		game.time.events.add(timeObj.bpm, function(){
+			this.beatCount ++;
 			this.quarterBeatTimer.start()
 		}, this)
 		
@@ -96,7 +90,7 @@ Game.prototype = {
 	},
 	
 	update: function(){
-		this.compare_timing()	
+		// this.compare_timing() //FOR DEBUGGING
 	},
 	
 	render: function(){

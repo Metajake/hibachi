@@ -43,7 +43,7 @@ Splash.prototype = {
 	},
 	
 	addGameMusic: function(){
-		music = game.add.audio('witit');
+		music = game.add.audio('rattrap');
 		music.loop = true;
 		music.play();
 	},
@@ -56,8 +56,15 @@ Splash.prototype = {
 	},
 	
 	add_controls: function (){
+		controls.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		controls.step = game.input.keyboard.addKey(Phaser.Keyboard.F);
 		controls.chop = game.input.keyboard.addKey(Phaser.Keyboard.W);
 		controls.mince = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+		controls.dice = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+		controls.slice = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+		controls.mix = game.input.keyboard.addKey(Phaser.Keyboard.A);
+		controls.flip = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		
 		controls.chop.onDown.addOnce(function(){game.state.start('Game');});
 		controls.mince.onDown.addOnce(function(){game.state.start('Game');});
 	},
