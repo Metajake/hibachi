@@ -12,6 +12,7 @@ Game.prototype = {
 		this.nextBeatPrediction = timeObj.bpm;
 		this.midBeat = timeObj.bpm / 2;
 		this.quarterMidBeat = 0;
+		this.beatList = [1000,2000,3000,4000,5000,6000]
 	},
 	update_counter: function(){
 		this.beatCount ++
@@ -39,16 +40,22 @@ Game.prototype = {
 		}
 	},	
 	add_controls: function(){
-		controls.chop.onDown.add(this.compare_timing, this)
-		controls.mince.onDown.add(this.compare_timing, this)
 		controls.dice = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
 		controls.slice = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
 		controls.mix = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		controls.flip = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		controls.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		controls.step = game.input.keyboard.addKey(Phaser.Keyboard.F);
+		
+		controls.chop.onDown.add(this.compare_timing, this)
+		controls.mince.onDown.add(this.compare_timing, this)
 		controls.dice.onDown.add(this.compare_timing, this)
 		controls.slice.onDown.add(this.compare_timing, this)
 		controls.mix.onDown.add(this.compare_timing, this)
 		controls.flip.onDown.add(this.compare_timing, this)
+		controls.space.onDown.add(pause_game);
+		controls.step.onDown.add(step_game);
+		
 	},
 
 	begin_rhythm: function(){
@@ -56,6 +63,7 @@ Game.prototype = {
 		this.quarterBeatTimer.loop(timeObj.bpm, this.update_counter, this)
 		this.quarterBeatMidTimer.loop(timeObj.bpm, this.predict_next_beat, this)
 		
+		this.stageTimer.start()
 		// this.predict_next_beat()
 		
 		game.time.events.add(timeObj.bpm, function(){
@@ -67,7 +75,6 @@ Game.prototype = {
 			this.quarterBeatMidTimer.start()
 		}, this);
 		
-		this.stageTimer.start()
 		
 		music.play()
 	},
@@ -93,7 +100,7 @@ Game.prototype = {
 	},
 	
 	render: function(){
-		game.debug.text('Elapsed seconds: ' + this.quarterBeatTimer.ms, 32, 32);
+		game.debug.text('Elapsed seconds: ' + this.stageTimer.ms, 32, 32);
 		game.debug.text('Beat Count: ' + this.beatCount, 32, 64);
 		game.debug.text('Time of Beat: ' + this.nextBeat, 32, 96);
 		game.debug.text('Quarter Mid (beat): ' + this.quarterMidBeat, 32, 128);
