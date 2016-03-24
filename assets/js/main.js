@@ -12,9 +12,9 @@ Main.prototype = {
 	
 	create: function(){
 		game.state.add('splash', Splash);
+		// game.state.add('game', Game);
 		game.state.start('splash');
 	}
 };
-
 game.state.add('main', Main);
 game.state.start('main');
