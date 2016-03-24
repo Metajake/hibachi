@@ -2,7 +2,7 @@ var Splash = function(){},
 	playSound = true,
 	playMusic = true,
 	controls = {},
-	music;
+	music = {};
 
 Splash.prototype = {
 	loadScripts: function(){
@@ -43,9 +43,10 @@ Splash.prototype = {
 	},
 	
 	addGameMusic: function(){
-		music = game.add.audio('rattrap');
-		music.loop = true;
-		music.play();
+		music.track = game.add.audio('rattrap');
+		music.bpm = 800;
+		// music.loop = true;
+		music.track.play();
 	},
 
 	init: function(){
@@ -84,9 +85,9 @@ Splash.prototype = {
 	
 	create: function(){
 		this.loadStatus.setText('Ready!');
-		this.start = game.make.text(game.world.centerX, 450, 'Press W or UP', {fill: 'white'});
-		utils.centerGameObjects([this.start]);
-		game.add.existing(this.start);
+		this.startLabel = game.make.text(game.world.centerX, 450, 'Press W or UP', {fill: 'white'});
+		utils.centerGameObjects([this.startLabel]);
+		game.add.existing(this.startLabel);
 		
 		this.addGameStates();
 		this.addGameMusic();

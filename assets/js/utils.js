@@ -28,7 +28,7 @@ function pause_game(event){
 	}
 }
 
-function step_game(){
+function step_game(event){
 	if(game.stepping){
 		game.step();
 	}

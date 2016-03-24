@@ -1,28 +1,25 @@
-var Game = function () {},
-	timeObj = {
-		bpm: 800
-	}
+var Game = function () {};
 
 Game.prototype = {
 	init: function(){
-		this.qualityNumbers = [timeObj.bpm * .02, timeObj.bpm * .1,timeObj.bpm * .2,timeObj.bpm * .30,timeObj.bpm * .50];
+		this.qualityNumbers = [music.bpm * .02, music.bpm * .1,music.bpm * .2,music.bpm * .30,music.bpm * .50];
 		this.qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
 		this.beatCount = 0;
-		this.nextBeat = timeObj.bpm;
-		this.nextBeatPrediction = timeObj.bpm;
-		this.midBeat = timeObj.bpm / 2;
+		this.nextBeat = music.bpm;
+		this.nextBeatPrediction = music.bpm;
+		this.midBeat = music.bpm / 2;
 		this.quarterMidBeat = 0;
 		this.beatList = [1000,2000,3000,4000,5000,6000]
 	},
 	update_counter: function(){
 		this.beatCount ++
-		this.nextBeat = this.quarterBeatTimer.ms + timeObj.bpm;
+		this.nextBeat = this.quarterBeatTimer.ms + music.bpm;
 	},	
 	predict_next_beat: function(){
 		this.quarterMidBeat = this.stageTimer.ms;
-		this.nextBeatPrediction = this.stageTimer.ms + (timeObj.bpm / 2);
+		this.nextBeatPrediction = this.stageTimer.ms + (music.bpm / 2);
 	},
-	compare_timing: function(){
+	compare_timing: function(event){
 		this.myBeatTime = this.stageTimer.ms;
 		this.difference = Math.abs(this.nextBeatPrediction - this.myBeatTime);
 		if(this.difference < this.qualityNumbers[0]){
@@ -48,33 +45,32 @@ Game.prototype = {
 		controls.slice.onDown.add(this.compare_timing, this)
 		controls.mix.onDown.add(this.compare_timing, this)
 		controls.flip.onDown.add(this.compare_timing, this)
-		
 	},
 
 	begin_rhythm: function(){
 
-		this.quarterBeatTimer.loop(timeObj.bpm, this.update_counter, this)
-		this.quarterBeatMidTimer.loop(timeObj.bpm, this.predict_next_beat, this)
+		this.quarterBeatTimer.loop(music.bpm, this.update_counter, this)
+		this.quarterBeatMidTimer.loop(music.bpm, this.predict_next_beat, this)
 		
 		this.stageTimer.start()
 		// this.predict_next_beat()
 		
-		game.time.events.add(timeObj.bpm, function(){
+		game.time.events.add(music.bpm, function(){
 			this.beatCount ++;
 			this.quarterBeatTimer.start()
 		}, this)
 		
-		game.time.events.add(timeObj.bpm / 2, function(){
+		game.time.events.add(music.bpm / 2, function(){
 			this.predict_next_beat()
 			this.quarterBeatMidTimer.start()
 		}, this);
 		
 		
-		music.play()
+		music.track.play()
 	},
 
 	preload: function () {
-		music.stop();
+		music.track.stop();
 		game.load.image('chickenLeg', '../assets/img/chicken_leg.png');
 		this.stageTimer = game.time.create(false);
 		this.quarterBeatTimer = game.time.create(false);
@@ -82,8 +78,10 @@ Game.prototype = {
     },
 	
     create: function () {
+		game.stage.disableVisibilityChange = true;
 		make_sky_bg();
-
+		this.indicator = game.add.sprite(200,200,'chickenLeg')
+		this.indicator.alpha = 0;
 		this.add_controls();
 		
 		this.begin_rhythm();
