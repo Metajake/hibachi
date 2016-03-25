@@ -23,6 +23,8 @@ Splash.prototype = {
 	loadImages: function(){
 		game.load.image('spatula', '../assets/img/spatula.png');
 		game.load.image('lamppost', '../assets/img/lamppost.png')
+		game.load.image('chickenLeg', '../assets/img/chicken_leg.png');
+		game.load.spritesheet('dancer', 'assets/img/breakdancer.png', 32, 32);
 	},
 	
 	loadFonts: function(){
@@ -43,8 +45,8 @@ Splash.prototype = {
 	},
 	
 	addGameMusic: function(){
-		music.track = game.add.audio('rattrap');
-		music.bpm = 800*2; //quarterNotes = 800;
+		music.track = game.add.audio('witit');
+		music.bpm = 674*2; //quarterNotes = 800;
 		// music.loop = true;
 		music.track.play();
 	},
@@ -65,6 +67,7 @@ Splash.prototype = {
 		controls.slice = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
 		controls.mix = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		controls.flip = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		controls.pose = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
 		
 		controls.chop.onDown.addOnce(function(){game.state.start('Game');});
 		controls.mince.onDown.addOnce(function(){game.state.start('Game');});

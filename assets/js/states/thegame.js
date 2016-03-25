@@ -11,6 +11,7 @@ Game.prototype = {
 		this.quarterMidBeat = 0;
 		this.beatList = [1000,2000,3000,4000,5000,6000];
 		this.indicator = {};
+		this.actor = {}
 	},
 	update_counter: function(){
 		this.beatCount ++
@@ -38,9 +39,24 @@ Game.prototype = {
 			this.timeQuality = this.qualityNames[5]
 		}
 	},	
+	action_one:function(actingOn, launchFrame){
+		this.launchFrame = launchFrame;
+		this.compare_timing()
+		log(this.timeQuality)
+		if(this.timeQuality == "POOR" || this.timeQuality == "BAD" || this.timeQuality == "OK"){
+			actingOn.animations.play('fall',6);
+		} else{
+			actingOn.animations.play('pose',5);			
+		}
+		actingOn.animations.currentAnim.onComplete.add(function(){
+			actingOn.animations.play('idle',3);
+			actingOn.animations.currentAnim.setFrame(launchFrame,true);
+		});
+	},
 	add_controls: function(){
 		controls.space.onDown.add(pause_game);
 		controls.step.onDown.add(step_game);
+		controls.pose.onDown.add(function(){this.action_one(this.dancer,this.dancer.animations.currentFrame.index)}, this);
 		controls.chop.onDown.add(this.compare_timing, this)
 		controls.mince.onDown.add(this.compare_timing, this)
 		controls.dice.onDown.add(this.compare_timing, this)
@@ -51,9 +67,22 @@ Game.prototype = {
 	
 	add_graphics: function(){
 		sky_bg();
-		this.indicator.sprite = game.add.sprite(220,180,'chickenLeg')
+		this.ground = game.add.sprite(0, 500, 'sidewalk');
+
+		this.indicator.sprite = game.add.sprite(125,0,'chickenLeg')
+		this.indicator.sprite.smoothed = false;
+		this.indicator.sprite.scale.setTo(10,10)
 		this.indicator.sprite.alpha = 0;
 		this.indicator.flash = make_flash(this.indicator.sprite);
+		
+		
+		this.dancer = game.add.sprite(500,420,'dancer')		
+		this.dancer.smoothed = false;
+		this.dancer.scale.setTo(4.5,4.5)
+		this.dancer.animations.add('idle',[0,1,2,1]);
+		this.dancer.animations.add('pose',[5,6,7,7,7,7,8,9]);
+		this.dancer.animations.add('fall',[11,12,13,14,14,14,14,15,16,17]);
+		this.dancer.animations.play('idle',3,true)
 	},
 
 	begin_rhythm: function(){
@@ -80,7 +109,6 @@ Game.prototype = {
 
 	preload: function () {
 		music.track.stop();
-		game.load.image('chickenLeg', '../assets/img/chicken_leg.png');
 		this.stageTimer = game.time.create(false);
 		this.quarterBeatTimer = game.time.create(false);
 		this.quarterBeatMidTimer = game.time.create(false);
@@ -97,7 +125,7 @@ Game.prototype = {
 	},
 	
 	update: function(){
-//		this.compare_timing() //FOR DEBUGGING
+		// this.compare_timing() //FOR DEBUGGING
 	},
 	
 	render: function(){
@@ -109,5 +137,7 @@ Game.prototype = {
 		game.debug.text('Difference: ' + this.difference, 32, 192);
 		game.debug.text('Beat Count: ' + this.beatCount, 32, 224);
 		game.debug.text('My Beat Quality: ' + this.timeQuality, 32, 256);
+		game.debug.text('Current Animation Frame: ' + this.dancer.animations.currentFrame.index, 32, 288);
+		game.debug.text('Starting Animation From Frame: ' + this.launchFrame, 32, 320);
 	}
 };
