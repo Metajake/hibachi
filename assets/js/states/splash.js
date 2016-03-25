@@ -46,7 +46,7 @@ Splash.prototype = {
 	
 	addGameMusic: function(){
 		music.track = game.add.audio('witit');
-		music.bpm = 674*2; //quarterNotes = 800;
+		music.bpm = 857;
 		// music.loop = true;
 		music.track.play();
 	},
@@ -61,7 +61,8 @@ Splash.prototype = {
 	add_controls: function (){
 		controls.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 		controls.step = game.input.keyboard.addKey(Phaser.Keyboard.F);
-		controls.chop = game.input.keyboard.addKey(Phaser.Keyboard.W);
+		controls.W = game.input.keyboard.addKey(Phaser.Keyboard.W);
+		controls.B = game.input.keyboard.addKey(Phaser.Keyboard.B);
 		controls.mince = game.input.keyboard.addKey(Phaser.Keyboard.UP);
 		controls.dice = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
 		controls.slice = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
@@ -69,7 +70,7 @@ Splash.prototype = {
 		controls.flip = game.input.keyboard.addKey(Phaser.Keyboard.D);
 		controls.pose = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
 		
-		controls.chop.onDown.addOnce(function(){game.state.start('Game');});
+		controls.W.onDown.addOnce(function(){game.state.start('Game');});
 		controls.mince.onDown.addOnce(function(){game.state.start('Game');});
 	},
 	
