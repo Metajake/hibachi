@@ -22,7 +22,7 @@ Splash.prototype = {
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
-        music.bgm.play();
+        //music.bgm.play();
     },
     createControls: function(){
         controls.W = game.input.keyboard.addKey(Phaser.Keyboard.W);

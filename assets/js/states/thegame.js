@@ -3,6 +3,7 @@ Game = function(){};
 Game.prototype = {
     init: function(){
         music.bgm.stop();
+        this.indicator = {};
         this.currentTrack = music.witit;
         this.sixteenthNotes = 0;
         this.eighthNotes = 0;
@@ -10,22 +11,22 @@ Game.prototype = {
         this.quarterNoteOccurance = 0;
         this.nextQuarterNotePrediction = this.quarterNoteOccurance + this.currentTrack.bpm;
         this.nextQuarterBeat = 1;
-        this.quarterExpectation = 0;
-        this.neb/*next expected beat*/ = this.currentTrack.eb[this.quarterExpectation];
+        this.quarterSequenceExpectation = 0;
+        this.neb/*next expected beat*/ = this.currentTrack.eb[this.quarterSequenceExpectation];
         this.qualityNumbers = [this.currentTrack.bpm * .02, this.currentTrack.bpm * .1,this.currentTrack.bpm * .2,this.currentTrack.bpm * .30,this.currentTrack.bpm * .50];
         this.qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
         this.acceptingInput = false;
     },
     loadMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
-        music.bgm.volume =0.4;
+        music.bgm.volume =0.35;
     },
     loadTimers: function(){
         this.stageTimer = game.time.create(false);
         this.stageTimer.loop(this.currentTrack.bpm/4, this.noteCounter, this)
     },
     loadControls: function(){
-        controls.W.onDown.add(this.compareTiming, this)
+        controls.W.onDown.add(this.actionOne, this)
         controls.SPACE.onDown.add(pause_game, this);
         controls.F.onDown.add(step_game);
     },
@@ -43,23 +44,26 @@ Game.prototype = {
     },
     predictNextBeatTime: function(){
         this.quarterNoteOccurance = this.stageTimer.ms;
-        this.predictionDifference = this.quarterNoteOccurance - this.nextQuarterNotePrediction;/*just for curiosity*/
+        //this.predictionDifference = this.quarterNoteOccurance - this.nextQuarterNotePrediction;/*just for curiosity*/
         this.nextQuarterNotePrediction = this.quarterNoteOccurance + this.currentTrack.bpm;
     },
     declareHitGoal: function(){
-        this.timeToDeclareHitGoal = this.nextQuarterNotePrediction - (this.currentTrack.bpm / 2);
+        this.timeToDeclareHitGoal = this.nextQuarterNotePrediction - this.qualityNumbers[4];
         if(this.stageTimer.ms >= this.timeToDeclareHitGoal){
             this.hitGoal = this.nextQuarterNotePrediction;
         }
     },
     expectBeat: function(beatType){
         if(beatType == "quarter") {
-            this.neb/*next expected beat*/ = this.currentTrack.eb[this.quarterExpectation];
+            this.neb/*next expected beat*/ = this.currentTrack.eb[this.quarterSequenceExpectation];
             if (this.neb == this.nextQuarterBeat) {
-                this.quarterExpectation ++;
-                this.neb = this.currentTrack.eb[this.quarterExpectation]
-                this.startAcceptingInput = this.nextQuarterNotePrediction - this.qualityNumbers[4]
-                this.stopAcceptingInput = this.nextQuarterNotePrediction + this.qualityNumbers[4]
+                this.quarterSequenceExpectation ++;
+                this.neb = this.currentTrack.eb[this.quarterSequenceExpectation]
+                this.startAcceptingInput = this.nextQuarterNotePrediction - this.qualityNumbers[4];
+                this.stopAcceptingInput = this.nextQuarterNotePrediction + this.qualityNumbers[4];
+                game.time.events.add(this.currentTrack.bpm - this.qualityNumbers[4], function(){
+                    this.i1.flash(this.currentTrack.bpm - this.qualityNumbers[4])
+                }, this);
             }
         }else{}
     },
@@ -85,20 +89,23 @@ Game.prototype = {
             this.timeQuality = this.qualityNames[5]
         }
     },
+    actionOne: function(){
+        this.compareTiming();
+        this.acceptInput();
+        if( ["PERFECT", "GOOD","GREAT"].indexOf(this.timeQuality) && this.acceptingInput == true){
+            log("dance")
+        }
+    },
     createGraphics: function(){
         gradient_bg(0x0D51a8, 0xe7a36E);
         this.ground = game.add.image(0,500, 'sidewalk');
-        this.dancer = game.add.sprite(500,420,'dancer');
-        this.dancer.smoothed = false;
-        this.dancer.scale.setTo(4.5,4.5);
-        this.dancer.animations.add('idle', [0,1,2,1]);
-        this.dancer.animations.play('idle',3,true)
+        this.i1 = new Indicator();
+        this.dancer = new Dancer(500,420);
     },
     createRhythm: function(){
         music.bgm.play();
         this.stageTimer.start();
-        this.declareHitGoal();
-        this.expectBeat();
+        this.expectBeat("quarter");
     },
     preload: function(){
         this.loadControls();
@@ -112,8 +119,8 @@ Game.prototype = {
     },
     update: function(){
         this.declareHitGoal();
-        this.acceptInput();
-        this.compareTiming();
+        //this.acceptInput();
+        //this.compareTiming();
     },
     render: function(){
         game.debug.text("Elapsed Seconds: "+this.stageTimer.ms, 32, 32)
@@ -124,7 +131,7 @@ Game.prototype = {
         game.debug.text("Next expected beat: "+this.neb, 32, 32*6)
         game.debug.text("Quarter Note NOW: "+this.quarterNoteOccurance, 32, 32*7)
         game.debug.text("Next Quarter Note Prediction: "+this.nextQuarterNotePrediction, 32, 32*8)
-        game.debug.text("Prediction was off by... "+this.predictionDifference+" milliseconds", 32, 32*9)
+        //game.debug.text("Prediction was off by... "+this.predictionDifference+" milliseconds", 32, 32*9)
         game.debug.text("Time to accept Input (and declare time to hit): "+this.timeToDeclareHitGoal, 32, 32*10)
         game.debug.text("Goal Hit Time: "+this.hitGoal, 32, 32*11)
         game.debug.text("Accepting Input?.. "+this.acceptingInput, 32, 32*12)
