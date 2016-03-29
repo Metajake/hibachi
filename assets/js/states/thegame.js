@@ -3,7 +3,6 @@ Game = function(){};
 Game.prototype = {
     init: function(){
         music.bgm.stop();
-        this.indicator = {};
         this.currentTrack = music.witit;
         this.sixteenthNotes = 0;
         this.eighthNotes = 0;
@@ -38,8 +37,10 @@ Game.prototype = {
         if (this.sixteenthNotes % 4 == 0){
             this.quarterNotes ++;
             this.nextQuarterBeat ++;
+            this.io.create();
+            this.io.move(this.currentTrack.bpm);
             this.predictNextBeatTime();
-            this.expectBeat("quarter")
+            this.expectBeat("quarter");
         };
     },
     predictNextBeatTime: function(){
@@ -72,25 +73,8 @@ Game.prototype = {
             this.acceptingInput = true
         }else{this.acceptingInput = false}
     },
-    compareTiming: function(){
-        this.myBeatTime = this.stageTimer.ms;
-        this.difference = Math.abs(this.hitGoal - this.myBeatTime);
-        if(this.difference < this.qualityNumbers[0]){
-            this.timeQuality = this.qualityNames[0]
-        }else if (this.difference < this.qualityNumbers[1]){
-            this.timeQuality = this.qualityNames[1]
-        }else if(this.difference < this.qualityNumbers[2]){
-            this.timeQuality = this.qualityNames[2]
-        }else if(this.difference < this.qualityNumbers[3]){
-            this.timeQuality = this.qualityNames[3]
-        }else if(this.difference < this.qualityNumbers[4]){
-            this.timeQuality = this.qualityNames[4]
-        }else{
-            this.timeQuality = this.qualityNames[5]
-        }
-    },
     actionOne: function(){
-        this.compareTiming();
+        this.timeQuality = compareTiming(this.stageTimer,this.hitGoal, this.qualityNumbers, this.qualityNames);
         this.acceptInput();
         if( ["PERFECT", "GOOD","GREAT"].indexOf(this.timeQuality) && this.acceptingInput == true){
             log("dance")
@@ -101,6 +85,12 @@ Game.prototype = {
         this.ground = game.add.image(0,500, 'sidewalk');
         this.i1 = new Indicator();
         this.dancer = new Dancer(500,420);
+        this.startingLine = new Phaser.Line(600,100,750,100);
+        this.q1Line = new Phaser.Line(600,200,750,200);
+        this.io = new IndicatorObj();
+        this.io.create();
+        this.io.move(this.currentTrack.bpm);
+
     },
     createRhythm: function(){
         music.bgm.play();
@@ -119,8 +109,7 @@ Game.prototype = {
     },
     update: function(){
         this.declareHitGoal();
-        //this.acceptInput();
-        //this.compareTiming();
+        //this.actionOne();
     },
     render: function(){
         game.debug.text("Elapsed Seconds: "+this.stageTimer.ms, 32, 32)
@@ -136,5 +125,7 @@ Game.prototype = {
         game.debug.text("Goal Hit Time: "+this.hitGoal, 32, 32*11)
         game.debug.text("Accepting Input?.. "+this.acceptingInput, 32, 32*12)
         game.debug.text("Quality of my timing: "+this.timeQuality, 32, 32*13)
+        game.debug.geom(this.startingLine)
+        game.debug.geom(this.q1Line)
     }
 }

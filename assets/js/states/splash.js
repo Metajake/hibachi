@@ -11,6 +11,7 @@ Splash.prototype = {
     },
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
+        game.load.script('actions', 'assets/js/actions.js');
     },
     loadBgm: function(){
         game.load.audio('witit', 'assets/mp3/witit.mp3');
