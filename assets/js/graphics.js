@@ -11,10 +11,11 @@ function gradient_bg(startHex, endHex){
     }
 }
 
-function Indicator(){
-    this.sprite = game.add.sprite(125,0,'chickenleg');
+function Flasher(tint, x, y){
+    this.sprite = game.add.sprite(x,y,'chickenleg');
+    this.sprite.tint = tint;
     this.sprite.smoothed = false;
-    this.sprite.scale.setTo(10,10)
+    this.sprite.scale.setTo(2,2)
     this.sprite.alpha = 0.1;
     this.flash = function(duration){
         f1 = game.add.tween(this.sprite)
@@ -45,18 +46,34 @@ function BmpRect(x, y){
     return bmd;
 }
 
-function IndicatorObj(){
+function IndicatorGroup(x,y,distance,sprite){
+    this.x = x;
+    this.y = y;
+    this.distance = distance;
+    this.sprite = sprite;
     this.indicators = game.add.group();
+
     this.create = function(){
-        this.bmpSprite = new BmpRect(200,200);
-        this.indicators.create(665,96, this.bmpSprite);
+        this.indicators.create(x,y,sprite);
     };
+
     this.move = function(duration){
-        toMove = this.indicators.getTop();
-        toRemove = this.indicators.getBottom();
-        m1 = game.add.tween(toMove);
-        m1.to({y:196}, duration,Phaser.Easing.Linear.None);
-        m1.onComplete.add(function(){this.indicators.remove(toRemove)},this);
+        m1 = game.add.tween(this.indicators.getTop());
+        m1.to({y:y+this.distance}, duration,Phaser.Easing.Linear.None);
+        m1.onComplete.add(function(){this.indicators.remove(this.indicators.getBottom())},this);
         m1.start()
     }
+}
+
+function IndicatorManager(x,y){
+    this.startingLine = new Phaser.Line(x,y,x+150,y);
+    this.sLine = new Phaser.Line(x,y+75,x+150,y+75);
+    this.eLine = new Phaser.Line(x,y+50,x+150,y+50);
+    this.qLine = new Phaser.Line(x,y+100,x+150,y+100);
+
+    this.bmpSprite = new BmpRect();
+
+    this.qi = new IndicatorGroup(x+95,y-4, 100,this.bmpSprite);
+    this.ei = new IndicatorGroup(x+55,y+46, 50,this.bmpSprite);
+    this.si = new IndicatorGroup(x+15,y+71, 25,this.bmpSprite);
 }

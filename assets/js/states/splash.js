@@ -14,7 +14,7 @@ Splash.prototype = {
         game.load.script('actions', 'assets/js/actions.js');
     },
     loadBgm: function(){
-        game.load.audio('witit', 'assets/mp3/witit.mp3');
+        game.load.audio('witit', 'assets/mp3/witit_short.mp3');
         game.load.audio('work', 'assets/mp3/work.mp3')
     },
     loadImages: function(){
@@ -27,6 +27,8 @@ Splash.prototype = {
     },
     createControls: function(){
         controls.W = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        controls.A = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        controls.D = game.input.keyboard.addKey(Phaser.Keyboard.D);
         controls.UP = game.input.keyboard.addKey(Phaser.Keyboard.UP);
         controls.SPACE = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         controls.F = game.input.keyboard.addKey(Phaser.Keyboard.F);
