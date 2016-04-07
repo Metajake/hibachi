@@ -3,7 +3,7 @@ Game = function(){};
 Game.prototype = {
     init: function(){
         music.bgm.stop();
-        this.currentTrack = music.witit;
+        this.currentTrack = music.carlos;
         this.qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
     },
     loadMusic: function(){
@@ -13,6 +13,7 @@ Game.prototype = {
     loadTimers: function(){
         this.stageTimer = game.time.create(false);
         this.stageTimer.loop(this.currentTrack.bpm/4, this.noteCounter, this)
+        this.stageTimer.loop(this.currentTrack.bpm, function(){this.hm.checkForHungry()}, this)
     },
     loadControls: function(){
         controls.A.onDown.add(function(){this.actionOne("sixteenth");}, this);
@@ -23,60 +24,72 @@ Game.prototype = {
     },
     noteCounter: function(){
         this.beatObj16.noteCounter(this.stageTimer, this.beatObj16.notes);
-        this.im.si.create();
-        this.im.si.move(this.currentTrack.bpm *.25);
+        this.im.ss.indicate(this.currentTrack.bpm *.25);
+        this.im.sf.flash(this.currentTrack.bpm *.02);
         if ( this.beatObj16.notes % 2 == 0){
             this.beatObj8.noteCounter(this.stageTimer);
-            this.im.ei.create();
-            this.im.ei.move(this.currentTrack.bpm *.5);
+            this.im.es.indicate(this.currentTrack.bpm *.5);
+            this.im.ef.flash(this.currentTrack.bpm *.02);
         }
         if (this.beatObj16.notes % 4 == 0){
             this.beatObj4.noteCounter(this.stageTimer);
-            this.im.qi.create();
-            this.im.qi.move(this.currentTrack.bpm);
+            this.im.qs.indicate(this.currentTrack.bpm);
+            this.im.qf.flash(this.currentTrack.bpm *.02);
         }
     },
     actionOne: function(beatType){
         if(beatType == "sixteenth"){
             this.sixteenthTimeQuality = compareTiming(this.stageTimer,this.beatObj16.hitGoal, this.beatObj16.qualityNumbers, this.qualityNames);
-            this.beatObj16.acceptInput(this.stageTimer);
+            this.beatObj16.acceptInput(this.stageTimer)
+            if(["PERFECT","GREAT", "GOOD"].indexOf(this.sixteenthTimeQuality) !== -1){
+                //this.hm.firstHungry += 30;
+            }
+            this.hm.hungerCount[this.hm.checkHungriest()].feed()
         }else if(beatType == "eighth"){
             this.eighthTimeQuality = compareTiming(this.stageTimer,this.beatObj8.hitGoal, this.beatObj8.qualityNumbers, this.qualityNames);
             this.beatObj8.acceptInput(this.stageTimer);
+            if(["PERFECT","GREAT", "GOOD"].indexOf(this.eighthTimeQuality) !== -1){
+                this.hm.firstHungry += 50;
+            }
         }else{
             this.quarterTimeQuality = compareTiming(this.stageTimer,this.beatObj4.hitGoal, this.beatObj4.qualityNumbers, this.qualityNames);
             this.beatObj4.acceptInput(this.stageTimer);
+            if(["PERFECT","GREAT", "GOOD"].indexOf(this.quarterTimeQuality) !== -1){
+                this.hm.firstHungry += 80;
+            }
         }
-        //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) && this.acceptingInput == true){
+
+        //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
         //    log("dance")
         //}
     },
-    createGraphics: function(){
+    createElements: function(){
         gradient_bg(0x0D51a8, 0xe7a36E);
         this.ground = game.add.image(0,500, 'sidewalk');
-        this.si = new Flasher(0xff0000, 150,300);
-        this.ei = new Flasher(0x00ff00, 250,300);
-        this.qi = new Flasher(0x0000ff, 350, 300);
+        this.si = new Flasher(150,300, 'chickenleg', 0x0000ff);
+        this.ei = new Flasher(250,300, 'chickenleg', 0xff0000);
+        this.qi = new Flasher(350, 300, 'chickenleg', 0x00ff00);
         this.dancer = new Dancer(500,420);
+        this.cube = new Cube(400,380);
 
         this.im = new IndicatorManager(600,300);
+        this.im.constructSliders();
+        this.im.constructFlashers(0,300);
 
+        this.hm = new HungryManager();
     },
     startRhythm: function(){
         this.beatObj16 = new BeatObj(this.currentTrack.bpm, this.si,.25, this.currentTrack.esb)
-        this.beatObj8 = new BeatObj(this.currentTrack.bpm, this.ei,.5, this.currentTrack.eeb)
-        this.beatObj4 = new BeatObj(this.currentTrack.bpm, this.qi,1, this.currentTrack.eqb)
+        this.beatObj8 = new BeatObj(this.currentTrack.bpm, this.ei,.5, this.currentTrack.eeb);
+        this.beatObj4 = new BeatObj(this.currentTrack.bpm, this.qi,1, this.currentTrack.eqb);
 
         music.bgm.play();
+        music.bgm.onStop.add(function(){game.state.start('splash')})
         this.stageTimer.start();
 
-        this.im.qi.create();
-        this.im.ei.create();
-        this.im.si.create();
-        this.im.qi.move(this.currentTrack.bpm);
-        this.im.ei.move(this.currentTrack.bpm *.5);
-        this.im.si.move(this.currentTrack.bpm *.25);
-
+        this.im.qs.indicate(this.currentTrack.bpm);
+        this.im.es.indicate(this.currentTrack.bpm *.5);
+        this.im.ss.indicate(this.currentTrack.bpm *.25);
 
         this.beatObj16.expectBeat();
         this.beatObj8.expectBeat();
@@ -90,7 +103,7 @@ Game.prototype = {
     },
     create: function(){
         game.stage.disableVisibilityChange = true;
-        this.createGraphics();
+        this.createElements();
         this.startRhythm();
     },
     update: function(){
@@ -98,6 +111,11 @@ Game.prototype = {
         this.beatObj8.declareHitGoal(this.stageTimer);
         this.beatObj4.declareHitGoal(this.stageTimer);
 
+        for(hungry in this.hm.hungerCount){
+            this.hm.hungerCount[hungry].update()
+        }
+
+        //Uncomment these for debugging beat input
         //this.actionOne("sixteenth");
         //this.actionOne("eighth");
         //this.actionOne("quarter");

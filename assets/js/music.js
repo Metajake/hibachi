@@ -1,6 +1,6 @@
 music = {
     witit:{
-        bpm:857*4,
+        bpm:857,
         name: 'witit',
         esb:[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100],
         eeb:[8, 18, 34, 38, 42, 46, 50, 54, 60, 64, 68, 72, 76, 80],
@@ -9,6 +9,13 @@ music = {
     work:{
         bpm:619,
         name: 'work'
+    },
+    carlos:{
+        bpm:923*2,
+        name: 'carlos',
+        esb:[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100],
+        eeb:[],
+        eqb:[]
     }
 };
 
@@ -55,7 +62,7 @@ BeatObj.prototype.expectBeat = function() {
         this.startAcceptingInput = this.nextNotePrediction - this.qualityNumbers[4];
         this.stopAcceptingInput = this.nextNotePrediction + this.qualityNumbers[4];
         game.time.events.add(this.bpm * this.interval - this.qualityNumbers[4], function () {
-            this.indicator.flash(this.bpm * this.interval - this.qualityNumbers[4])
+            this.indicator.glow(this.bpm * this.interval - this.qualityNumbers[4])
         }, this);
     };
 };
