@@ -24,10 +24,10 @@ function Dancer(x, y){
 }
 function Cube(x, y){
     this.sprite = new Spritesheet(x,y,'cube');
-    this.sprite.scale.setTo(4.5,4.5);
+    this.sprite.scale.setTo(4,4);
     this.sprite.animations.add('spin');
     this.sprite.animations.play('spin',6,true);
-    this.sprite.animations.currentAnim.speed = 10;
+    this.sprite.animations.currentAnim.speed = 15;
 }
 
 function BmpRect(x, y){

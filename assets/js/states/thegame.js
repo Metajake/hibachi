@@ -3,7 +3,7 @@ Game = function(){};
 Game.prototype = {
     init: function(){
         music.bgm.stop();
-        this.currentTrack = music.carlos;
+        this.currentTrack = music.realiti;
         this.qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
     },
     loadMusic: function(){
@@ -13,7 +13,6 @@ Game.prototype = {
     loadTimers: function(){
         this.stageTimer = game.time.create(false);
         this.stageTimer.loop(this.currentTrack.bpm/4, this.noteCounter, this)
-        this.stageTimer.loop(this.currentTrack.bpm, function(){this.hm.checkForHungry()}, this)
     },
     loadControls: function(){
         controls.A.onDown.add(function(){this.actionOne("sixteenth");}, this);
@@ -35,33 +34,31 @@ Game.prototype = {
             this.beatObj4.noteCounter(this.stageTimer);
             this.im.qs.indicate(this.currentTrack.bpm);
             this.im.qf.flash(this.currentTrack.bpm *.02);
+            this.hm.checkForHungry()
         }
     },
     actionOne: function(beatType){
+        hungerCountPos = this.hm.checkHungriest();
         if(beatType == "sixteenth"){
             this.sixteenthTimeQuality = compareTiming(this.stageTimer,this.beatObj16.hitGoal, this.beatObj16.qualityNumbers, this.qualityNames);
-            this.beatObj16.acceptInput(this.stageTimer)
+            //this.beatObj16.acceptInput(this.stageTimer)
+            //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
+            //    log("dance")
+            //}
             if(["PERFECT","GREAT", "GOOD"].indexOf(this.sixteenthTimeQuality) !== -1){
-                //this.hm.firstHungry += 30;
+                this.hm.hungerCount[hungerCountPos].feed(this.hm.hungerCount,hungerCountPos, 30, this.sixteenthTimeQuality)
             }
-            this.hm.hungerCount[this.hm.checkHungriest()].feed()
         }else if(beatType == "eighth"){
             this.eighthTimeQuality = compareTiming(this.stageTimer,this.beatObj8.hitGoal, this.beatObj8.qualityNumbers, this.qualityNames);
-            this.beatObj8.acceptInput(this.stageTimer);
             if(["PERFECT","GREAT", "GOOD"].indexOf(this.eighthTimeQuality) !== -1){
-                this.hm.firstHungry += 50;
+                this.hm.hungerCount[hungerCountPos].feed(this.hm.hungerCount,hungerCountPos, 50, this.eighthTimeQuality)
             }
-        }else{
-            this.quarterTimeQuality = compareTiming(this.stageTimer,this.beatObj4.hitGoal, this.beatObj4.qualityNumbers, this.qualityNames);
-            this.beatObj4.acceptInput(this.stageTimer);
-            if(["PERFECT","GREAT", "GOOD"].indexOf(this.quarterTimeQuality) !== -1){
-                this.hm.firstHungry += 80;
+        }else {
+            this.quarterTimeQuality = compareTiming(this.stageTimer, this.beatObj4.hitGoal, this.beatObj4.qualityNumbers, this.qualityNames);
+            if (["PERFECT", "GREAT", "GOOD"].indexOf(this.quarterTimeQuality) !== -1) {
+                this.hm.hungerCount[hungerCountPos].feed(this.hm.hungerCount, hungerCountPos, 80, this.quarterTimeQuality)
             }
         }
-
-        //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
-        //    log("dance")
-        //}
     },
     createElements: function(){
         gradient_bg(0x0D51a8, 0xe7a36E);
@@ -70,7 +67,7 @@ Game.prototype = {
         this.ei = new Flasher(250,300, 'chickenleg', 0xff0000);
         this.qi = new Flasher(350, 300, 'chickenleg', 0x00ff00);
         this.dancer = new Dancer(500,420);
-        this.cube = new Cube(400,380);
+        this.cube = new Cube(380,380);
 
         this.im = new IndicatorManager(600,300);
         this.im.constructSliders();
@@ -121,6 +118,8 @@ Game.prototype = {
         //this.actionOne("quarter");
     },
     render: function(){
+        // BEAT INFO
+        /*
         game.debug.text("Elapsed Seconds: "+this.stageTimer.ms, 32, 32);
         game.debug.text("Sixteenth Notes: "+this.beatObj16.notes, 32, 32 *1.5);
         game.debug.text("Next Sixteenth Is:  "+this.beatObj16.nextBeat, 32, 32*2);
@@ -137,6 +136,7 @@ Game.prototype = {
         game.debug.text("Next expected Quarter beat: "+this.beatObj4.neb, 32, 32*8.5)
         game.debug.text("Quarter Note NOW: "+this.beatObj4.noteOccurance, 32, 32*9)
         game.debug.text("Next Quarter Prediction: "+this.beatObj4.nextNotePrediction, 32, 32*9.5)
+        */
         game.debug.text("Quality of my Sixteenth Timing: "+this.sixteenthTimeQuality, 32, 32*10.5)
         game.debug.text("Quality of my Eighth Timing: "+this.eighthTimeQuality, 32, 32*11)
         game.debug.text("Quality of my Quarter Timing: "+this.quarterTimeQuality, 32, 32*11.5)
