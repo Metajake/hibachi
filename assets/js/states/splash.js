@@ -12,14 +12,20 @@ Splash.prototype = {
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
         game.load.script('actions', 'assets/js/actions.js');
+        game.load.script('objects', 'assets/js/objects.js');
     },
     loadBgm: function(){
         game.load.audio('witit', 'assets/mp3/witit_short.mp3');
-        game.load.audio('work', 'assets/mp3/work.mp3')
+        game.load.audio('work', 'assets/mp3/work.mp3');
+        game.load.audio('carlos', 'assets/mp3/carlos.mp3');
+        game.load.audio('notype', 'assets/mp3/notype.mp3');
+        game.load.audio('btstu', 'assets/mp3/btstu.mp3');
+        game.load.audio('realiti', 'assets/mp3/realiti.mp3');
     },
     loadImages: function(){
         game.load.image('chickenleg', 'assets/img/chicken_leg.png');
         game.load.spritesheet('dancer', 'assets/img/breakdancer.png', 32, 32);
+        game.load.spritesheet('cube', 'assets/img/softBody_sphere.png', 50,50);
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
