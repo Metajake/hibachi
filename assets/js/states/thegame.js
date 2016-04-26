@@ -3,7 +3,7 @@ Game = function(){};
 Game.prototype = {
     init: function(){
         music.bgm.stop();
-        this.currentTrack = music.realiti;
+        this.currentTrack = music.carlos;
         this.qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
     },
     loadMusic: function(){
@@ -67,7 +67,7 @@ Game.prototype = {
         this.ei = new Flasher(250,300, 'chickenleg', 0xff0000);
         this.qi = new Flasher(350, 300, 'chickenleg', 0x00ff00);
         this.dancer = new Dancer(500,420);
-        this.cube = new Cube(380,380);
+        this.cube = new Cube(100,80);
 
         this.im = new IndicatorManager(600,300);
         this.im.constructSliders();
@@ -76,9 +76,11 @@ Game.prototype = {
         this.hm = new HungryManager();
     },
     startRhythm: function(){
-        this.beatObj16 = new BeatObj(this.currentTrack.bpm, this.si,.25, this.currentTrack.esb)
-        this.beatObj8 = new BeatObj(this.currentTrack.bpm, this.ei,.5, this.currentTrack.eeb);
-        this.beatObj4 = new BeatObj(this.currentTrack.bpm, this.qi,1, this.currentTrack.eqb);
+        this.beatObj16 = new regBeatObj(this.currentTrack.bpm, this.si,.25, this.currentTrack.esb)
+        this.beatObj8 = new regBeatObj(this.currentTrack.bpm, this.ei,.5, this.currentTrack.eeb);
+        this.beatObj4 = new regBeatObj(this.currentTrack.bpm, this.qi,1, this.currentTrack.eqb);
+
+        this.musicBeatObj = new musicBeatObj(this.currentTrack, this.im.mbf)
 
         music.bgm.play();
         music.bgm.onStop.add(function(){game.state.start('splash')})
@@ -108,6 +110,8 @@ Game.prototype = {
         this.beatObj8.declareHitGoal(this.stageTimer);
         this.beatObj4.declareHitGoal(this.stageTimer);
 
+        this.musicBeatObj.update(music.bgm.currentTime);
+
         for(hungry in this.hm.hungerCount){
             this.hm.hungerCount[hungry].update()
         }
@@ -118,6 +122,11 @@ Game.prototype = {
         //this.actionOne("quarter");
     },
     render: function(){
+        game.debug.text("Music Time: "+music.bgm.currentTime, 32, 32)
+        game.debug.text("Upcoming Beat: "+this.musicBeatObj.upcomingBeat, 32, 32*1.5)
+        game.debug.text("Current Track BPM: "+this.currentTrack.bpm, 32, 32*2)
+        game.debug.text("Next BPM: "+this.musicBeatObj.nextBpm, 32, 32*2.5)
+        game.debug.text("Current track time divisible by BPM: "+this.musicBeatObj.timeOfBPM, 32, 32*3)
         // BEAT INFO
         /*
         game.debug.text("Elapsed Seconds: "+this.stageTimer.ms, 32, 32);
