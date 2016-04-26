@@ -25,7 +25,7 @@ Splash.prototype = {
     loadImages: function(){
         game.load.image('chickenleg', 'assets/img/chicken_leg.png');
         game.load.spritesheet('dancer', 'assets/img/breakdancer.png', 32, 32);
-        game.load.spritesheet('cube', 'assets/img/softBody_sphere.png', 50,50);
+        game.load.spritesheet('cube', 'assets/img/noodles1.png', 50,50);
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);

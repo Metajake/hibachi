@@ -70,7 +70,29 @@ Hungry.prototype = {
     }
 };
 
-var BeatObj = function(bpm, indicator, interval, expectedBeats){
+var musicBeatObj = function(currentTrack, indicator){
+    this.beatsMS = currentTrack.beatsMS;
+    this.bpm = currentTrack.bpm;
+    this.nextBpm = this.bpm;
+    this.beatsMSCounter = 0;
+    this.upcomingBeat = this.beatsMS[this.beatsMSCounter];
+    this.indicator = indicator;
+    this.timeOfBPM = 0;
+}
+
+musicBeatObj.prototype.update = function(time){
+    if(time >= this.nextBpm){
+        this.timeOfBPM = time
+        this.nextBpm = time + this.bpm;
+    }
+    if(time >= this.upcomingBeat){
+        this.indicator.flash(100)
+        this.beatsMSCounter ++
+        this.upcomingBeat = this.beatsMS[this.beatsMSCounter]
+    }
+}
+
+var regBeatObj = function(bpm, indicator, interval, expectedBeats){
     this.bpm = bpm;
     this.indicator = indicator;
     this.interval = interval;
@@ -85,26 +107,26 @@ var BeatObj = function(bpm, indicator, interval, expectedBeats){
     this.acceptingInput = false;
 };
 
-BeatObj.prototype.noteCounter = function(time){
+regBeatObj.prototype.noteCounter = function(time){
     this.notes ++;
     this.nextBeat ++;
     this.predictNextBeatTime(time);
     this.expectBeat();
 };
 
-BeatObj.prototype.predictNextBeatTime = function(time) {
+regBeatObj.prototype.predictNextBeatTime = function(time) {
     this.noteOccurance = time.ms;
     this.nextNotePrediction = this.noteOccurance + (this.bpm * this.interval);
 };
 
-BeatObj.prototype.declareHitGoal = function(time){
+regBeatObj.prototype.declareHitGoal = function(time){
     this.timeToDeclareHitGoal = this.nextNotePrediction - this.qualityNumbers[4];
     if (time.ms >= this.timeToDeclareHitGoal) {
         this.hitGoal = this.nextNotePrediction;
     };
 };
 
-BeatObj.prototype.expectBeat = function() {
+regBeatObj.prototype.expectBeat = function() {
     this.neb = this.eb[this.sequenceExpectation];
     if (this.neb == this.nextBeat) {
         this.sequenceExpectation++;
@@ -117,8 +139,78 @@ BeatObj.prototype.expectBeat = function() {
     };
 };
 
-BeatObj.prototype.acceptInput = function(time){
+regBeatObj.prototype.acceptInput = function(time){
     if((time.ms >= this.startAcceptingInput) && (time.ms <= this.stopAcceptingInput)){
         this.acceptingInput = true
     }else{this.acceptingInput = false}
 };
+
+/*
+function Food(name, value, combinationList){
+    this.name = name;
+    this.value = value;
+    this.combinationList = combinationList;
+    this.combine = function(otherFood){
+    if(this.combinationList.indexOf(otherFood.getName()) != -1){
+        isValid = true;
+        this.decoratedFood = otherFood;
+    } else {
+        isValid=false;
+    }
+        return isValid;
+    };
+    this.eat = function(){
+        if(!this.decoratedFood){
+        return this.value;
+    }
+    else{
+        return this.decoratedFood.eat() + this.value;
+       }
+    };
+    this.getName = function(){
+        if(!this.decoratedFood){
+            return this.name;
+        } else {
+            return this.name + " and " + this.decoratedFood.getName()
+        }
+    }
+};
+
+function MultiplierFood(name, value, combinationList){
+    this.name = name;
+    this.value = value;
+    this.combinationList = combinationList;
+    this.combine = function(otherFood){
+        if(this.combinationList.indexOf(otherFood.getName()) != -1){
+            isValid = true;
+            this.decoratedFood = otherFood;
+        } else {
+            isValid=false;
+        }
+        return isValid;
+    };
+    this.eat = function(){
+        if(!this.decoratedFood){
+            return this.value;
+        }
+        else{
+            return this.decoratedFood.eat() * this.value;
+        }
+    };
+    this.getName = function(){
+        if(!this.decoratedFood){
+            return this.name;
+        } else {
+            return this.name + " and " + this.decoratedFood.getName()
+        }
+    }
+};
+
+var stbry = new Food("strawberry",2,["shortcake"]);
+var shrtck = new Food("shortcake",10,[]);
+var brslsprt = new Food("brussels sprout", 9,["butter"]);
+
+stbry.combine(shrtck)
+
+alert(stbry.getName())
+ */

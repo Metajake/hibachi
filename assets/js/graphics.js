@@ -27,7 +27,8 @@ function Cube(x, y){
     this.sprite.scale.setTo(4,4);
     this.sprite.animations.add('spin');
     this.sprite.animations.play('spin',6,true);
-    this.sprite.animations.currentAnim.speed = 15;
+    this.sprite.animations.currentAnim.speed = 10;
+    this.sprite.animations.currentAnim.speed = 10;
 }
 
 function BmpRect(x, y){
@@ -105,8 +106,10 @@ function IndicatorManager(x,y){
         this.c1 = BmpCirc(80,100,12,"#000");
         this.c2 = BmpCirc(80,100,12,"#00f");
         this.c3 = BmpCirc(80,100,12,"#ff0");
+        this.c4 = BmpCirc(80,100,12,"#f0f");
         this.sf = new Flasher(x,y, this.c1);
         this.ef = new Flasher(x+100,y, this.c2);
         this.qf = new Flasher(x+200,y, this.c3);
+        this.mbf = new Flasher(x,y-100, this.c4);
     }
 }
