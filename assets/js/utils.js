@@ -23,6 +23,10 @@ function pause_game(event){
     }
 }
 
+function gofull(){
+    if (controls.P.altKey){ if (game.scale.isFullScreen){ game.scale.stopFullScreen(); } else { game.scale.startFullScreen(false); }; };
+}
+
 function step_game(event){
     if(game.stepping){
         game.step();

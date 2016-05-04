@@ -12,7 +12,9 @@ Splash.prototype = {
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
         game.load.script('actions', 'assets/js/actions.js');
-        game.load.script('objects', 'assets/js/objects.js');
+        game.load.script('hungry', 'assets/js/hungry.js');
+        game.load.script('food', 'assets/js/food.js');
+        game.load.script('beats', 'assets/js/beats.js');
     },
     loadBgm: function(){
         game.load.audio('witit', 'assets/mp3/witit_short.mp3');
@@ -25,7 +27,6 @@ Splash.prototype = {
     loadImages: function(){
         game.load.image('chickenleg', 'assets/img/chicken_leg.png');
         game.load.spritesheet('dancer', 'assets/img/breakdancer.png', 32, 32);
-        game.load.spritesheet('cube', 'assets/img/noodles1.png', 50,50);
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
@@ -38,7 +39,9 @@ Splash.prototype = {
         controls.UP = game.input.keyboard.addKey(Phaser.Keyboard.UP);
         controls.SPACE = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         controls.F = game.input.keyboard.addKey(Phaser.Keyboard.F);
+        controls.P = game.input.keyboard.addKey(Phaser.Keyboard.P);
 
+        controls.P.onUp.add(gofull)
         controls.W.onDown.addOnce(function(){game.state.start('Game');});
         controls.UP.onDown.addOnce(function(){game.state.start('Game');});
     },
@@ -53,6 +56,7 @@ Splash.prototype = {
         this.loadBgm();
     },
     create: function(){
+        game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
         game.stage.disableVisibilityChange = true;
         this.loadStatus.setText("Ready!");
         this.startLabel = game.make.text(game.world.centerX, 450, 'Press W or UP', {fill: 'white'});
