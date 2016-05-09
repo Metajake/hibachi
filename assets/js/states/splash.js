@@ -7,29 +7,31 @@ Splash.prototype = {
         this.title = game.make.sprite(game.world.centerX, 150, 'logo');
         this.loadStatus = game.make.text(game.world.centerX, 350, "Loading...", {fill: 'white'});
         utils.centerGameObjects([this.title, this.loadStatus]);
-        this.currentTrack = music.work;
+        this.currentTrack = tracks.ivy;
     },
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
+        game.load.script('music', 'assets/js/music.js');
         game.load.script('actions', 'assets/js/actions.js');
-        game.load.script('objects', 'assets/js/objects.js');
+        game.load.script('hungry', 'assets/js/hungry.js');
+        game.load.script('food', 'assets/js/food.js');
+        game.load.script('beats', 'assets/js/beats.js');
     },
     loadBgm: function(){
-        game.load.audio('witit', 'assets/mp3/witit_short.mp3');
+        game.load.audio('witit', 'assets/mp3/witit.mp3');
         game.load.audio('work', 'assets/mp3/work.mp3');
         game.load.audio('carlos', 'assets/mp3/carlos.mp3');
         game.load.audio('notype', 'assets/mp3/notype.mp3');
         game.load.audio('btstu', 'assets/mp3/btstu.mp3');
         game.load.audio('realiti', 'assets/mp3/realiti.mp3');
+        game.load.audio('ivy', 'assets/mp3/ivy.mp3');
     },
     loadImages: function(){
-        game.load.image('chickenleg', 'assets/img/chicken_leg.png');
-        game.load.spritesheet('dancer', 'assets/img/breakdancer.png', 32, 32);
-        game.load.spritesheet('cube', 'assets/img/noodles1.png', 50,50);
+        game.load.image('grill', 'assets/img/grill.png');
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
-        //music.bgm.play();
+        music.bgm.play();
     },
     createControls: function(){
         controls.W = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -38,12 +40,15 @@ Splash.prototype = {
         controls.UP = game.input.keyboard.addKey(Phaser.Keyboard.UP);
         controls.SPACE = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         controls.F = game.input.keyboard.addKey(Phaser.Keyboard.F);
+        controls.P = game.input.keyboard.addKey(Phaser.Keyboard.P);
 
+        controls.P.onUp.add(gofull)
         controls.W.onDown.addOnce(function(){game.state.start('Game');});
         controls.UP.onDown.addOnce(function(){game.state.start('Game');});
     },
     preload: function(){
-        gradient_bg(0x0D51a8, 0xe7a36E);
+        this.sky = gradient_bg(0x0D51a8, 0xe7a36E);
+        this.sky.addToWorld();
         game.add.existing(this.title).scale.setTo(0.75);
         game.add.existing(this.loadingBar).scale.setTo(1, 0.75);
         game.add.existing(this.loadStatus);
@@ -53,6 +58,7 @@ Splash.prototype = {
         this.loadBgm();
     },
     create: function(){
+        game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
         game.stage.disableVisibilityChange = true;
         this.loadStatus.setText("Ready!");
         this.startLabel = game.make.text(game.world.centerX, 450, 'Press W or UP', {fill: 'white'});
