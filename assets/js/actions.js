@@ -34,28 +34,31 @@ function noteCounter(bm, timer, im, bpm, hm){
     }
 }
 
-function actionOne(beatType, hm, timer,bm, fm, stage){
+function actionOne(beatType, hm, timer,bm, chef){
     hungerCountPos = hm.checkHungriest();
     qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
     if(beatType == "sixteenth"){
-        sixteenthTimeQuality = compareTiming(timer,bm.beatObj16.hitGoal, bm.beatObj16.qualityNumbers, qualityNames);
+        bm.sixteenthTimeQuality = compareTiming(timer,bm.beatObj16.hitGoal, bm.beatObj16.qualityNumbers, qualityNames);
         //this.beatObj16.acceptInput(this.stageTimer)
         //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
         //    log("dance")
         //}
-        if(["PERFECT","GREAT", "GOOD"].indexOf(sixteenthTimeQuality) !== -1){
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 30, sixteenthTimeQuality)
+        if(["PERFECT","GREAT", "GOOD"].indexOf(bm.sixteenthTimeQuality) !== -1){
+            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 30, bm.sixteenthTimeQuality)
         }
     }else if(beatType == "eighth"){
-        eighthTimeQuality = compareTiming(timer,bm.beatObj8.hitGoal, bm.beatObj8.qualityNumbers, qualityNames);
-        if(["PERFECT","GREAT", "GOOD"].indexOf(eighthTimeQuality) !== -1){
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 50, eighthTimeQuality)
+        bm.eighthTimeQuality = compareTiming(timer,bm.beatObj8.hitGoal, bm.beatObj8.qualityNumbers, qualityNames);
+        if(["PERFECT","GREAT", "GOOD"].indexOf(bm.eighthTimeQuality) !== -1){
+            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 50, bm.eighthTimeQuality)
         }
+        sndfx.clang1.play();
     }else {
-        quarterTimeQuality = compareTiming(timer, bm.beatObj4.hitGoal, bm.beatObj4.qualityNumbers, qualityNames);
-        if (["PERFECT", "GREAT", "GOOD"].indexOf(quarterTimeQuality) !== -1) {
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount, hungerCountPos, 80, quarterTimeQuality)
+        bm.quarterTimeQuality = compareTiming(timer, bm.beatObj4.hitGoal, bm.beatObj4.qualityNumbers, qualityNames);
+        if (["PERFECT", "GREAT", "GOOD"].indexOf(bm.quarterTimeQuality) !== -1) {
+            hm.hungerCount[hungerCountPos].feed(hm.hungerCount, hungerCountPos, 80, bm.quarterTimeQuality)
         }
     }
-    fm.ndls = fm.addFood("noodles",2,["shortcake"]);
+    if(chef.grill.currentFood.length <= 6) {
+        chef.grill.ndls = chef.addFood(200, 200, "noodles", 10, 4, 2, ["shortcake"]);
+    }
 }

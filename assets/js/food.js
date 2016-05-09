@@ -1,22 +1,21 @@
-function FoodManager(stage) {
+function Chef(stage) {
     this.stage = stage;
     this.grill = new Grill();
 };
 
-FoodManager.prototype.addFood = function(name, value, combinationList){
-    food = new Food(name, value, combinationList, this.stage)
-    this.grill.currentFood.push(food.name)
-    log("Grill contains "+this.grill.currentFood);
-    return food
+Chef.prototype.addFood = function(x,y,name,speed, scale, value, combinationList){
+    if (this.grill.currentFood.indexOf(name) !== -1) {} else {
+        food = new Food(x, y, name, speed, scale, value, combinationList, this.stage);
+        this.grill.currentFood.push(food.name);
+    }
+    log("The Grill contains: "+this.grill.currentFood);
 };
 
-function Food(name, value, combinationList, stage){
+function Food(x,y,name,speed, scale,value, combinationList, stage){
     this.name = name;
     this.value = value;
     this.combinationList = combinationList;
-    if(this.name = "noodles"){
-        this.sprite = new FoodSprite(200,200,"noodles",10,3.5, stage);
-    }
+    this.sprite = new FoodSprite(x,y,name,speed,scale, stage);
     this.combine = function(otherFood){
         if(this.combinationList.indexOf(otherFood.getName()) != -1){
             isValid = true;
@@ -80,6 +79,9 @@ function MultiplierFood(name, value, combinationList){
 
 var brslsprt = new Food("brussels sprout", 9,["butter"]);
 
+ //this.fm.ndls = this.fm.addFood("w",2,["shortcake"]);
+ //this.fm.shrtck = this.fm.addFood("shortcake",10,[]);
+ //this.fm.ndls.combine(this.fm.shrtck)
 stbry.combine(shrtck)
 
 alert(stbry.getName())

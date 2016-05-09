@@ -34,7 +34,7 @@ HungryManager.prototype.addHungry = function(){
 };
 
 function Hungry(graphics, originX){
-    this.graphics = graphics
+    this.graphics = graphics;
     this.graphics.lineStyle(2, 0x00ffFF, 1);
     this.graphics.drawRect(originX, 400+ Math.floor(Math.random()*100), 10,10);
     this.hungerLevel = 0;
