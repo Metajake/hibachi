@@ -3,6 +3,8 @@ var Splash = function(){},
 
 Splash.prototype = {
     init: function(){
+        this.stageTimer = game.time.create(false);
+
         this.loadingBar = game.make.sprite(0, 500, 'sidewalk');
         this.title = game.make.sprite(game.world.centerX, 150, 'logo');
         this.loadStatus = game.make.text(game.world.centerX, 350, "Loading...", {fill: 'white'});
@@ -21,23 +23,36 @@ Splash.prototype = {
         game.load.audio('witit', 'assets/mp3/witit.mp3');
         game.load.audio('work', 'assets/mp3/work.mp3');
         game.load.audio('carlos', 'assets/mp3/carlos.mp3');
+        game.load.audio('rattrap', 'assets/mp3/rattrap.mp3');
         game.load.audio('notype', 'assets/mp3/notype.mp3');
         game.load.audio('btstu', 'assets/mp3/btstu.mp3');
         game.load.audio('realiti', 'assets/mp3/realiti.mp3');
-        game.load.audio('ivy', 'assets/mp3/ivy.mp3');
+        game.load.audio('wind', 'assets/mp3/wind.mp3');
     },
     loadImages: function(){
         game.load.image('grill', 'assets/img/grill.png');
+        game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
+
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
+        music.bgm.volume = .5
         music.bgm.play();
+        log("Music is playing after creation"+music.bgm.isPlaying+"at"+this.stageTimer.ms);
+
     },
     createControls: function(){
         controls.W = game.input.keyboard.addKey(Phaser.Keyboard.W);
         controls.A = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        controls.S = game.input.keyboard.addKey(Phaser.Keyboard.S);
         controls.D = game.input.keyboard.addKey(Phaser.Keyboard.D);
+        controls.E = game.input.keyboard.addKey(Phaser.Keyboard.E);
+        //DONT STEAL R FROM BROWSER controls.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        controls.G = game.input.keyboard.addKey(Phaser.Keyboard.G);
         controls.UP = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        controls.LEFT = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        controls.RIGHT = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        controls.DOWN = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         controls.SPACE = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         controls.F = game.input.keyboard.addKey(Phaser.Keyboard.F);
         controls.P = game.input.keyboard.addKey(Phaser.Keyboard.P);
@@ -65,6 +80,7 @@ Splash.prototype = {
         utils.centerGameObjects([this.startLabel]);
         game.add.existing(this.startLabel);
 
+        this.stageTimer.start();
         this.createMusic();
         this.createControls();
         game.state.add('Game', Game);

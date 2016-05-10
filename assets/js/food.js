@@ -8,7 +8,7 @@ Chef.prototype.addFood = function(x,y,name,speed, scale, value, combinationList)
         food = new Food(x, y, name, speed, scale, value, combinationList, this.stage);
         this.grill.currentFood.push(food.name);
     }
-    log("The Grill contains: "+this.grill.currentFood);
+    //log("The Grill contains: "+this.grill.currentFood);
 };
 
 function Food(x,y,name,speed, scale,value, combinationList, stage){
