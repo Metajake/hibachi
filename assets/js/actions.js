@@ -1,5 +1,5 @@
-function compareTiming(timer, goal, qualities, results){
-    myBeatTime = timer.ms;
+function compareTiming(musicTime, goal, qualities, results){
+    myBeatTime = musicTime
     difference = Math.abs(goal - myBeatTime);
     if(difference < qualities[0]){
         timeQuality = results[0]
@@ -34,31 +34,40 @@ function noteCounter(bm, timer, im, bpm, hm){
     }
 }
 
-function actionOne(beatType, hm, timer,bm, chef){
+function actionOne(beatType, hm, musicTime , chef, mu){
     hungerCountPos = hm.checkHungriest();
     qualityNames = ["PERFECT", "GREAT","GOOD","OK","BAD","POOR"];
-    if(beatType == "sixteenth"){
-        bm.sixteenthTimeQuality = compareTiming(timer,bm.beatObj16.hitGoal, bm.beatObj16.qualityNumbers, qualityNames);
+    if(beatType == "thirtysecond"){
+        mu.timingQuality32 = compareTiming(musicTime, mu.hitGoal32, mu.qualityNumbers32, qualityNames);
         //this.beatObj16.acceptInput(this.stageTimer)
         //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
         //    log("dance")
         //}
-        if(["PERFECT","GREAT", "GOOD"].indexOf(bm.sixteenthTimeQuality) !== -1){
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 30, bm.sixteenthTimeQuality)
+        if(["PERFECT","GREAT", "GOOD"].indexOf(mu.timingQuality32) !== -1){
+            //hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 15//, mu.timingQuality32)
+        }
+        //sndfx.clang1.play();
+    } else if(beatType == "sixteenth"){
+        mu.timingQuality16 = compareTiming(musicTime, mu.hitGoal16, mu.qualityNumbers16, qualityNames);
+        //this.beatObj16.acceptInput(this.stageTimer)
+        //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
+        //    log("dance")
+        //}
+        if(["PERFECT","GREAT", "GOOD"].indexOf(mu.timingQuality16) !== -1){
+            //hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 30, mu.timingQuality16)
         }
     }else if(beatType == "eighth"){
-        bm.eighthTimeQuality = compareTiming(timer,bm.beatObj8.hitGoal, bm.beatObj8.qualityNumbers, qualityNames);
-        if(["PERFECT","GREAT", "GOOD"].indexOf(bm.eighthTimeQuality) !== -1){
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 50, bm.eighthTimeQuality)
+        mu.timingQuality8 = compareTiming(musicTime, mu.hitGoal8, mu.qualityNumbers8, qualityNames);
+        if(["PERFECT","GREAT", "GOOD"].indexOf(mu.timingQuality8) !== -1){
+            //hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 50, mu.timingQuality8)
         }
-        sndfx.clang1.play();
     }else {
-        bm.quarterTimeQuality = compareTiming(timer, bm.beatObj4.hitGoal, bm.beatObj4.qualityNumbers, qualityNames);
-        if (["PERFECT", "GREAT", "GOOD"].indexOf(bm.quarterTimeQuality) !== -1) {
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount, hungerCountPos, 80, bm.quarterTimeQuality)
+        mu.timingQuality4 = compareTiming(musicTime, mu.hitGoal4, mu.qualityNumbers4, qualityNames);
+        if (["PERFECT", "GREAT", "GOOD"].indexOf(mu.timingQuality4) !== -1) {
+            //hm.hungerCount[hungerCountPos].feed(hm.hungerCount, hungerCountPos, 80, mu.timingQuality4)
         }
     }
     if(chef.grill.currentFood.length <= 6) {
-        chef.grill.ndls = chef.addFood(200, 200, "noodles", 10, 4, 2, ["shortcake"]);
+        chef.grill.ndls = chef.addFood(200, 200, "noodles", 8, 4, 2, ["shortcake"]);
     }
 }

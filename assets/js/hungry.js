@@ -12,7 +12,7 @@ HungryManager.prototype = {
     checkHungriest: function(){
         hungerLevels = [];
         for(hungry in this.hungerCount){
-            hungerLevels.push(this.hungerCount[hungry].hungerLevel)
+            hungerLevels.push(this.hungerCount[hungry].impatience)
         }
         max = hungerLevels[0];
         maxIndex = 0;
@@ -36,22 +36,26 @@ HungryManager.prototype.addHungry = function(){
 function Hungry(graphics, originX){
     this.graphics = graphics;
     this.graphics.lineStyle(2, 0x00ffFF, 1);
-    this.graphics.drawRect(originX, 400+ Math.floor(Math.random()*100), 10,10);
-    this.hungerLevel = 0;
+    this.graphics.drawRect(originX, 500+ Math.floor(Math.random()*100), 10,10);
+    this.hunger = 0;
+    this.readyToEat = false;
+    this.impatience = 0;
     this.fedCount = 0;
+    this.ammused = 0;
+    this.dissappointed = false;
 }
 
 Hungry.prototype = {
     update: function() {
         this.graphics.x -= .5;
-        this.hungerLevel += 1;
+        this.impatience += 1;
         if (this.graphics.x <= -680) {
             music.bgm.stop();
             game.state.start('splash');
         }
     },
     feed: function(toRemoveFrom, toRemove, feedAmount, timingQuality){
-        this.hungerLevel -=100;
+        this.impatience -=100;
         if (timingQuality== "PERFECT") {
             multiplier = 1.4
         } else if(timingQuality == "GREAT") {

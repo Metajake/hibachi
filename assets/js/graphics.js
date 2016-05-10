@@ -138,23 +138,27 @@ IndicatorManager.prototype.constructFlashers = function(x, y, size){
     this.sf = new Flasher(x,y, this.c1);
     this.ef = new Flasher(x+50,y, this.c2);
     this.qf = new Flasher(x+100,y, this.c3);
-    this.mbf = new Flasher(x,y-100, this.c4);
+    this.tf = new Flasher(x-50,y, this.c4);
 };
 
 IndicatorManager.prototype.constructSliders = function(x,y){
     this.rectSprite = new BmpRect(0,0,30,8, "#aaa");
     this.startingLine = new Phaser.Line(x,y,x+150,y);
-    this.sLine = new Phaser.Line(x,y+75,x+150,y+75);
-    this.eLine = new Phaser.Line(x,y+50,x+150,y+50);
-    this.qLine = new Phaser.Line(x,y+100,x+150,y+100);
+    this.tLine = new Phaser.Line(x-50,y+87.5,x+150,y+87.5);
+    this.sLine = new Phaser.Line(x-50,y+75,x+150,y+75);
+    this.eLine = new Phaser.Line(x-50,y+50,x+150,y+50);
+    this.qLine = new Phaser.Line(x-50,y+100,x+150,y+100);
 
 
+    // THESE SHOULD BE MORE PRECISE AND CALCULATED.
     this.qs = new SlidingIndicator(x+95,y-4, 100,this.rectSprite);
     this.es = new SlidingIndicator(x+55,y+46, 50,this.rectSprite);
     this.ss = new SlidingIndicator(x+15,y+71, 25,this.rectSprite);
+    this.ts = new SlidingIndicator(x-35,y+82, 12.5,this.rectSprite);
 };
 
 IndicatorManager.prototype.constructExpectingFlashers = function(x, y){
+    this.tef = new Flasher(x-100,y, 'chickenleg', 0x0000ff);
     this.sef = new Flasher(x,y, 'chickenleg', 0x0000ff);
     this.eef = new Flasher(x+100,y, 'chickenleg', 0xff0000);
     this.qef = new Flasher(x+200, y, 'chickenleg', 0x00ff00);
