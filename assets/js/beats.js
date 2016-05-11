@@ -1,12 +1,8 @@
 BeatManager = function(trackInfo, im){
-    this.thirtysecondTimeQuality = "";
-    this.sixteenthTimeQuality = "";
-    this.quarterTimeQuality = "";
-    this.eighthTimeQuality = "";
-    this.beatObj32 = new regBeatObj(trackInfo.bpm, im.tef,.125, trackInfo.etb)
-    this.beatObj16 = new regBeatObj(trackInfo.bpm, im.sef,.25, trackInfo.esb)
-    this.beatObj8 = new regBeatObj(trackInfo.bpm, im.eef,.5, trackInfo.eeb);
-    this.beatObj4 = new regBeatObj(trackInfo.bpm, im.qef,1, trackInfo.eqb);
+    //this.beatObj32 = new regBeatObj(trackInfo.bpm, im.tef,.125, trackInfo.etb)
+    //this.beatObj16 = new regBeatObj(trackInfo.bpm, im.sef,.25, trackInfo.esb)
+    //this.beatObj8 = new regBeatObj(trackInfo.bpm, im.eef,.5, trackInfo.eeb);
+    //this.beatObj4 = new regBeatObj(trackInfo.bpm, im.qef,1, trackInfo.eqb);
 };
 
 var regBeatObj = function(bpm, indicator, interval, expectedBeats){
@@ -137,45 +133,40 @@ MusicBeatObj.prototype.update = function(time){
             this.hitGoal8 = this.next8;
         }
         if (time >= this.declareHitGoal4) {
+            //log("greater then declareHitGoal4")
             this.hitGoal4 = this.next4;
+            //this.im.qf.flash(this.trackInfo.bpm-this.qualityNumbers4[4])
         }
         if(time >= this.next32){
             this.timeOf32 = time;
             this.current32 ++;
-            //this.bm.beatObj32.predictNextBeatTime(time);
-            //this.bm.beatObj32.declareHitGoal(time);
-            //this.noteCounter(this.timeOf32);
             this.im.ts.indicate(this.duration32);
-            this.im.tf.flash(this.bpm *.02);
+            this.im.tf.flash(this.bpm *.01);
             this.next32 = time + this.duration32;
             if(time >= this.next16){
                 this.timeOf16 = time;
                 this.current16 ++;
-                //this.noteCounter(this.timeOf32);
                 this.im.ss.indicate(this.duration16);
                 this.im.sf.flash(this.bpm *.02);
                 this.next16 = time + this.duration16;
                 if(time >= this.next8){
                     this.timeOf8 = time;
                     this.current8 ++;
-                    this.im.es.indicate(this.duration8);
-                    this.im.ef.flash(this.bpm *.02);
-                    //this.noteCounter(this.timeOf8);
-                    //this.bm.beatObj8.predictNextBeatTime(time);
-                    //this.bm.beatObj8.declareHitGoal(time);
+                    //this.im.es.indicate(this.duration8);
+                    //this.im.ef.flash(this.bpm *.02);
                     this.next8 = time + this.duration8;
                     if(time >= this.next4){
                         if(this.current4 % 4 == 0){
-                            this.setupMeasure()
+                            this.setupMeasure();
                             this.measureCount ++;
                         }
+
                         this.timeOf4 = time;
                         this.current4 ++;
-                        //this.bm.beatObj4.predictNextBeatTime(time);
-                        //this.bm.beatObj4.declareHitGoal(time);
-                        //this.noteCounter(this.timeOf4);
-                        this.im.qs.indicate(this.bpm);
-                        this.im.qf.flash(this.bpm *.02);
+
+                        //this.im.qs.indicate(this.bpm)
+                        //this.im.qf.flash(this.bpm *.02);
+
                         this.next4 = time + this.bpm;
                         this.hm.checkForHungry()
                     }
@@ -192,6 +183,6 @@ MusicBeatObj.prototype.update = function(time){
     //}
 };
 
-MusicBeatObj.prototype.setupMeasure = function() {
-    this.measureGraphics.addMeasure(this.trackInfo.measures[this.measureCount-1/*for zero indexing*/]);
+MusicBeatObj.prototype.setupMeasure = function(animDuration) {
+    this.measureGraphics.addMeasure(animDuration, this.trackInfo.measures[this.measureCount-1/*for zero indexing*/]);
 };
