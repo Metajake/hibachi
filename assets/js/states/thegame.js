@@ -4,13 +4,13 @@ Game.prototype = {
     // ONE IMPORTANT NOTE ABOUT THE WAY THIS CODE WORKS: INIT, PRELOAD, CREATE, UPDATE, and RENDER are 4 natural Phaser States. They will be executing IN ORDER as the game loads AND Update and Render repeat (as fast as possible(like FPS or whatever)).
     init: function(){
         music.bgm.stop();
-        this.trackInfo = tracks.btstu;
+        this.trackInfo = tracks.notype;
         music.bgm = game.add.audio(this.trackInfo.name);
     },
     loadAudio: function(){
         sndfx.clang1 = game.add.audio('clang1');
         sndfx.clang1.volume = 0.3;
-        music.bgm.volume =0.35;
+        music.bgm.volume =0.85;
     },
     loadControls: function(){
         controls.A.onDown.add(function(){actionOne("thirtysecond",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
@@ -31,27 +31,23 @@ Game.prototype = {
     createElements: function(){
         this.stage = new LevelStage(game.stage);
         this.stage.constructWindows();
-        this.sky1 = gradient_bg(0x0D51a8, 0xe7a36E);
-        this.grillBg = new CroppedSprite(0,this.stage.windowA.position.x,this.sky1,[1,.85],this.stage)
-        this.grill = new CroppedSprite(-100,0,"grill",[4.05,4.05],this.stage)
+        this.stage.constructElements();
+
 
         this.im = new IndicatorManager(/*600,300*/);
-        this.im.constructSliders(420, 0);
-        this.im.constructFlashers(430,80, 9);
-        //this.im.constructExpectingFlashers(150,300);
+        this.im.constructIndicators(35,130,9);//#######SAME X AND Y AS MEASUREMENTMANAGERVERTICAL
+        //this.measureGraphics = new MeasurementManagerHorizontal(this.trackInfo, this.stage);
+        this.measureGraphics = new MeasurementManagerVertical(this.trackInfo, this.stage, 35,130);//#######SAME X AND Y AS CONSTRUCTINDICATORS
 
         this.hm = new HungryManager();
         this.hm.addHungry();
 
         this.chef = new Chef(this.stage);
-
-        this.measureGraphics = new MeasurementManager(this.trackInfo, this.stage);
     },
     startRhythm: function(){
         this.bm = new BeatManager(this.trackInfo, this.im);
 
         this.stageTimer = game.time.create(false);
-        //this.stageTimer.loop(this.trackInfo.bpm/4, function(){noteCounter(this.bm, this.stageTimer, this.im, this.trackInfo.bpm, this.hm)}, this)
 
         this.musicBeatObj = new MusicBeatObj(this.trackInfo, this.measureGraphics, this.bm, this.im, this.hm)
 
@@ -59,9 +55,14 @@ Game.prototype = {
         music.bgm.play();
         this.stageTimer.start();
 
-        //this.im.qs.indicate(this.trackInfo.bpm);
-        //this.im.es.indicate(this.trackInfo.bpm *.5);
-        //this.im.ss.indicate(this.trackInfo.bpm *.25);
+        music.bgm.onPlay.add(function(){
+            log("on Playing")
+            this.musicBeatObj.setupMeasure(this.trackInfo.bpm*4);
+            this.im.ts.indicate(this.trackInfo.bpm *.125);
+            this.im.ss.indicate(this.trackInfo.bpm *.25);
+            //this.im.es.indicate(this.trackInfo.bpm *.5);
+            //this.im.qs.indicate(this.trackInfo.bpm);
+        },this)
 
         //this.bm.beatObj16.expectBeat();
         //this.bm.beatObj8.expectBeat();
@@ -86,43 +87,44 @@ Game.prototype = {
         }
 
         //Uncomment these for debugging beat input
-        actionOne("thirtysecond",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
-        actionOne("sixteenth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
-        actionOne("eighth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
-        actionOne("quarter",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
+        //actionOne("thirtysecond",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
+        //actionOne("sixteenth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
+        //actionOne("eighth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
+        //actionOne("quarter",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
     },
     render: function(){
-        game.debug.text("Quality of my ThirtySecond Timing: "+this.musicBeatObj.timingQuality32, 32, 12)
+        game.debug.text("Quality of my ThirtySecond Timing: "+this.musicBeatObj.timingQuality32, 32, 32*14)
         game.debug.text("Quality of my Sixteenth Timing: "+this.musicBeatObj.timingQuality16, 32, 32)
         game.debug.text("Quality of my Eighth Timing: "+this.musicBeatObj.timingQuality8, 32, 32*1.5)
         game.debug.text("Quality of my Quarter Timing: "+this.musicBeatObj.timingQuality4, 32, 32*2)
 
-        game.debug.text("Music Time: "+music.bgm.currentTime, 32, 32*3)
-        game.debug.text("Music Duration : " + this.musicBeatObj.duration, 32, 32 * 3.5)
-        game.debug.text("Current 32: " + this.musicBeatObj.current32, 32, 32 * 4)
-        game.debug.text("Time of 32: "+this.musicBeatObj.timeOf32, 32, 32*4.5)
-        game.debug.text("Next Thirty Second: " + this.musicBeatObj.next32, 32, 32 * 5)
-        game.debug.text("Declare Hit Goal 32 at: " + this.musicBeatObj.declareHitGoal32, 32, 32 * 5.5)
-        game.debug.text(" Hit Goal 32 : " + this.musicBeatObj.hitGoal32, 500, 32* 5.5)
-        game.debug.text("Current 16: " + this.musicBeatObj.current16, 32, 32 * 6)
-        game.debug.text("Time of 16: "+this.musicBeatObj.timeOf16, 32, 32*6.5)
-        game.debug.text("Next Sixteenth: " + this.musicBeatObj.next16, 32, 32 * 7)
-        game.debug.text("Declare Hit Goal 16 at: " + this.musicBeatObj.declareHitGoal16, 32, 32 * 7.5)
-        game.debug.text("Hit Goal 16 : " + this.musicBeatObj.hitGoal16, 500, 32 * 7.5)
-        game.debug.text("Current 8: " + this.musicBeatObj.current8, 32, 32 * 8)
-        game.debug.text("Time of 8: "+this.musicBeatObj.timeOf8, 32, 32*8.5)
-        game.debug.text("Next Eighth: " + this.musicBeatObj.next8, 32, 32 * 9)
-        game.debug.text("Declare Hit Goal 8 at : " + this.musicBeatObj.declareHitGoal8, 32, 32 * 9.5)
-        game.debug.text("Hit Goal 8 : " + this.musicBeatObj.hitGoal8, 500, 32 * 9.5)
-        game.debug.text("Current 4: " + this.musicBeatObj.current4, 32, 32 * 10)
-        game.debug.text("Time of 4: "+this.musicBeatObj.timeOf4, 32, 32*10.5)
-        game.debug.text("Next 4: " + this.musicBeatObj.next4, 32, 32 * 11)
-        game.debug.text("Decare Hit Goal 4 at : " + this.musicBeatObj.declareHitGoal4, 32, 32 * 11.5)
-        game.debug.text("Hit Goal 4 : " + this.musicBeatObj.hitGoal4, 500, 32 * 11.5)
-        game.debug.text("Measure Count: " + this.musicBeatObj.measureCount, 32, 32 * 12)
-        game.debug.text("Total Measures: " + this.musicBeatObj.totalMeasures, 32, 32 * 12.5)
+        //game.debug.text("Music Time: "+music.bgm.currentTime, 32, 32*3)
+        //game.debug.text("Music Duration : " + this.musicBeatObj.duration, 32, 32 * 3.5)
+        //game.debug.text("Current 32: " + this.musicBeatObj.current32, 32, 32 * 4)
+        //game.debug.text("Time of 32: "+this.musicBeatObj.timeOf32, 32, 32*4.5)
+        //game.debug.text("Next Thirty Second: " + this.musicBeatObj.next32, 32, 32 * 5)
+        //game.debug.text("Declare Hit Goal 32 at: " + this.musicBeatObj.declareHitGoal32, 32, 32 * 5.5)
+        //game.debug.text(" Hit Goal 32 : " + this.musicBeatObj.hitGoal32, 500, 32* 5.5)
+        //game.debug.text("Current 16: " + this.musicBeatObj.current16, 32, 32 * 6)
+        //game.debug.text("Time of 16: "+this.musicBeatObj.timeOf16, 32, 32*6.5)
+        //game.debug.text("Next Sixteenth: " + this.musicBeatObj.next16, 32, 32 * 7)
+        //game.debug.text("Declare Hit Goal 16 at: " + this.musicBeatObj.declareHitGoal16, 32, 32 * 7.5)
+        //game.debug.text("Hit Goal 16 : " + this.musicBeatObj.hitGoal16, 500, 32 * 7.5)
+        //game.debug.text("Current 8: " + this.musicBeatObj.current8, 32, 32 * 8)
+        //game.debug.text("Time of 8: "+this.musicBeatObj.timeOf8, 32, 32*8.5)
+        //game.debug.text("Next Eighth: " + this.musicBeatObj.next8, 32, 32 * 9)
+        //game.debug.text("Declare Hit Goal 8 at : " + this.musicBeatObj.declareHitGoal8, 32, 32 * 9.5)
+        //game.debug.text("Hit Goal 8 : " + this.musicBeatObj.hitGoal8, 500, 32 * 9.5)
+        //game.debug.text("Current 4: " + this.musicBeatObj.current4, 32, 32 * 10)
+        //game.debug.text("Time of 4: "+this.musicBeatObj.timeOf4, 32, 32*10.5)
+        //game.debug.text("Next 4: " + this.musicBeatObj.next4, 32, 32 * 11)
+        //game.debug.text("Decare Hit Goal 4 at : " + this.musicBeatObj.declareHitGoal4, 32, 32 * 11.5)
+        //game.debug.text("Hit Goal 4 : " + this.musicBeatObj.hitGoal4, 500, 32 * 11.5)
+        //game.debug.text("Measure Count: " + this.musicBeatObj.measureCount, 32, 32 * 12)
+        //game.debug.text("Total Measures: " + this.musicBeatObj.totalMeasures, 32, 32 * 12.5)
 
-        game.debug.geom(this.im.startingLine)
+        game.debug.geom(this.im.leftStart)
+        game.debug.geom(this.im.rightStart)
         game.debug.geom(this.im.qLine)
         game.debug.geom(this.im.sLine)
         game.debug.geom(this.im.tLine)

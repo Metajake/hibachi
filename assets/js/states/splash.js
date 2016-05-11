@@ -28,17 +28,18 @@ Splash.prototype = {
         game.load.audio('btstu', 'assets/mp3/btstu.mp3');
         game.load.audio('realiti', 'assets/mp3/realiti.mp3');
         game.load.audio('wind', 'assets/mp3/wind.mp3');
+        game.load.audio('mch', 'assets/mp3/mch.mp3');
     },
     loadImages: function(){
         game.load.image('grill', 'assets/img/grill.png');
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
+        game.load.spritesheet('wadKeys', 'assets/img/wadKeys.png', 64,64);
 
     },
     createMusic: function(){
         music.bgm = game.add.audio(this.currentTrack.name);
         music.bgm.volume = .5
         music.bgm.play();
-        log("Music is playing after creation"+music.bgm.isPlaying+"at"+this.stageTimer.ms);
 
     },
     createControls: function(){
