@@ -15,7 +15,7 @@ function Food(x,y,name,speed, scale,value, combinationList, stage){
     this.name = name;
     this.value = value;
     this.combinationList = combinationList;
-    this.sprite = new FoodSprite(x,y,name,speed,scale, stage);
+    this.sprite = new AnimSprite(x,y,name,utils.arrayRange(0,14),[14],speed,scale, stage.cropRectC);
     this.combine = function(otherFood){
         if(this.combinationList.indexOf(otherFood.getName()) != -1){
             isValid = true;
@@ -44,6 +44,7 @@ function Food(x,y,name,speed, scale,value, combinationList, stage){
 
 function Grill(){
     this.currentFood = [];
+    this.smell = 0; // USE THIS TO EFFECT NEARBY HUNGRY
 };
 
 /*

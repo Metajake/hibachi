@@ -14,16 +14,17 @@ function gradient_bg(startHex, endHex){
 
 function BmpRect(x,y, width, height, color){
     bmd = game.add.bitmapData(800,600);
-    bmd.rect(x,y, width, height, color)
-    //bmd.ctx.rect(x,y, width, height);
-    //bmd.ctx.fillStyle = color;
-    //bmd.ctx.fill();
+    bmd.rect(x,y, width, height, color);
     return bmd;
 }
 
-function BmpCirc(x, y, size, color){
-    circ = game.add.bitmapData(x+128,y+128);
+function BmpCirc(x, y, size, color, toSprite){
+    circ = game.add.bitmapData(x+size,y+size);
     circ.circle(x, y, size,color);
+    if(toSprite !== "undefined"){
+        sprite = circ.generateTexture()
+        return sprite
+    }
     return circ;
 }
 
@@ -44,15 +45,26 @@ LevelStage.prototype.constructWindows = function(){
     this.windowC = game.add.sprite(this.margin,this.winHeight *.2+this.margin*2,this.winCBmp);
     this.winDBmp = new BmpRect(0,0,this.winWidth,this.winHeight *.2+this.margin, "#ddd");
     this.windowD = game.add.sprite(this.margin,this.winHeight*.8,this.winDBmp);
+    this.cropGraphicsC = game.add.graphics();
+    this.cropGraphicsD = game.add.graphics();
+    this.cropGraphicsC.beginFill(0,0x000000);
+    this.cropGraphicsD.beginFill(0,0x000000);
+    this.cropRectC = this.cropGraphicsC.drawRect(this.margin,this.winHeight *.2+this.margin*2,this.winWidth, this.winHeight *.6-this.margin*3);
+    this.cropRectD = this.cropGraphicsD.drawRect(this.margin,this.winHeight*.8,this.winWidth, this.winHeight *.2+this.margin);
 };
 
 LevelStage.prototype.constructElements = function(){
     this.grillSky = gradient_bg(0x0D51a8, 0xe7a36E);
-    this.grillBg = new ModSprite(0,this.windowA.position.y,this.grillSky,{scale:[1,.85],mask:[this.margin,this.windowC.position.y,this.winWidth,this.winHeight *.6 - this.margin*3]});
-    this.grill = new ModSprite(-100,0,"grill",{scale:[4.05,4.05],mask:[this.margin,this.windowC.position.y,this.winWidth,this.winHeight *.6 - this.margin*3]});
+    this.grillBg = new ModSprite(0,this.windowA.position.y,this.grillSky,{scale:[1,.85],mask:this.cropRectC});
+    this.grill = new ModSprite(-100,0,"grill",{scale:[4.05,4.05],mask:this.cropRectC});
+    //this.grill = game.add.sprite(-100,0,"grill");
+    //this.grill.scale.setTo(4.05,4.05);
+    //this.grill.mask = this.
 
-    this.wadKeys = new ModSprite(30,395,"wadKeys",{scale:[2.25,2.25]});
+    this.wadKeys = new ModSprite(40,395,"wadKeys",{scale:[2,2]});
     this.arrowKeys = new ModSprite(630,395,"wadKeys",{scale:[2.25,2.25],static:1});
+    //this.grillMini = new ModSprite(80,455,"grillMini",{mask:this.stage.cropRectD,scale:[4.8,4.8]})
+    //this.grillMini = new AnimSprite(80,455,"grillMini",[0],{mask:this.stage.cropRectD,scale:[4.8,4.8]})
 };
 
 LevelStage.prototype.update = function(){
@@ -66,55 +78,31 @@ function ModSprite(x,y,key,hash){
         this.sprite.scale.setTo(hash.scale[0],hash.scale[1])
     }
     if(typeof(hash.mask) !== "undefined"){
-        this.boundingBox = game.add.graphics();
-        this.boundingBox.beginFill(0x000000);
-        this.boundingBox.drawRect(hash.mask[0],hash.mask[1],hash.mask[2],hash.mask[3])
-        this.sprite.mask = this.boundingBox;
+        this.sprite.mask = hash.mask;
     }
     if(typeof(hash.static) !== "undefined"){
         staticAnim = this.sprite.animations.add("static");
         staticAnim.frame = hash.static;
     }
-    //if(typeof(hash.animations) !== "undefined"){
-        //if(Object.keys(hash.animations)[0]) == "start"){
-            //this.sprite.animations.add("static", hash.animations.[0]);
-        //}
-        //staticAnim = this.sprite.animations.add("static");
-        //log(String()
-        //staticAnim.frame = hash.static;
-    //}
+    if(typeof(hash.alpha) !== "undefined"){
+        this.sprite.alpha = hash.alpha
+    }
     return this.sprite;
 }
-function FoodSprite(x,y,key, speed, scale, cropRect){
+function AnimSprite(x,y,key, start, idle, speed, scale, cropRect){
     this.sprite = game.add.sprite(x,y,key);
     this.sprite.smoothed = false;
     this.sprite.scale.setTo(scale, scale);
-    this.boundingBox = game.add.graphics();
-    this.boundingBox.beginFill(0x000000);
-    this.boundingBox.drawRect(cropRect.margin,cropRect.winHeight *.2+cropRect.margin*2,cropRect.winWidth,cropRect.winHeight *.6 - cropRect.margin*3)
-    this.sprite.mask = this.boundingBox;
-    this.sprite.animations.add('start');
-    this.sprite.animations.add('idle');
-    this.sprite.animations.play('start',speed);
-    return this.sprite
+    this.sprite.mask = cropRect;
+    this.start = this.sprite.animations.add('start', start);
+    this.idle = this.sprite.animations.add('idle', idle);
+    this.start.play(speed,false);
+    this.start.onComplete.add(function(){this.idle.play(speed,true);},this);
+    return this
 }
 
-//CHANGE THIS INTO A MODSPRITE
 function Flasher(x, y, displayObj, tint){
-    this.sprite = game.add.sprite(x,y,displayObj);
-    if(tint){this.sprite.tint = tint;}else{}
-    this.sprite.smoothed = false;
-    this.sprite.scale.setTo(2,2);
-    this.sprite.alpha = 0.0; //CHANGE BACK TO 0.1 to see INDICATOR Before Flashing
-}
-
-Flasher.prototype.glow = function(duration){
-    f1 = game.add.tween(this.sprite);
-    f2 = game.add.tween(this.sprite);
-    f1.to({alpha:1},duration,Phaser.Easing.Linear.None);
-    f2.to({alpha:0},duration *.07,Phaser.Easing.Linear.None);
-    f1.chain(f2);
-    f1.start();
+    this.sprite = new ModSprite(x,y,displayObj,{tint:tint,scale:[2,2],alpha:0})
 }
 
 Flasher.prototype.flash = function(duration){
@@ -128,35 +116,36 @@ Flasher.prototype.flash = function(duration){
 
 function IndicatorManager(){}
 
-IndicatorManager.prototype.constructIndicators= function(x, y, size){
+IndicatorManager.prototype.constructIndicators= function(x, y){
     this.y = y+300; // MOVE THIS.Y PER MEASUREMENTMANAGERVERTICAL POSITION
     this.width = 130; // MEASUREMENTMANAGERVERTICAL WIDTH
-    this.x2 = x + 600
+    this.x2 = x + 600;
     this.indicatorHeight = 8;
-    this.distanceT = 20;
-    this.size = size
+    this.distance = 20;
+    this.flashSize = 9;
     this.columnWidth = 15;
 
-    this.tf = new Flasher(x+this.columnWidth*3,this.y, BmpCirc(this.size,this.size,this.size,"#000"));
-    this.sf = new Flasher(this.x2+this.columnWidth*3,this.y, BmpCirc(this.size,this.size,this.size,"#F0F"));
-    //this.ef = new Flasher(120,480, BmpCirc(this.fWidth,this.fWidth,this.fWidth,"#0FF"));
-    //this.qf = new Flasher(630,440, BmpCirc(this.fWidth,this.fWidth,this.fWidth,"#FF0"));
+    this.tf = new Flasher(x+this.columnWidth*3,this.y, BmpCirc(this.flashSize,this.flashSize,this.flashSize,"#000"));
+    this.sf = new Flasher(this.x2+this.columnWidth*3,this.y, BmpCirc(this.flashSize,this.flashSize,this.flashSize,"#F0F"));
+    this.ef = new Flasher(x+this.columnWidth*6,this.y+20, BmpCirc(this.flashSize,this.flashSize,this.flashSize,"#0FF"));
+    this.qf = new Flasher(this.x2+this.columnWidth*(-1),this.y+20, BmpCirc(this.flashSize,this.flashSize,this.flashSize,"#FF0"));
 
-    this.i32= new BmpRect(0,0,30,this.indicatorHeight, "#000");
-    this.i16= new BmpRect(0,0,30,this.indicatorHeight, "#f0f");
-    this.i8= new BmpRect(0,0,30,this.indicatorHeight, "#0ff");
-    this.i4= new BmpRect(0,0,30,this.indicatorHeight, "#ff0");
-    this.ts = new SlidingIndicator(x+this.columnWidth*3,this.y-this.distanceT-(this.indicatorHeight *.5), this.distanceT,this.i32);
-    this.ss = new SlidingIndicator(this.x2+this.columnWidth*3,this.y-this.distanceT*2-(this.indicatorHeight *.5), this.distanceT*2,this.i16);
-    //this.qs = new SlidingIndicator(x+95,y-4, 100,this.rectSprite);
-    //this.es = new SlidingIndicator(x+55,y+46, 50,this.rectSprite);
+    this.i32= new BmpRect(0,0,40,this.indicatorHeight, "#000");
+    this.i16= new BmpRect(0,0,40,this.indicatorHeight, "#f0f");
+    this.i8= new BmpRect(0,0,40,this.indicatorHeight, "#0ff");
+    this.i4= new BmpRect(0,0,40,this.indicatorHeight, "#ff0");
+    this.ts = new SlidingIndicator(x+this.columnWidth*3,this.y-this.distance-(this.indicatorHeight *.5), this.distance,this.i32);
+    this.ss = new SlidingIndicator(this.x2+this.columnWidth*3,this.y-this.distance*2-(this.indicatorHeight *.5), this.distance*2,this.i16);
+    this.es = new SlidingIndicator(x+this.columnWidth*6,this.y-this.distance*3-(this.indicatorHeight *.5), this.distance*3,this.i8);
+    this.qs = new SlidingIndicator(this.x2+this.columnWidth*(-1),this.y-this.distance*4-(this.indicatorHeight *.5), this.distance*4,this.i4);
 
     this.leftStart= new Phaser.Line(x,this.y,x+this.width,this.y);
     this.rightStart= new Phaser.Line(this.x2,this.y,this.x2+this.width,this.y);
-    this.tLine = new Phaser.Line(x,this.y-this.distanceT,x+this.width,this.y-this.distanceT);
-    this.sLine = new Phaser.Line(this.x2,this.y-this.distanceT*2,this.x2+this.width,this.y-this.distanceT*2);
-    //this.eLine = new Phaser.Line(x-50,y+50,x+150,y+50);
-    //this.qLine = new Phaser.Line(x-50,y+100,x+150,y+100);
+    this.tLine = new Phaser.Line(x,this.y-this.distance,x+this.width,this.y-this.distance);
+    this.t2Line = new Phaser.Line(this.x2,this.y-this.distance,this.x2+this.width,this.y-this.distance);
+    this.sLine = new Phaser.Line(this.x2,this.y-this.distance*2,this.x2+this.width,this.y-this.distance*2);
+    this.eLine = new Phaser.Line(x,this.y-this.distance*3,x+this.width,this.y-this.distance*3);
+    this.qLine = new Phaser.Line(this.x2,this.y-this.distance*4,this.x2+this.width,this.y-this.distance*4);
 
     //this.tef = new Flasher(x-100,y, 'chickenleg', 0x0000ff);
     //this.sef = new Flasher(x,y, 'chickenleg', 0x0000ff);
@@ -175,16 +164,18 @@ function SlidingIndicator(x,y,distance,sprite, tint){
 
 SlidingIndicator.prototype.indicate = function(duration){
     this.indicators.create(this.x,this.y,this.sprite);
-    this.topIndicator = this.indicators.getTop();
-    this.topIndicator.alpha = 0;
-    this.m1 = game.add.tween(this.topIndicator);
+    this.latestIndicator = this.indicators.getTop();
+    this.latestIndicator.alpha = 0;
+    this.m1 = game.add.tween(this.latestIndicator);
     this.m1.to({y:this.y+this.distance, alpha:1}, duration,Phaser.Easing.Linear.None);
     this.m1.onComplete.add(function(){this.indicators.remove(this.indicators.getBottom())},this);
     this.m1.start()
 }
 
+//MOVE MEASURE MANAGER INTO INDICATOR MANAGER -- UNIFY IT!
 function MeasurementManagerVertical(trackInfo, cropRect, x, y){
     this.trackInfo = trackInfo
+    this.cropRect = cropRect;
     this.measureDuration = this.trackInfo.bpm * 4;
     this.left = x;
     this.top = y;
@@ -192,7 +183,7 @@ function MeasurementManagerVertical(trackInfo, cropRect, x, y){
     this.p2 = y+300;
     this.p3 = y+450;
     this.measureWidth = 130;
-    this.measureHeight = 150;
+    this.measureHeight = 150*2;
     this.bar1bmd = game.add.bitmapData(800,600);
     this.bar1bmd.addToWorld();
     this.bar1 = this.bar1bmd.line(this.left,this.top,this.left,this.p3,'#999',3);
@@ -214,37 +205,37 @@ MeasurementManagerVertical.prototype.update = function(){
 };
 
 MeasurementManagerVertical.prototype.addMeasure = function(duration, type){
-    this.newMeasure = new MeasureVert(this, this.left, this.top, this.measureWidth, this.measureHeight, this.p3+this.measureHeight, duration, type);
+    this.newMeasure = new MeasureVert(this, this.left, this.top, this.measureWidth, this.measureHeight, this.p3+this.measureHeight, duration, type,this.cropRect);
 };
 
-function MeasureVert(manager, x, y, w, h, dest, td, type){
+function MeasureVert(manager, x, y, w, h, dest, td, type, cropRect){
     this.quarter = 0;
     this.eighth = 0;
     this.sixteenth = 0;
     this.graphics = game.add.graphics(x,y);
     this.graphics.beginFill(0x111111, .1);
-    //this.graphics.lineStyle(0, 0xffffff, 1);
+    //this.graphics.lineStyle(1, 0xffffff, 1);
     this.graphics.drawRect(x,y, w, h);
-    //if(type == 1) {
-    //    this.graphics.lineStyle(2, 0xffffff,.7);
-    //    for(i = 0;i<4;i++){
-    //        this.graphics.moveTo(x+50*this.quarter,y+50);
-    //        this.graphics.lineTo(x+50*this.quarter,y+h);
-    //        this.quarter ++;
-    //    }
-    //    this.graphics.lineStyle(2, 0xaaaaaa,.7);
-    //    for(i = 0;i<8;i++){
-    //        this.graphics.moveTo(x+25*this.eighth,y+25);
-    //        this.graphics.lineTo(x+25*this.eighth,y+50);
-    //        this.eighth ++;
-    //    }
-    //    this.graphics.lineStyle(2, 0x333333,.7);
-    //    for(i = 0;i<16;i++){
-    //        this.graphics.moveTo(x+12.5*this.sixteenth,y);
-    //        this.graphics.lineTo(x+12.5*this.sixteenth,y+25);
-    //        this.sixteenth ++;
-    //    }
-    //}// else if (type == 2){
+    if(type == 1) {
+        this.graphics.lineStyle(2, 0x333333,.7);
+        for(i = 0;i<16;i++){
+            this.graphics.moveTo(x,y+(h *.0625)*this.sixteenth);
+            this.graphics.lineTo(x+w,y+(h *.0625)*this.sixteenth);
+            this.sixteenth ++;
+        }
+        this.graphics.lineStyle(1, 0xaaaaaa,.7);
+        for(i = 0;i<8;i++){
+            this.graphics.moveTo(x,y+(h *.125)*this.eighth);
+            this.graphics.lineTo(x+w,y+(h *.125)*this.eighth);
+            this.eighth ++;
+        }
+        this.graphics.lineStyle(1, 0xffffff,.7);
+        for(i = 0;i<4;i++){
+            this.graphics.moveTo(x,y+(h *.25)*this.quarter);
+            this.graphics.lineTo(x+w,y+(h *.25)*this.quarter);
+            this.quarter ++;
+        }
+    }// else if (type == 2){
     //    customMeasure = manager.currentTrack.customMeasures[manager.currentCustomMeasure];
     //    this.graphics.lineStyle(2, 0xff9999, 1);
     //    for(q in customMeasure["q"]){
@@ -280,6 +271,11 @@ function MeasureVert(manager, x, y, w, h, dest, td, type){
 
     this.sprite = game.add.sprite(x,y,this.graphics.generateTexture());
     this.graphics.destroy();
+    this.sprite.anchor.y = 0;
+    this.boundingBox = game.add.graphics();
+    this.boundingBox.beginFill(0x000000);
+    this.boundingBox.drawRect(cropRect.margin,cropRect.winHeight *.2+cropRect.margin*2,cropRect.winWidth,cropRect.winHeight *.6 - cropRect.margin*3)
+    this.sprite.mask = this.boundingBox;
     this.tween = game.add.tween(this.sprite);
     this.tween.to({ y: dest}, td, 'Linear', true, 0);
     this.tween.onComplete.add(function(){this.sprite.destroy()}, this);
@@ -350,6 +346,7 @@ function Measure(manager,x, y,w,h, td, type){
     this.travelDuration = td;
     this.sprite = game.add.sprite(x,y,this.graphics.generateTexture());
     this.graphics.destroy();
+    this.boundingBox =
     this.tween = game.add.tween(this.sprite);
     this.tween.to({ x: -200 }, this.travelDuration, 'Linear', true, 0);
     this.tween.onComplete.add(function(){this.sprite.destroy()}, this);

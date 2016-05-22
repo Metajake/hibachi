@@ -1,9 +1,19 @@
-function HungryManager(){
+function HungryManager(stage){
     this.startingPoint = game.width - 100;
-    this.hungerCount = []
+    this.hungerCount = [];
+    this.stage = stage;
 }
 
 HungryManager.prototype = {
+    update: function(){
+        this.checkForHungry();
+        for(hungry in this.hungerCount){
+            //log(this.hungerCount[hungry].graphics.sprite.alive)
+            //if (this.hungerCount[hungry].graphics.sprite.alive){
+                this.hungerCount[hungry].step()
+            //}else{log("sprite not alive. not adding Idle")};
+        }
+    },
     checkForHungry: function() {
         if (this.hungerCount.length < 5) {
             this.addHungry();
@@ -28,15 +38,14 @@ HungryManager.prototype = {
 
 
 HungryManager.prototype.addHungry = function(){
-    this.hungry = new Hungry(game.add.graphics(0,0), this.startingPoint);
+    this.hungry = new Hungry(this.startingPoint, this.stage);
     this.hungerCount.push(this.hungry);
     return this.hungry;
 };
 
-function Hungry(graphics, originX){
-    this.graphics = graphics;
-    this.graphics.lineStyle(2, 0x00ffFF, 1);
-    this.graphics.drawRect(originX, 400+ Math.floor(Math.random()*100), 10,100);
+function Hungry(originX, stage){
+    this.animSprite = new AnimSprite(originX,510/*+ Math.floor(Math.random()*100)*/,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
+    this.animSprite.walk = this.animSprite.sprite.animations.add('walk', [0,1,2,3,4]);
     this.hunger = 0;
     this.readyToEat = false;
     this.impatience = 0;
@@ -47,11 +56,21 @@ function Hungry(graphics, originX){
 
 Hungry.prototype = {
     update: function() {
-        this.graphics.x -= .5;
         this.impatience += 1;
-        if (this.graphics.x <= -680) {
-            music.bgm.stop();
-            game.state.start('splash');
+    },
+    step: function(){
+        currentX = this.animSprite.sprite.position.x;
+        if (this.animSprite.sprite.position.x <= 200) {
+            //music.bgm.stop();
+            //game.state.start('splash');
+
+        } else{
+            this.moveLeft = game.add.tween(this.animSprite.sprite);
+            this.moveLeft.to({x:currentX-100},1000,Phaser.Easing.Linear.None);
+            this.moveLeft.onComplete.add(function(){this.animSprite.idle.play()},this);
+            this.moveLeft.start();
+            this.animSprite.walk.play(4,true);
+
         }
     },
     feed: function(toRemoveFrom, toRemove, feedAmount, timingQuality){
@@ -65,10 +84,11 @@ Hungry.prototype = {
         } else {
             log("default");
         }
-        this.graphics.x += feedAmount*multiplier;
+        this.animSprite.sprite.position.x += feedAmount*multiplier;
         this.fedCount += 1;
         if(this.fedCount == 10){
-            this.graphics.destroy()
+            // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()
+            this.animSprite.sprite.kill();
             toRemoveFrom.splice(toRemove,1);
         }
     }
