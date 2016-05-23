@@ -1,5 +1,13 @@
 var utils = {
     centerGameObjects: function (objects) {objects.forEach(function (object) {object.anchor.setTo(0.5);});},
+    arrayRange: function (low,high){
+        var list = [];
+        for (var i = low; i <= high; i++) {
+            list.push(i);
+        }
+        return list
+    }
+
 }
 
 function log(toLog){

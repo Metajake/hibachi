@@ -18,6 +18,7 @@ Splash.prototype = {
         game.load.script('hungry', 'assets/js/hungry.js');
         game.load.script('food', 'assets/js/food.js');
         game.load.script('beats', 'assets/js/beats.js');
+        game.load.script('sound', 'assets/js/sound.js');
     },
     loadBgm: function(){
         game.load.audio('witit', 'assets/mp3/witit.mp3');
@@ -34,6 +35,8 @@ Splash.prototype = {
         game.load.image('grill', 'assets/img/grill.png');
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
         game.load.spritesheet('wadKeys', 'assets/img/wadKeys.png', 64,64);
+        game.load.spritesheet('walkerGuy', 'assets/img/walkLeft_guy.png', 64,64);
+        game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
 
     },
     createMusic: function(){

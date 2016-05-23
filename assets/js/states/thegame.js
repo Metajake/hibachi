@@ -4,24 +4,28 @@ Game.prototype = {
     // ONE IMPORTANT NOTE ABOUT THE WAY THIS CODE WORKS: INIT, PRELOAD, CREATE, UPDATE, and RENDER are 4 natural Phaser States. They will be executing IN ORDER as the game loads AND Update and Render repeat (as fast as possible(like FPS or whatever)).
     init: function(){
         music.bgm.stop();
-        this.trackInfo = tracks.notype;
-        music.bgm = game.add.audio(this.trackInfo.name);
+        this.trackInfo = tracks.witit;
     },
     loadAudio: function(){
-        sndfx.clang1 = game.add.audio('clang1');
-        sndfx.clang1.volume = 0.3;
-        music.bgm.volume =0.85;
+        music.bgm = game.add.audio(this.trackInfo.name);
+        music.bgm.volume = this.trackInfo.volume;
+        music.bgm.onStop.add(function(){game.playing = false;});
+
+
+        this.sm = new SoundManager();
+
+        this.sm.shkingSS1 = this.sm.addSound('shking_soft_short1',1,this.sm.utinsels);
+        this.sm.sharpenL1 = this.sm.addSound('sharpen_long1',1,this.sm.utinsels);
+        this.sm.sharpenL2 = this.sm.addSound('sharpen_long2',1,this.sm.utinsels);
+        this.sm.sharpenL3 = this.sm.addSound('sharpen_long3',1,this.sm.utinsels);
+        this.sm.sharpenS1 = this.sm.addSound('sharpen_short1',1,this.sm.utinsels);
+        this.sm.sharpenS2 = this.sm.addSound('sharpen_short2',1,this.sm.utinsels);
     },
     loadControls: function(){
-        controls.A.onDown.add(function(){actionOne("thirtysecond",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.W.onDown.add(function(){actionOne("thirtysecond",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.UP.onDown.add(function(){actionOne("sixteenth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.D.onDown.add(function(){actionOne("eighth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.LEFT.onDown.add(function(){actionOne("quarter",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.S.onDown.add(function(){actionOne("thirysecond ",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.E.onDown.add(function(){actionOne("sixteenth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.F.onDown.add(function(){actionOne("eighth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
-        controls.RIGHT.onDown.add(function(){actionOne("sixteenth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);}, this);
+        controls.W.onDown.add(function(){actionOne(this.musicObj.beat32, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
+        controls.UP.onDown.add(function(){actionOne(this.musicObj.beat16, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
+        controls.D.onDown.add(function(){actionOne(this.musicObj.beat8, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
+        controls.LEFT.onDown.add(function(){actionOne(this.musicObj.beat4, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
         controls.SPACE.onDown.add(pause_game, this);
         controls.G.onDown.add(step_game);
         controls.P.onUp.add(gofull)
@@ -33,37 +37,34 @@ Game.prototype = {
         this.stage.constructWindows();
         this.stage.constructElements();
 
-
         this.im = new IndicatorManager(/*600,300*/);
-        this.im.constructIndicators(35,130,9);//#######SAME X AND Y AS MEASUREMENTMANAGERVERTICAL
+        this.im.constructIndicators(35,130);
         //this.measureGraphics = new MeasurementManagerHorizontal(this.trackInfo, this.stage);
-        this.measureGraphics = new MeasurementManagerVertical(this.trackInfo, this.stage, 35,130);//#######SAME X AND Y AS CONSTRUCTINDICATORS
+        //this.measureGraphics = new MeasurementManagerVertical(this.trackInfo, this.stage, 35,-20);//####### 150 HIGHER then SLIDE INDICATORS
 
-        this.hm = new HungryManager();
-        this.hm.addHungry();
+        this.hm = new HungryManager(this.stage);
+        //this.hm.addHungry();
 
         this.chef = new Chef(this.stage);
     },
     startRhythm: function(){
-        this.bm = new BeatManager(this.trackInfo, this.im);
-
         this.stageTimer = game.time.create(false);
 
-        this.musicBeatObj = new MusicBeatObj(this.trackInfo, this.measureGraphics, this.bm, this.im, this.hm)
+        this.musicObj = new MusicObj(this.trackInfo, this.stage, this.measureGraphics, this.im, this.hm,  music.bgm.currentTime)
 
-        music.bgm.onStop.add(function(){game.state.start('splash')});
         music.bgm.play();
         this.stageTimer.start();
 
-        music.bgm.onPlay.add(function(){
-            log("on Playing")
-            this.musicBeatObj.setupMeasure(this.trackInfo.bpm*4);
-            this.im.ts.indicate(this.trackInfo.bpm *.125);
-            this.im.ss.indicate(this.trackInfo.bpm *.25);
-            //this.im.es.indicate(this.trackInfo.bpm *.5);
-            //this.im.qs.indicate(this.trackInfo.bpm);
-        },this)
+        // ON MUSIC.BGM PLAY EXECUTE SOME STUFF (indicators)
+        //music.bgm.onPlay.add(function(){
+        //    //this.musicObj.setupMeasure(this.trackInfo.bpm*8);
+        //    this.im.ts.indicate(this.trackInfo.bpm *.125);
+        //    this.im.ss.indicate(this.trackInfo.bpm *.25);
+        //    this.im.es.indicate(this.trackInfo.bpm *.5);
+        //    this.im.qs.indicate(this.trackInfo.bpm);
+        //},this);
 
+        // FOR WHEN WE DO EXPECTED BEATS again
         //this.bm.beatObj16.expectBeat();
         //this.bm.beatObj8.expectBeat();
         //this.bm.beatObj4.expectBeat();
@@ -72,67 +73,75 @@ Game.prototype = {
     preload: function(){
         this.loadControls();
         this.loadAudio();
-        //this.loadGraphics();
+        this.loadGraphics();
     },
     create: function(){
         game.stage.disableVisibilityChange = true;
+        game.playing = true;
+
         this.createElements();
         this.startRhythm();
     },
     update: function(){
-        this.musicBeatObj.update(music.bgm.currentTime);
+        this.musicObj.update(music.bgm.currentTime);
 
         for(hungry in this.hm.hungerCount){
             this.hm.hungerCount[hungry].update()
         }
 
+        if(game.playing == false){
+            game.state.start('splash');
+        };
+
         //Uncomment these for debugging beat input
-        //actionOne("thirtysecond",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
-        //actionOne("sixteenth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
-        //actionOne("eighth",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
-        //actionOne("quarter",this.hm, music.bgm.currentTime, this.chef, this.musicBeatObj);
+        //actionOne(this.musicObj.beat32, this.hm, music.bgm.currentTime, this.chef)
+        //actionOne(this.musicObj.beat16, this.hm, music.bgm.currentTime, this.chef)
+        //actionOne(this.musicObj.beat8, this.hm, music.bgm.currentTime, this.chef)
+        //actionOne(this.musicObj.beat4, this.hm, music.bgm.currentTime, this.chef)
     },
     render: function(){
-        game.debug.text("Quality of my ThirtySecond Timing: "+this.musicBeatObj.timingQuality32, 32, 32*14)
-        game.debug.text("Quality of my Sixteenth Timing: "+this.musicBeatObj.timingQuality16, 32, 32)
-        game.debug.text("Quality of my Eighth Timing: "+this.musicBeatObj.timingQuality8, 32, 32*1.5)
-        game.debug.text("Quality of my Quarter Timing: "+this.musicBeatObj.timingQuality4, 32, 32*2)
+        game.debug.text(/*"Quality of my ThirtySecond Timing: "+*/this.musicObj.beat32.qualityResult, this.im.group1X, 32*14)
+        game.debug.text(/*"Quality of my Sixteenth Timing: "+*/this.musicObj.beat16.qualityResult,this.im.group1X+100, 32*14.5)
+        game.debug.text(/*"Quality of my Eighth Timing: "+*/this.musicObj.beat8.qualityResult, this.im.group1X+30, 32*14.5)
+        game.debug.text(/*"Quality of my Quarter Timing: "+*/this.musicObj.beat4.qualityResult, this.im.group1X+60, 32*15.25)
 
         //game.debug.text("Music Time: "+music.bgm.currentTime, 32, 32*3)
-        //game.debug.text("Music Duration : " + this.musicBeatObj.duration, 32, 32 * 3.5)
-        //game.debug.text("Current 32: " + this.musicBeatObj.current32, 32, 32 * 4)
-        //game.debug.text("Time of 32: "+this.musicBeatObj.timeOf32, 32, 32*4.5)
-        //game.debug.text("Next Thirty Second: " + this.musicBeatObj.next32, 32, 32 * 5)
-        //game.debug.text("Declare Hit Goal 32 at: " + this.musicBeatObj.declareHitGoal32, 32, 32 * 5.5)
-        //game.debug.text(" Hit Goal 32 : " + this.musicBeatObj.hitGoal32, 500, 32* 5.5)
-        //game.debug.text("Current 16: " + this.musicBeatObj.current16, 32, 32 * 6)
-        //game.debug.text("Time of 16: "+this.musicBeatObj.timeOf16, 32, 32*6.5)
-        //game.debug.text("Next Sixteenth: " + this.musicBeatObj.next16, 32, 32 * 7)
-        //game.debug.text("Declare Hit Goal 16 at: " + this.musicBeatObj.declareHitGoal16, 32, 32 * 7.5)
-        //game.debug.text("Hit Goal 16 : " + this.musicBeatObj.hitGoal16, 500, 32 * 7.5)
-        //game.debug.text("Current 8: " + this.musicBeatObj.current8, 32, 32 * 8)
-        //game.debug.text("Time of 8: "+this.musicBeatObj.timeOf8, 32, 32*8.5)
-        //game.debug.text("Next Eighth: " + this.musicBeatObj.next8, 32, 32 * 9)
-        //game.debug.text("Declare Hit Goal 8 at : " + this.musicBeatObj.declareHitGoal8, 32, 32 * 9.5)
-        //game.debug.text("Hit Goal 8 : " + this.musicBeatObj.hitGoal8, 500, 32 * 9.5)
-        //game.debug.text("Current 4: " + this.musicBeatObj.current4, 32, 32 * 10)
-        //game.debug.text("Time of 4: "+this.musicBeatObj.timeOf4, 32, 32*10.5)
-        //game.debug.text("Next 4: " + this.musicBeatObj.next4, 32, 32 * 11)
-        //game.debug.text("Decare Hit Goal 4 at : " + this.musicBeatObj.declareHitGoal4, 32, 32 * 11.5)
-        //game.debug.text("Hit Goal 4 : " + this.musicBeatObj.hitGoal4, 500, 32 * 11.5)
-        //game.debug.text("Measure Count: " + this.musicBeatObj.measureCount, 32, 32 * 12)
-        //game.debug.text("Total Measures: " + this.musicBeatObj.totalMeasures, 32, 32 * 12.5)
+        //game.debug.text("Music Time: "+this.musicObj.theTime, 32, 32*3.5)
+        //game.debug.text("Music Duration : " + this.musicObj.duration, 32, 32 * 3.5)
+        //game.debug.text("Current 32: " + this.musicObj.current32, 32, 32 * 4)
+        //game.debug.text("Time of 32: "+this.musicObj.timeOf32, 32, 32*4.5)
+        //game.debug.text("Next Thirty Second: " + this.musicObj.next32, 32, 32 * 5)
+        //game.debug.text("Declare Hit Goal 32 at: " + this.musicObj.declareHitGoal32, 32, 32 * 5.5)
+        //game.debug.text(" Hit Goal 32 : " + this.musicObj.hitGoal32, 500, 32* 5.5)
+        //game.debug.text("Current 16: " + this.musicObj.current16, 32, 32 * 6)
+        //game.debug.text("Time of 16: "+this.musicObj.timeOf16, 32, 32*6.5)
+        //game.debug.text("Next Sixteenth: " + this.musicObj.next16, 32, 32 * 7)
+        //game.debug.text("Declare Hit Goal 16 at: " + this.musicObj.declareHitGoal16, 32, 32 * 7.5)
+        //game.debug.text("Hit Goal 16 : " + this.musicObj.hitGoal16, 500, 32 * 7.5)
+        //game.debug.text("Current 8: " + this.musicObj.current8, 32, 32 * 8)
+        //game.debug.text("Time of 8: "+this.musicObj.timeOf8, 32, 32*8.5)
+        //game.debug.text("Next Eighth: " + this.musicObj.next8, 32, 32 * 9)
+        //game.debug.text("Declare Hit Goal 8 at : " + this.musicObj.declareHitGoal8, 32, 32 * 9.5)
+        //game.debug.text("Hit Goal 8 : " + this.musicObj.hitGoal8, 500, 32 * 9.5)
+        //game.debug.text("Current 4: " + this.musicObj.current4, 32, 32 * 10)
+        //game.debug.text("Time of 4: "+this.musicObj.timeOf4, 32, 32*10.5)
+        //game.debug.text("Next 4: " + this.musicObj.next4, 32, 32 * 11)
+        //game.debug.text("Decare Hit Goal 4 at : " + this.musicObj.declareHitGoal4, 32, 32 * 11.5)
+        //game.debug.text("Hit Goal 4 : " + this.musicObj.hitGoal4, 500, 32 * 11.5)
+        //game.debug.text("Measure Count: " + this.musicObj.measureCount, 32, 32 * 12)
+        //game.debug.text("Total Measures: " + this.musicObj.totalMeasures, 32, 32 * 12.5)
 
         game.debug.geom(this.im.leftStart)
         game.debug.geom(this.im.rightStart)
         game.debug.geom(this.im.qLine)
         game.debug.geom(this.im.sLine)
         game.debug.geom(this.im.tLine)
+        game.debug.geom(this.im.t2Line)
         game.debug.geom(this.im.eLine)
         /*
-        game.debug.text("Upcoming Beat: "+this.musicBeatObj.upcomingBeat, 32, 32*1.5)
+        game.debug.text("Upcoming Beat: "+this.musicObj.upcomingBeat, 32, 32*1.5)
         game.debug.text("Current Track BPM: "+this.trackInfo.bpm, 32, 32*2)
-        game.debug.text("Current track time divisible by BPM: "+this.musicBeatObj.timeOfBPM, 32, 32*3)
+        game.debug.text("Current track time divisible by BPM: "+this.musicObj.timeOfBPM, 32, 32*3)
         */
 
         // BEAT INFO
