@@ -91,6 +91,7 @@ MusicObj.prototype.update = function(time){
         if (this.theTime >= this.beat32.declareHitGoal) {
             //log("declare 32!")
             this.beat32.hitGoal = this.beat32.nextBeat;
+            //this.im.tf.flash(this.beat32.duration);
         }
         if (this.theTime >= this.beat16.declareHitGoal) {
             this.beat16.hitGoal = this.beat16.nextBeat;
@@ -101,7 +102,6 @@ MusicObj.prototype.update = function(time){
         if (this.theTime >= this.beat4.declareHitGoal) {
             //log("greater then declareHitGoal4")
             this.beat4.hitGoal = this.beat4.nextBeat;
-            //this.im.qf.flash(this.trackInfo.bpm-this.qualityNumbers4[4])
         }
         if(this.theTime >= this.beat32.nextBeat){
             this.beat32.timeOfBeat = this.theTime;
@@ -109,12 +109,15 @@ MusicObj.prototype.update = function(time){
             this.im.ts.indicate(this.beat32.duration);
             this.im.tf.flash(this.bpm *.01);
             this.beat32.nextBeat = this.theTime + this.beat32.duration;
-            this.hm.update()
+
+            this.hm.update('sixteenth');
+
             if(this.theTime >= this.beat16.nextBeat){
                 this.beat16.timeOfBeat = this.theTime;
                 this.beat16.currentBeat ++;
                 this.im.ss.indicate(this.beat16.duration);
                 this.im.sf.flash(this.bpm *.02);
+                tweenTint(this.stage.bgSprite, 0xeecccc,0xfc2222, this.bpm *.02)
                 this.beat16.nextBeat = this.theTime + this.beat16.duration;
                 if(this.theTime >= this.beat8.nextBeat){
                     this.beat8.timeOfBeat = this.theTime;
@@ -127,15 +130,15 @@ MusicObj.prototype.update = function(time){
                             //this.setupMeasure(this.trackInfo.bpm*8);
                             this.measureCount ++;
                         }
-
                         this.beat4.timeOfBeat = this.theTime;
                         this.beat4.currentBeat ++;
 
-                        this.im.qs.indicate(this.bpm)
+                        this.im.qs.indicate(this.bpm);
                         this.im.qf.flash(this.bpm *.02);
 
                         this.beat4.nextBeat = this.theTime + this.bpm;
 
+                        this.hm.update('quarter');
                     }
                 }
             }

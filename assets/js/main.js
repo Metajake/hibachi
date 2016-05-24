@@ -9,10 +9,14 @@ Main.prototype = {
         game.load.script('graphics', 'assets/js/graphics.js');
         game.load.script('music', 'assets/js/music.js');
         game.load.script('splash', 'assets/js/states/splash.js');
+        game.load.script('gIndicators', 'assets/js/gIndicators.js');
+        game.load.script('gMeasurements', 'assets/js/gMeasurements.js');
 
         game.load.image('sidewalk', 'assets/img/sidewalk.png');
         game.load.image('logo', 'assets/img/logo.png');
         game.load.spritesheet('keyboard', 'assets/img/keyboard.png', 32, 32);
+        game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
+        game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
 
         game.load.audio('ivy', 'assets/mp3/ivy.mp3');
         game.load.audio('hype', 'assets/mp3/hype.mp3');

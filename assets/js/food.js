@@ -1,7 +1,7 @@
 function Chef(stage) {
     this.stage = stage;
     this.grill = new Grill();
-};
+}
 
 Chef.prototype.addFood = function(x,y,name,speed, scale, value, combinationList){
     if (this.grill.currentFood.indexOf(name) !== -1) {} else {
@@ -40,12 +40,13 @@ function Food(x,y,name,speed, scale,value, combinationList, stage){
             return this.name + " and " + this.decoratedFood.getName()
         }
     }
-};
+}
 
 function Grill(){
     this.currentFood = [];
     this.smell = 0; // USE THIS TO EFFECT NEARBY HUNGRY
-};
+    this.rep = 0;
+}
 
 /*
 function MultiplierFood(name, value, combinationList){

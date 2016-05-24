@@ -37,15 +37,16 @@ Game.prototype = {
         this.stage.constructWindows();
         this.stage.constructElements();
 
-        this.im = new IndicatorManager(/*600,300*/);
-        this.im.constructIndicators(35,130);
+        this.im = new IndicatorManager(this.stage);
+        this.im.constructIndicators();
         //this.measureGraphics = new MeasurementManagerHorizontal(this.trackInfo, this.stage);
         //this.measureGraphics = new MeasurementManagerVertical(this.trackInfo, this.stage, 35,-20);//####### 150 HIGHER then SLIDE INDICATORS
 
-        this.hm = new HungryManager(this.stage);
+        this.chef = new Chef(this.stage);
+
+        this.hm = new HungryManager(this.stage, this.chef);
         //this.hm.addHungry();
 
-        this.chef = new Chef(this.stage);
     },
     startRhythm: function(){
         this.stageTimer = game.time.create(false);
@@ -85,10 +86,6 @@ Game.prototype = {
     update: function(){
         this.musicObj.update(music.bgm.currentTime);
 
-        for(hungry in this.hm.hungerCount){
-            this.hm.hungerCount[hungry].update()
-        }
-
         if(game.playing == false){
             game.state.start('splash');
         };
@@ -100,10 +97,20 @@ Game.prototype = {
         //actionOne(this.musicObj.beat4, this.hm, music.bgm.currentTime, this.chef)
     },
     render: function(){
-        game.debug.text(/*"Quality of my ThirtySecond Timing: "+*/this.musicObj.beat32.qualityResult, this.im.group1X, 32*14)
-        game.debug.text(/*"Quality of my Sixteenth Timing: "+*/this.musicObj.beat16.qualityResult,this.im.group1X+100, 32*14.5)
-        game.debug.text(/*"Quality of my Eighth Timing: "+*/this.musicObj.beat8.qualityResult, this.im.group1X+30, 32*14.5)
-        game.debug.text(/*"Quality of my Quarter Timing: "+*/this.musicObj.beat4.qualityResult, this.im.group1X+60, 32*15.25)
+        //this.testLine = new Phaser.Line(this.stage.poi1[0],this.stage.poi1[1],this.stage.poi1[0]+100,this.stage.poi1[1]+100);
+        //game.debug.geom(this.testLine)
+
+        game.debug.text(/*"Quality of my ThirtySecond Timing: "+*/this.musicObj.beat32.qualityResult, this.stage.poi1[0], 32*14)
+        game.debug.text(/*"Quality of my Sixteenth Timing: "+*/this.musicObj.beat16.qualityResult,this.stage.poi1[0]+100, 32*14.5)
+        game.debug.text(/*"Quality of my Eighth Timing: "+*/this.musicObj.beat8.qualityResult, this.stage.poi1[0]+30, 32*14.5)
+        game.debug.text(/*"Quality of my Quarter Timing: "+*/this.musicObj.beat4.qualityResult, this.stage.poi1[0]+60, 32*15.25)
+
+        game.debug.text("Grill Rep: "+this.chef.grill.rep, 32, 32)
+        //i=2;
+        //for(hungry in this.hm.hungerCount){
+        //    game.debug.text("dude "+ hungry+ ", Fed count: "+ this.hm.hungerCount[hungry].fedCount+ ", impatience level: "+ this.hm.hungerCount[hungry].impatience+ ", tolerance level: "+ this.hm.hungerCount[hungry].tolerance, 32, 32*i);
+        //    i++;
+        //}
 
         //game.debug.text("Music Time: "+music.bgm.currentTime, 32, 32*3)
         //game.debug.text("Music Time: "+this.musicObj.theTime, 32, 32*3.5)
@@ -132,12 +139,12 @@ Game.prototype = {
         //game.debug.text("Total Measures: " + this.musicObj.totalMeasures, 32, 32 * 12.5)
 
         game.debug.geom(this.im.leftStart)
-        game.debug.geom(this.im.rightStart)
-        game.debug.geom(this.im.qLine)
         game.debug.geom(this.im.sLine)
         game.debug.geom(this.im.tLine)
-        game.debug.geom(this.im.t2Line)
-        game.debug.geom(this.im.eLine)
+        //game.debug.geom(this.im.rightStart)
+        //game.debug.geom(this.im.qLine)
+        //game.debug.geom(this.im.t2Line)
+        //game.debug.geom(this.im.eLine)
         /*
         game.debug.text("Upcoming Beat: "+this.musicObj.upcomingBeat, 32, 32*1.5)
         game.debug.text("Current Track BPM: "+this.trackInfo.bpm, 32, 32*2)

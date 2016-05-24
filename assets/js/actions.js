@@ -31,9 +31,10 @@ function actionOne(muBeat, hm, musicTime, chef, sm){
     hungerCountPos = hm.checkHungriest();
     if(["PERFECT","GREAT", "GOOD"].indexOf(muBeat.qualityResult) !== -1){
         if(hm.hungerCount[hungerCountPos] !== undefined){
-            hm.hungerCount[hungerCountPos].feed(hm.hungerCount,hungerCountPos, 15, muBeat.qualityResult)
+            hm.hungerCount[hungerCountPos].feed(15, muBeat.qualityResult);
         }
-    }
+        chef.grill.rep += 1;
+    } else{chef.grill.rep -= 1;}
 
     choice = sm.getRand(sm.utinsels);
     choice.sound.play()

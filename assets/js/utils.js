@@ -8,7 +8,7 @@ var utils = {
         return list
     }
 
-}
+};
 
 function log(toLog){
     console.log(toLog);
@@ -43,4 +43,12 @@ function step_game(event){
     if(game.stepping){
         game.step();
     }
+}
+
+//RANDOM NUMBER
+
+function randInt(limit){
+    if(limit !== "undefined"){
+        return Math.floor(limit * Math.random());
+    }else{return Math.floor(Math.random()*100);}
 }
