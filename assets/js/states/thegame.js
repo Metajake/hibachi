@@ -4,13 +4,12 @@ Game.prototype = {
     // ONE IMPORTANT NOTE ABOUT THE WAY THIS CODE WORKS: INIT, PRELOAD, CREATE, UPDATE, and RENDER are 4 natural Phaser States. They will be executing IN ORDER as the game loads AND Update and Render repeat (as fast as possible(like FPS or whatever)).
     init: function(){
         music.bgm.stop();
-        this.trackInfo = tracks.witit;
+        this.trackInfo = tracks.enter;
     },
     loadAudio: function(){
         music.bgm = game.add.audio(this.trackInfo.name);
         music.bgm.volume = this.trackInfo.volume;
         music.bgm.onStop.add(function(){game.playing = false;});
-
 
         this.sm = new SoundManager();
 
@@ -22,10 +21,10 @@ Game.prototype = {
         this.sm.sharpenS2 = this.sm.addSound('sharpen_short2',1,this.sm.utinsels);
     },
     loadControls: function(){
-        controls.W.onDown.add(function(){actionOne(this.musicObj.beat32, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
-        controls.UP.onDown.add(function(){actionOne(this.musicObj.beat16, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
-        controls.D.onDown.add(function(){actionOne(this.musicObj.beat8, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
-        controls.LEFT.onDown.add(function(){actionOne(this.musicObj.beat4, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm);}, this);
+        controls.W.onDown.add(function(){actionOne(this.musicObj.beat32, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
+        controls.UP.onDown.add(function(){actionOne(this.musicObj.beat16, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
+        controls.D.onDown.add(function(){actionOne(this.musicObj.beat8, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
+        controls.LEFT.onDown.add(function(){actionOne(this.musicObj.beat4, this.hm, /* music.bgm.currentTime */ this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
         controls.SPACE.onDown.add(pause_game, this);
         controls.G.onDown.add(step_game);
         controls.P.onUp.add(gofull)
@@ -47,6 +46,7 @@ Game.prototype = {
         this.hm = new HungryManager(this.stage, this.chef);
         //this.hm.addHungry();
 
+        this.tm = new TextManager(this.stage);
     },
     startRhythm: function(){
         this.stageTimer = game.time.create(false);
@@ -69,7 +69,6 @@ Game.prototype = {
         //this.bm.beatObj16.expectBeat();
         //this.bm.beatObj8.expectBeat();
         //this.bm.beatObj4.expectBeat();
-
     },
     preload: function(){
         this.loadControls();
@@ -97,13 +96,17 @@ Game.prototype = {
         //actionOne(this.musicObj.beat4, this.hm, music.bgm.currentTime, this.chef)
     },
     render: function(){
-        //this.testLine = new Phaser.Line(this.stage.poi1[0],this.stage.poi1[1],this.stage.poi1[0]+100,this.stage.poi1[1]+100);
+        game.debug.geom(this.stage.p1)
+        game.debug.geom(this.stage.p2)
+        game.debug.geom(this.stage.p3)
+
+        //this.testLine = new Phaser.Line(this.stage.p1.x,this.stage.p1.y,this.stage.p1.x+100,this.stage.p1.y+100);
         //game.debug.geom(this.testLine)
 
-        game.debug.text(/*"Quality of my ThirtySecond Timing: "+*/this.musicObj.beat32.qualityResult, this.stage.poi1[0], 32*14)
-        game.debug.text(/*"Quality of my Sixteenth Timing: "+*/this.musicObj.beat16.qualityResult,this.stage.poi1[0]+100, 32*14.5)
-        game.debug.text(/*"Quality of my Eighth Timing: "+*/this.musicObj.beat8.qualityResult, this.stage.poi1[0]+30, 32*14.5)
-        game.debug.text(/*"Quality of my Quarter Timing: "+*/this.musicObj.beat4.qualityResult, this.stage.poi1[0]+60, 32*15.25)
+        //game.debug.text(/*"Quality of my ThirtySecond Timing: "+*/this.musicObj.beat32.qualityResult, this.stage.p1.x, 32*14)
+        //game.debug.text(/*"Quality of my Sixteenth Timing: "+*/this.musicObj.beat16.qualityResult,this.stage.p1.x+100, 32*14.5)
+        //game.debug.text(/*"Quality of my Eighth Timing: "+*/this.musicObj.beat8.qualityResult, this.stage.p1.x+30, 32*14.5)
+        //game.debug.text(/*"Quality of my Quarter Timing: "+*/this.musicObj.beat4.qualityResult, this.stage.p1.x+60, 32*15.25)
 
         game.debug.text("Grill Rep: "+this.chef.grill.rep, 32, 32)
         //i=2;

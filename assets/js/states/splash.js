@@ -9,7 +9,7 @@ Splash.prototype = {
         this.title = game.make.sprite(game.world.centerX, 150, 'logo');
         this.loadStatus = game.make.text(game.world.centerX, 350, "Loading...", {fill: 'white'});
         utils.centerGameObjects([this.title, this.loadStatus]);
-        this.currentTrack = tracks.ivy;
+        this.currentTrack = tracks.work;
     },
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
@@ -22,19 +22,15 @@ Splash.prototype = {
     },
     loadBgm: function(){
         game.load.audio('witit', 'assets/mp3/witit.mp3');
-        game.load.audio('work', 'assets/mp3/work.mp3');
         game.load.audio('carlos', 'assets/mp3/carlos.mp3');
         game.load.audio('rattrap', 'assets/mp3/rattrap.mp3');
         game.load.audio('notype', 'assets/mp3/notype.mp3');
         game.load.audio('btstu', 'assets/mp3/btstu.mp3');
         game.load.audio('realiti', 'assets/mp3/realiti.mp3');
-        game.load.audio('wind', 'assets/mp3/wind.mp3');
         game.load.audio('mch', 'assets/mp3/mch.mp3');
     },
     loadImages: function(){
-        game.load.image('grill', 'assets/img/grill.png');
-        game.load.spritesheet('wadKeys', 'assets/img/wadKeys.png', 64,64);
-        game.load.spritesheet('walkerGuy', 'assets/img/walkLeft_guy.png', 64,64);
+
 
     },
     createMusic: function(){

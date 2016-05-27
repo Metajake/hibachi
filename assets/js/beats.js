@@ -107,7 +107,8 @@ MusicObj.prototype.update = function(time){
             this.beat32.timeOfBeat = this.theTime;
             this.beat32.currentBeat ++;
             this.im.ts.indicate(this.beat32.duration);
-            this.im.tf.flash(this.bpm *.01);
+            //this.im.tf.flash(this.bpm *.01);
+            flash(this.stage.wButton, this.bpm *.01, 1, 2);
             this.beat32.nextBeat = this.theTime + this.beat32.duration;
 
             this.hm.update('sixteenth');
@@ -116,14 +117,14 @@ MusicObj.prototype.update = function(time){
                 this.beat16.timeOfBeat = this.theTime;
                 this.beat16.currentBeat ++;
                 this.im.ss.indicate(this.beat16.duration);
-                this.im.sf.flash(this.bpm *.02);
-                tweenTint(this.stage.bgSprite, 0xeecccc,0xfc2222, this.bpm *.02)
+                //this.im.sf.flash(this.bpm *.02);
+                flash(this.stage.upButton, this.bpm *.02, 1, 2);
                 this.beat16.nextBeat = this.theTime + this.beat16.duration;
                 if(this.theTime >= this.beat8.nextBeat){
                     this.beat8.timeOfBeat = this.theTime;
                     this.beat8.currentBeat ++;
                     this.im.es.indicate(this.beat8.duration);
-                    this.im.ef.flash(this.bpm *.02);
+                    //this.im.ef.flash(this.bpm *.02);
                     this.beat8.nextBeat = this.theTime + this.beat8.duration;
                     if(this.theTime >= this.beat4.nextBeat){
                         if(this.beat4.currentBeat % 4 == 0){
@@ -134,7 +135,7 @@ MusicObj.prototype.update = function(time){
                         this.beat4.currentBeat ++;
 
                         this.im.qs.indicate(this.bpm);
-                        this.im.qf.flash(this.bpm *.02);
+                        //this.im.qf.flash(this.bpm *.02);
 
                         this.beat4.nextBeat = this.theTime + this.bpm;
 

@@ -10,6 +10,10 @@ var utils = {
 
 };
 
+function Map(map, results){
+
+}
+
 function log(toLog){
     console.log(toLog);
 }

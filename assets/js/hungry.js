@@ -73,15 +73,19 @@ function Hungry(manager, originX, endX, stage){
 Hungry.prototype = {
     update: function() {
     },
-    feed: function(feedAmount, timingQuality){
-        if (timingQuality== "PERFECT") {
-            multiplier = 1.4
-        } else if(timingQuality == "GREAT") {
-            multiplier = 1.3
-        } else if(timingQuality == "GOOD") {
-            multiplier = 1.2
-        } else {
-            multiplier = 1;
+    feed: function(feedAmount, timingScore){
+        switch (timingScore) {
+            case(5):
+                multiplier = 1.4
+                break;
+            case(4):
+                multiplier = 1.3
+                break;
+            case(3):
+                multiplier = 1.2
+                break;
+            default:
+                multiplier = 1;
         }
         this.impatience -= feedAmount * multiplier;
         this.fedCount += 1;
