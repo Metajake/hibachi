@@ -31,6 +31,8 @@ LevelStage.prototype = {
         this.p3 = new Phaser.Point(525,445);
         this.p4 = new Phaser.Point(275,430);
         this.p5 = new Phaser.Point(525,430);
+        this.p6 = new Phaser.Point(330,460);
+        this.p7 = new Phaser.Point(465,460);
     },
     constructElements: function(){
         this.grillSky = gradient_bg(0x0D51a8, 0xe7a36E);

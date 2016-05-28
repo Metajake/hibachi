@@ -1,52 +1,47 @@
-function compareTiming(musicTime, goal, qualities, results){
+function compareTiming(musicTime, goal, qualities, resultNames){
     myBeatTime = musicTime;
     difference = Math.abs(goal - myBeatTime);
-    compareResult = {}
 
-    if(difference < qualities[0]){
-        compareResult.sprite = new BmpText('carrierCommand', results[0],12);
-        compareResult.score = 5
-    }else if (difference < qualities[1]){
-        compareResult.sprite = new BmpText('carrierCommand', results[1],12);
-        compareResult.score = 4
-    }else if(difference < qualities[2]){
-        compareResult.sprite = new BmpText('carrierCommand', results[2],12);
-        compareResult.score = 3
-    }else if(difference < qualities[3]){
-        compareResult.sprite = new BmpText('carrierCommand', results[3],12);
-        compareResult.score = 2
-    }else if(difference < qualities[4]){
-        compareResult.sprite = new BmpText('carrierCommand', results[4],12);
-        compareResult.score = 1
-    }else{
-        compareResult.sprite = new BmpText('carrierCommand', results[5],12);
-        compareResult.score = 0
+    this.compareResult = {};
+    this.compareResult.score = 1;
+    this.compareResult.sprite = new BmpText('carrierCommand', resultNames[resultNames.length-1],12);
+    this.compareResult.string = resultNames[resultNames.length-1];
+
+    for (quality in qualities){
+        iterator = quality;
+        if(difference < qualities[iterator]){
+            this.compareResult.sprite = new BmpText('carrierCommand', resultNames[iterator],12);
+            this.compareResult.score ++;
+            this.compareResult.string = resultNames[iterator];
+        }
     }
-
-    return compareResult;
+    return this.compareResult;
 }
 
-function actionOne(muBeat, hm, musicTime, chef, sm, tm){
-    qualityNames = ["PERFECT!!!", "Great!!","Good!","OK","Bad","POOR"];
-    qualityResult = compareTiming(musicTime, muBeat.hitGoal, muBeat.qualityNumbers, qualityNames);
+function actionOne(muBeat, hm, musicTime, chef, sm, tm, key){
+    qualityResult = compareTiming(musicTime, muBeat.hitGoal, muBeat.qualityNumbers, muBeat.qualityNames);
+
+    choice = sm.getRand(sm.utinsels);
+
+    if(key !== undefined){event = {code:key};game.debug.text("Quality of Timing: "+qualityResult.string, 32, 32*14);
+    }else{
+        tm.resultIndicator.shoot(qualityResult.sprite, 600, 100, event.code);
+        choice.sound.play()
+    }
 
     //this.beatObj16.acceptInput(this.stageTimer)
     //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){
     //    log("dance")
     //}
 
-    tm.resultIndicator.shoot(qualityResult.sprite, 600, 100, event.code);
-
     hungerCountPos = hm.checkHungriest();
-    if(qualityResult.score >= 3){
+    if(qualityResult.score > 1){
         if(hm.hungerCount[hungerCountPos] !== undefined){
             hm.hungerCount[hungerCountPos].feed(15, qualityResult.score);
         }
-        chef.grill.rep += 1;
+        chef.grill.rep += qualityResult.score;
     } else{chef.grill.rep -= 1;}
 
-    choice = sm.getRand(sm.utinsels);
-    choice.sound.play()
 
     if(chef.grill.currentFood.length <= 6) {
         chef.grill.ndls = chef.addFood(200, 200, "noodles", 8, 4, 2, ["shortcake"]);
