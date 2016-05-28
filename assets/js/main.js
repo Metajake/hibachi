@@ -6,10 +6,10 @@ var gameWidth = 800,
 Main.prototype = {
     preload: function(){
         game.load.script('utils', 'assets/js/utils.js');
-        game.load.script('graphics', 'assets/js/graphics.js');
+        game.load.script('stage', 'assets/js/stage.js');
         game.load.script('music', 'assets/js/music.js');
         game.load.script('splash', 'assets/js/states/splash.js');
-        game.load.script('gIndicators', 'assets/js/gIndicators.js');
+        game.load.script('graphics', 'assets/js/graphicUtils.js');
         game.load.script('gMeasurements', 'assets/js/gMeasurements.js');
         game.load.script('typography', 'assets/js/typography.js');
 

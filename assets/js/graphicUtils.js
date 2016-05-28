@@ -1,8 +1,91 @@
-function IndicatorManager(stage){
-    this.stage = stage;
+function tweenTint(sprite, startColor, endColor, duration) {
+    //~~~~~~~ EXAMPLE CALL: tweenTint(this.stage.bgSprite, 0xaa6666,0xee9999, this.bpm *.02)
+    colorBlend = {step: 0};
+    game.add.tween(colorBlend).to({step: 100}, duration, Phaser.Easing.Default,false, 0,0,true)
+        .onUpdateCallback(function() {
+            sprite.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step, 1);
+        }).start();
 }
 
-IndicatorManager.prototype.constructIndicators= function(){
+function gradient_bg(startHex, endHex){
+    var out = [];
+    var sky = game.add.bitmapData(gameWidth, gameHeight);
+    //sky.addToWorld();
+    var skyY = 0;
+    for (var i = 0; i < gameHeight; i++) {
+        var c = Phaser.Color.interpolateColor(startHex, endHex, 330, i);
+        sky.rect(0, skyY, 800, skyY+2, Phaser.Color.getWebRGB(c));
+        out.push(Phaser.Color.getWebRGB(c));
+        skyY += 2;
+    }
+    return sky;
+}
+
+function BmpRect(x,y, width, height, color){
+    bmd = game.add.bitmapData(800,600);
+    bmd.rect(x,y, width, height, color);
+    return bmd;
+}
+
+function BmpCirc(x, y, size, color, toSprite){
+    bmd = game.add.bitmapData(800,600);
+    bmd.circle(x, y, size,color);
+    if(toSprite !== "undefined"){
+        sprite = bmd.generateTexture()
+        return sprite
+    }
+    return bmd;
+}
+
+function ModSprite(x,y,key,hash){
+    this.sprite = game.add.sprite(x,y,key);
+    if(typeof(hash.scale) !== "undefined"){
+        this.sprite.smoothed = false;
+        this.sprite.scale.setTo(hash.scale[0],hash.scale[1])
+    }
+    if(typeof(hash.mask) !== "undefined"){
+        this.sprite.mask = hash.mask;
+    }
+    if(typeof(hash.static) !== "undefined"){
+        staticAnim = this.sprite.animations.add("static");
+        staticAnim.frame = hash.static;
+    }
+    if(typeof(hash.alpha) !== "undefined"){
+        this.sprite.alpha = hash.alpha
+    }
+    if(typeof(hash.anchor) !== "undefined"){
+        this.sprite.anchor.set(hash.anchor[0],hash.anchor[1]);
+    }
+    if(typeof(hash.drag) !== "undefined"){
+        this.sprite.inputEnabled = true;
+        this.sprite.input.enableDrag();
+    }
+    return this.sprite;
+}
+
+function flash(graphic, duration, alpha, scale){
+    t1 = game.add.tween(graphic);
+    t2 = game.add.tween(graphic.scale);
+    t1.to({alpha:alpha},duration,Phaser.Easing.Linear.None,false, 0,0,true);
+    t2.to({x:scale,y:scale},duration,Phaser.Easing.Linear.None,false, 0,0,true);
+    t1.start();
+    t2.start()
+}
+
+function AnimSprite(x,y,key, start, idle, speed, scale, cropRect){
+    this.sprite = game.add.sprite(x,y,key);
+    this.sprite.smoothed = false;
+    this.sprite.scale.setTo(scale, scale);
+    this.sprite.mask = cropRect;
+    this.start = this.sprite.animations.add('start', start);
+    this.idle = this.sprite.animations.add('idle', idle);
+    this.start.play(speed,false);
+    this.start.onComplete.add(function(){this.idle.play(speed,true);},this);
+    return this
+}
+
+function IndicatorManager(stage){
+    this.stage = stage;
     this.y = this.stage.p1.y; // MOVE THIS.Y PER MEASUREMENTMANAGERVERTICAL POSITION
     this.width = 150; // MEASUREMENTMANAGERVERTICAL WIDTH
     this.x2 = 600;
@@ -36,7 +119,7 @@ IndicatorManager.prototype.constructIndicators= function(){
     //this.sef = new Flasher(x,y, 'chickenleg', 0x0000ff);
     //this.eef = new Flasher(x+100,y, 'chickenleg', 0xff0000);
     //this.qef = new Flasher(x+200, y, 'chickenleg', 0x00ff00);
-};
+}
 
 function Flasher(x, y, displayObj, scale){
     this.sprite = new ModSprite(x,y,displayObj,{scale:scale,alpha:0})

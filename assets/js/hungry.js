@@ -76,13 +76,13 @@ Hungry.prototype = {
     feed: function(feedAmount, timingScore){
         switch (timingScore) {
             case(5):
-                multiplier = 1.4
+                multiplier = 1.4;
                 break;
             case(4):
-                multiplier = 1.3
+                multiplier = 1.3;
                 break;
             case(3):
-                multiplier = 1.2
+                multiplier = 1.2;
                 break;
             default:
                 multiplier = 1;
