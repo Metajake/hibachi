@@ -1,20 +1,30 @@
-function InputConductor(stage){
+function InputConductor(stage,chef){
     this.stage = stage;
-    //this.inputOne = new InputEnsemble(100,300, '#000', controls.E);
+    this.chef = chef;
 };
 
 InputConductor.prototype = {
-    createEnsemble: function(x, y, color, distance, spriteFrame, control, beatObj,hm,musicObj,chef,sm,tm, type){
-        return new InputEnsemble(x, y, color, distance, spriteFrame, control, beatObj,hm,musicObj,chef,sm,tm, type)
+    createEnsemble: function(parent, x, y, color, distance, spriteFrame, control, beatObj,hm,musicObj,chef,sm,tm, type){
+        return new InputEnsemble(parent, x, y, color, distance, spriteFrame, control, beatObj,hm,musicObj,chef,sm,tm, type)
+    },
+    checkRoles: function(){
+        //if(this.chef.checkGrill() !== undefined){
+        //    log("We ready now!");
+        //}
+    },
+    removeEnsemble: function(){
+        log("removing ensemble");
     }
 };
 
-function InputEnsemble(x, y, color, distance, spriteFrame, input, beatObj,hm,musicObj,chef,sm,tm, type){
+function InputEnsemble(parent, x, y, color, distance, spriteFrame, input, beatObj,hm,musicObj,chef,sm,tm, type){
+    this.ic = parent;
     switch(type){
         case("trick"):
-            this.icon = new ModSprite(x,y+20, "iconTrick", {scale:[1.5,1.5]});
+            this.icon = new ModSprite(x,y+20, "iconTrick", {scale:[1.4,1.4]});
+            break;
         default:
-            this.icon = new ModSprite(x,y+20, "iconTrick", {scale:[1.5,1.5]});
+            this.icon = new ModSprite(x,y+20, "iconBaseFood", {scale:[1.5,1.5]});
     }
     this.x = x;
     this.y = y;
@@ -24,7 +34,7 @@ function InputEnsemble(x, y, color, distance, spriteFrame, input, beatObj,hm,mus
     this.graphics = game.add.graphics(x,y);
     this.graphics.lineStyle(2, Phaser.Color.hexToRGB(color));
     this.graphics.lineTo(40,0);
-    this.input = input.onDown.add(function(){actionOne(beatObj,hm,musicObj.theTime,chef,sm,tm, [this.x,this.y]);}, this);
+    this.input = input.onDown.add(function(){actionOne(this.ic, beatObj,hm,musicObj.theTime,chef,sm,tm, [this.x,this.y], type);}, this);
 }
 
 InputEnsemble.prototype = {

@@ -4,6 +4,7 @@ Game.prototype = {
     init: function(){
         music.bgm.stop();
         this.trackInfo = tracks.enter;
+        this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
     },
     loadAudio: function(){
         music.bgm = game.add.audio(this.trackInfo.name);
@@ -23,8 +24,13 @@ Game.prototype = {
         this.p = controls.P.onUp.add(gofull)
     },
     createElements: function(){
-        this.stage = new LevelStage(game.stage);
 
+        this.stage = new LevelStage(game.stage, this.soundAnalyseSprite);
+        //
+        //this.soundAnalyseSprite = this.soundAnalyse.add.soundAnalyseSprite(0, 0, 800, 600, this.trackInfo.name, true, this._onDecodeFinish, this);
+        //this.soundAnalyseSprite.showFrequencyDomainChartBars(true);
+        //this.soundAnalyseSprite.mask = this.stage.cropRectD;
+        //
         this.im = new IndicatorManager(this.stage);
 
         this.chef = new Chef(this.stage);
@@ -36,14 +42,16 @@ Game.prototype = {
         //circle.anchor.setTo(0.5,0.5)
         //circle.tint = 0xff0000
 
-        this.ic = new InputConductor();
+        this.ic = new InputConductor(this.stage, this.chef);
 
         this.musicObj = new MusicObj(this.trackInfo, this.stage, this.im, this.hm,  music.bgm.currentTime, this.ic);
 
-        this.ic.inputOne = this.ic.createEnsemble(this.stage.p1.x,this.stage.p1.y, '#000', 20, 1, controls.W, this.musicObj.beat32, this.hm, this.musicObj, this.chef, this.sm, this.tm, "trick");
-        this.ic.inputTwo = this.ic.createEnsemble(this.stage.p3.x,this.stage.p3.y, '#f0f', 40, 0, controls.UP, this.musicObj.beat16, this.hm, this.musicObj, this.chef, this.sm, this.tm, "ingredient");
+        this.ic.inputOne = this.ic.createEnsemble(this.ic, this.stage.p1.x,this.stage.p1.y, '#000', 20, 1, controls.W, this.musicObj.beat32, this.hm, this.musicObj, this.chef, this.sm, this.tm, "trick");
+        this.ic.inputTwo = this.ic.createEnsemble(this.ic, this.stage.p3.x,this.stage.p3.y, '#f0f', 40, 0, controls.UP, this.musicObj.beat16, this.hm, this.musicObj, this.chef, this.sm, this.tm, "ingredient");
 
         game.world.bringToTop(this.tm.resultIndicator.indicators);
+
+
     },
     startRhythm: function(){
         this.stageTimer = game.time.create(false);

@@ -19,6 +19,7 @@ Splash.prototype = {
         game.load.script('food', 'assets/js/food.js');
         game.load.script('beats', 'assets/js/beats.js');
         game.load.script('sound', 'assets/js/sound.js');
+        game.load.script('analyser', 'assets/js/vendor/soundAnalyse.js');
     },
     loadBgm: function(){
         game.load.audio('witit', 'assets/mp3/witit.mp3');

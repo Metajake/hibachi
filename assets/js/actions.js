@@ -18,7 +18,7 @@ function compareTiming(musicTime, goal, qualities, resultNames){
     return this.compareResult;
 }
 
-function actionOne(muBeat, hm, musicTime, chef, sm, tm, location){
+function actionOne(ic, muBeat, hm, musicTime, chef, sm, tm, location, type){
     qualityResult = compareTiming(musicTime, muBeat.hitGoal, muBeat.qualityNumbers, muBeat.qualityNames);
     choice = sm.getRand(sm.utinsels);
 
@@ -39,7 +39,9 @@ function actionOne(muBeat, hm, musicTime, chef, sm, tm, location){
     } else{chef.grill.rep -= 1;}
 
 
-    if(chef.grill.currentFood.length <= 6) {
-        chef.grill.ndls = chef.addFood(200, 200, "noodles", 8, 4, 2, ["shortcake"]);
+    if(type == "ingredient" && chef.grill.currentFood.length <= 6) {
+        chef.addFood("noodles", 8, 4, 2, ["shortcake"]);
     }
+
+    //ic.checkRoles()
 }

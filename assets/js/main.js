@@ -19,6 +19,7 @@ Main.prototype = {
         game.load.image('grill', 'assets/img/grill.png');
         game.load.image('circle', 'assets/img/greyElipse.png');
         game.load.image('iconTrick', 'assets/img/iconTrick.png');
+        game.load.image('iconBaseFood', 'assets/img/iconBaseFood.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
         game.load.spritesheet('chef', 'assets/img/chef.png', 48,48);

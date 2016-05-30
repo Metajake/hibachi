@@ -33,9 +33,13 @@ function LevelStage(phaserStage){
     this.p7 = new Phaser.Point(465,460);
 
     /////////////Construct Stage Graphics//////////////////////
+
     this.grillSky = gradient_bg(0x0D51a8, 0xe7a36E);
+
+
     this.skyMini = gradient_bg(0x2D61a8, 0xe7a36E);
     this.grillBg = new ModSprite(0,this.windowA.position.y,this.grillSky,{scale:[1,.85],mask:this.cropRectC});
+
     this.grillBgMini = new ModSprite(0,this.windowD.position.y,this.skyMini,{scale:[1,.25],mask:this.cropRectD});
     this.grill = new ModSprite(-100,-100,"grill",{scale:[4.05,4.7],mask:this.cropRectC});
 
