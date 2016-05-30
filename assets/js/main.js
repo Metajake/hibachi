@@ -12,10 +12,13 @@ Main.prototype = {
         game.load.script('graphics', 'assets/js/graphicUtils.js');
         game.load.script('gMeasurements', 'assets/js/gMeasurements.js');
         game.load.script('typography', 'assets/js/typography.js');
+        game.load.script('input', 'assets/js/inputConductor.js');
 
         game.load.image('sidewalk', 'assets/img/sidewalk.png');
         game.load.image('logo', 'assets/img/logo.png');
         game.load.image('grill', 'assets/img/grill.png');
+        game.load.image('circle', 'assets/img/greyElipse.png');
+        game.load.image('iconTrick', 'assets/img/iconTrick.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
         game.load.spritesheet('chef', 'assets/img/chef.png', 48,48);

@@ -29,13 +29,14 @@ BeatObj = function(trackInfo, division, qualityNumbers, qualityNames){
     this.declareHitGoal = this.hitGoal + this.qualityNumbers[0];
 };
 
-MusicObj = function(trackInfo, stage, im, hm, time){
+MusicObj = function(trackInfo, stage, im, hm, time, inputConductor){
     this.trackInfo = trackInfo;
     this.theTime = time - this.trackInfo.delay;
     this.stage = stage;
     //this.measureGraphics = graphics;
     this.im = im;
     this.hm = hm;
+    this.ic = inputConductor;
     this.bpm = trackInfo.bpm;
     this.duration = trackInfo.durationMS;
     this.durationMeasure = this.bpm*4;
@@ -76,23 +77,28 @@ MusicObj.prototype.update = function(time){
         if(this.theTime >= this.beat32.nextBeat){
             this.beat32.timeOfBeat = this.theTime;
             this.beat32.currentBeat ++;
-            this.im.ts.indicate(this.beat32.duration);
-            flash(this.stage.wButton, this.bpm *.01, 1, 2);
             this.beat32.nextBeat = this.theTime + this.beat32.duration;
+            //this.im.ts.indicate(this.beat32.duration);
+            //flash(this.stage.wButton, this.bpm *.01, 1, 2);
+
+            this.ic.inputOne.beat(this.beat32.duration, this.bpm *.02, 1, 2);
+            //flash(this.ic.inputOne.sprite, this.bpm *.02, 1, 2);
 
             this.hm.update('sixteenth');
 
             if(this.theTime >= this.beat16.nextBeat){
                 this.beat16.timeOfBeat = this.theTime;
                 this.beat16.currentBeat ++;
-                this.im.ss.indicate(this.beat16.duration);
-                flash(this.stage.upButton, this.bpm *.02, 1, 2);
                 this.beat16.nextBeat = this.theTime + this.beat16.duration;
+                //this.im.ss.indicate(this.beat16.duration);
+                //flash(this.stage.upButton, this.bpm *.02, 1, 2);
+                this.ic.inputTwo.beat(this.beat16.duration, this.bpm *.02, 1, 2);
+
                 if(this.theTime >= this.beat8.nextBeat){
                     this.beat8.timeOfBeat = this.theTime;
                     this.beat8.currentBeat ++;
-                    this.im.es.indicate(this.beat8.duration);
                     this.beat8.nextBeat = this.theTime + this.beat8.duration;
+                    //this.im.es.indicate(this.beat8.duration);
                     if(this.theTime >= this.beat4.nextBeat){
                         if(this.beat4.currentBeat % 4 == 0){
                             //this.setupMeasure(this.trackInfo.bpm*8);
@@ -100,8 +106,9 @@ MusicObj.prototype.update = function(time){
                         }
                         this.beat4.timeOfBeat = this.theTime;
                         this.beat4.currentBeat ++;
-                        this.im.qs.indicate(this.bpm);
                         this.beat4.nextBeat = this.theTime + this.bpm;
+                        //this.im.qs.indicate(this.bpm);
+                        tweenTint(this.stage.bgSprite, 0xaa2222,0xcc3300, this.bpm *.5)
                         this.hm.update('quarter');
                     }
                 }

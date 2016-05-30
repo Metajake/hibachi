@@ -9,7 +9,7 @@ Splash.prototype = {
         this.title = game.make.sprite(game.world.centerX, 150, 'logo');
         this.loadStatus = game.make.text(game.world.centerX, 350, "Loading...", {fill: 'white'});
         utils.centerGameObjects([this.title, this.loadStatus]);
-        this.currentTrack = tracks.work;
+        this.currentTrack = tracks.btstu;
     },
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');

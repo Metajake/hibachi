@@ -18,16 +18,12 @@ function compareTiming(musicTime, goal, qualities, resultNames){
     return this.compareResult;
 }
 
-function actionOne(muBeat, hm, musicTime, chef, sm, tm, key){
+function actionOne(muBeat, hm, musicTime, chef, sm, tm, location){
     qualityResult = compareTiming(musicTime, muBeat.hitGoal, muBeat.qualityNumbers, muBeat.qualityNames);
-
     choice = sm.getRand(sm.utinsels);
 
-    if(key !== undefined){event = {code:key};game.debug.text("Quality of Timing: "+qualityResult.string, 32, 32*14);
-    }else{
-        tm.resultIndicator.shoot(qualityResult.sprite, 600, 100, event.code);
-        choice.sound.play()
-    }
+    tm.resultIndicator.shoot(qualityResult.sprite, 600, 100, location);
+    choice.sound.play()
 
     //this.beatObj16.acceptInput(this.stageTimer)
     //if( ["PERFECT", "GOOD","GREAT"].indexOf(this.sixteenthTimeQuality) !== -1 && this.acceptingInput == true){

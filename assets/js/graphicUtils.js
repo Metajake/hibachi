@@ -98,18 +98,18 @@ function IndicatorManager(stage){
     //this.ef = new Flasher(this.stage.p1.x+this.col*2.5,this.stage.p1.y+15, BmpCirc(10,10,10,"#0FF"), [1,1]);
     //this.qf = new Flasher(this.stage.p1.x+this.col*4,this.stage.p1.y+35, BmpCirc(10,10,10,"#FF0"), [1,1]);
 
-    this.i32= new BmpRect(0,0,40,this.indicatorHeight, "#000");
-    this.i16= new BmpRect(0,0,40,this.indicatorHeight, "#f0f");
-    this.i8= new BmpRect(0,0,20,this.indicatorHeight, "#0ff");
-    this.i4= new BmpRect(0,0,20,this.indicatorHeight, "#ff0");
-    this.ts = new SlidingIndicator(this.stage.p1.x,this.y-this.distance-(this.indicatorHeight *.5), this.distance,this.i32);
-    this.ss = new SlidingIndicator(this.stage.p1.x+this.col*6,this.y-this.distance*2-(this.indicatorHeight *.5), this.distance*2,this.i16);
-    this.es = new SlidingIndicator(this.stage.p1.x+this.col*2.75,this.y-this.distance*3-(this.indicatorHeight *.5), this.distance*3,this.i8);
-    this.qs = new SlidingIndicator(this.stage.p1.x+this.col*4.5,this.y-this.distance*4-(this.indicatorHeight *.5), this.distance*4,this.i4);
+    //this.i32= new BmpRect(0,0,40,this.indicatorHeight, "#000");
+    //this.i16= new BmpRect(0,0,40,this.indicatorHeight, "#f0f");
+    //this.i8= new BmpRect(0,0,20,this.indicatorHeight, "#0ff");
+    //this.i4= new BmpRect(0,0,20,this.indicatorHeight, "#ff0");
+    //this.ts = new SlidingIndicator(this.stage.p1.x,this.y-this.distance-(this.indicatorHeight *.5), this.distance,this.i32);
+    //this.ss = new SlidingIndicator(this.stage.p1.x+this.col*6,this.y-this.distance*2-(this.indicatorHeight *.5), this.distance*2,this.i16);
+    //this.es = new SlidingIndicator(this.stage.p1.x+this.col*2.75,this.y-this.distance*3-(this.indicatorHeight *.5), this.distance*3,this.i8);
+    //this.qs = new SlidingIndicator(this.stage.p1.x+this.col*4.5,this.y-this.distance*4-(this.indicatorHeight *.5), this.distance*4,this.i4);
 
-    this.leftStart= new Phaser.Line(this.stage.p1.x,this.y,this.stage.p1.x+this.width,this.y);
-    this.tLine = new Phaser.Line(this.stage.p1.x,this.y-this.distance,this.stage.p1.x+this.width,this.y-this.distance);
-    this.sLine = new Phaser.Line(this.stage.p1.x,this.y-this.distance*2,this.stage.p1.x+this.width,this.y-this.distance*2);
+    //this.leftStart= new Phaser.Line(this.stage.p1.x,this.y,this.stage.p1.x+this.width,this.y);
+    //this.tLine = new Phaser.Line(this.stage.p1.x,this.y-this.distance,this.stage.p1.x+this.width,this.y-this.distance);
+    //this.sLine = new Phaser.Line(this.stage.p1.x,this.y-this.distance*2,this.stage.p1.x+this.width,this.y-this.distance*2);
     //this.rightStart= new Phaser.Line(this.x2,this.y,this.x2+this.width,this.y);
     //this.t2Line = new Phaser.Line(this.x2,this.y-this.distance,this.x2+this.width,this.y-this.distance);
     //this.eLine = new Phaser.Line(this.group1X,this.y-this.distance*3,this.group1X+this.width,this.y-this.distance*3);
@@ -140,7 +140,7 @@ function SlidingIndicator(x,y,distance,sprite){
     this.x = x;
     this.y = y;
     this.distance = distance;
-    this.sprite = sprite;
+    this.sprite = sprite
     this.indicators = game.add.group();
 }
 

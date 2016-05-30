@@ -1,4 +1,4 @@
-function Chef(stage) {
+    function Chef(stage) {
     this.stage = stage;
     this.grill = new Grill();
 }
