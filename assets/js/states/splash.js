@@ -14,7 +14,6 @@ Splash.prototype = {
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
         game.load.script('music', 'assets/js/music.js');
-        game.load.script('actions', 'assets/js/actions.js');
         game.load.script('hungry', 'assets/js/hungry.js');
         game.load.script('food', 'assets/js/food.js');
         game.load.script('beats', 'assets/js/beats.js');

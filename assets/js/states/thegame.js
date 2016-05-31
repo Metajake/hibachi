@@ -4,7 +4,10 @@ Game.prototype = {
     init: function(){
         music.bgm.stop();
         this.trackInfo = tracks.enter;
-        this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
+        //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
+        this.SPACE = controls.SPACE.onDown.add(pause_game, this);
+        this.G = controls.G.onDown.add(step_game);
+        this.P = controls.P.onUp.add(gofull)
     },
     loadAudio: function(){
         music.bgm = game.add.audio(this.trackInfo.name);
@@ -14,43 +17,29 @@ Game.prototype = {
         this.sm = new SoundManager();
         this.sm.constructSounds();
     },
-    loadControls: function(){
-        //this.w = controls.W.onDown.add(function(){actionOne(this.musicObj.beat32, this.hm, this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
-        //this.up = controls.UP.onDown.add(function(){actionOne(this.musicObj.beat16, this.hm, this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
-        //this.d = controls.D.onDown.add(function(){actionOne(this.musicObj.beat8, this.hm, this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
-        //this.left = controls.LEFT.onDown.add(function(){actionOne(this.musicObj.beat4, this.hm, this.musicObj.theTime, this.chef, this.sm, this.tm);}, this);
-        this.space = controls.SPACE.onDown.add(pause_game, this);
-        this.g = controls.G.onDown.add(step_game);
-        this.p = controls.P.onUp.add(gofull)
-    },
     createElements: function(){
 
         this.stage = new LevelStage(game.stage, this.soundAnalyseSprite);
-        //
+
         //this.soundAnalyseSprite = this.soundAnalyse.add.soundAnalyseSprite(0, 0, 800, 600, this.trackInfo.name, true, this._onDecodeFinish, this);
         //this.soundAnalyseSprite.showFrequencyDomainChartBars(true);
         //this.soundAnalyseSprite.mask = this.stage.cropRectD;
-        //
-        this.im = new IndicatorManager(this.stage);
 
         this.chef = new Chef(this.stage);
 
-        this.hm = new HungryManager(this.stage, this.chef);
+        this.hm = new HungryManager(this.stage, this.chef, this.hm);
 
         this.tm = new TextManager(this.stage);
         //circle = game.add.sprite(400, 300, 'circle');
         //circle.anchor.setTo(0.5,0.5)
         //circle.tint = 0xff0000
 
-        this.ic = new InputConductor(this.stage, this.chef);
 
         this.musicObj = new MusicObj(this.trackInfo, this.stage, this.im, this.hm,  music.bgm.currentTime, this.ic);
 
-        this.ic.inputOne = this.ic.createEnsemble(this.ic, this.stage.p1.x,this.stage.p1.y, '#000', 20, 1, controls.W, this.musicObj.beat32, this.hm, this.musicObj, this.chef, this.sm, this.tm, "trick");
-        this.ic.inputTwo = this.ic.createEnsemble(this.ic, this.stage.p3.x,this.stage.p3.y, '#f0f', 40, 0, controls.UP, this.musicObj.beat16, this.hm, this.musicObj, this.chef, this.sm, this.tm, "ingredient");
+        this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
-        game.world.bringToTop(this.tm.resultIndicator.indicators);
-
+        this.musicObj.signal.add(this.ic.beat, this.ic);
 
     },
     startRhythm: function(){
@@ -68,7 +57,6 @@ Game.prototype = {
         //},this);
     },
     preload: function(){
-        this.loadControls();
         this.loadAudio();
     },
     create: function(){

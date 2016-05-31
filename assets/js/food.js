@@ -68,6 +68,14 @@ function Grill(){
     this.currentFood = [];
     this.smell = 0; // USE THIS TO EFFECT NEARBY HUNGRY
     this.rep = 0;
+    this.log = {
+        perfect:[],
+        great:[],
+        good:[],
+        ok:[],
+        bad:[],
+        poor:[]
+    };
     this.positions = {
         one: {
             currentFood: undefined,
@@ -99,6 +107,16 @@ function Grill(){
         }
     }
 }
+
+Grill.prototype = {
+    logResult: function(string){
+        switch(string){
+            case("PERFECT!!!"):
+                this.log.perfect.push("PERFECT!!!");
+        }
+    }
+};
+
 
 /*
 function MultiplierFood(name, value, combinationList){
