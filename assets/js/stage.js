@@ -3,6 +3,7 @@ function LevelStage(phaserStage){
     this.margin = 6;
     this.heightA = 144;
     this.heightB = 288;
+    this.colWidth = 50;
 
     /////////////Construct Windows//////////////////////
     this.bgBmp = new BmpRect(0,0,this.phaserStage.width,this.phaserStage.height,"#ffffff")
@@ -43,9 +44,6 @@ function LevelStage(phaserStage){
     this.grillBgMini = new ModSprite(0,this.windowD.position.y,this.skyMini,{scale:[1,.25],mask:this.cropRectD});
     this.grill = new ModSprite(-100,-100,"grill",{scale:[4.05,4.7],mask:this.cropRectC});
 
-    //this.keyboard = new ModSprite(320, 395, "keyboard",{scale:[5,5],static:1});
     this.grillMini = new AnimSprite(60,455,"grillMini",[0],utils.arrayRange(1,9),4,4.8,this.cropRectD);
-    //this.upButton = new ModSprite(this.p3.x,this.p3.y, "buttons", {scale:[1,1], anchor:[0.5,0.5], alpha:0.5, static:0, drag:true});
-    //this.wButton = new ModSprite(this.p2.x, this.p2.y, "buttons", {scale:[1,1], anchor:[0.5,0.5], alpha:0.5, static:1, drag:true});
     this.chef = new ModSprite(40,5, "chef", {scale:[3,3], static:0, drag:true});
 }

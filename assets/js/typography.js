@@ -1,4 +1,4 @@
-function TextManager(stage){
+function TextManager(stage) {
     this.stage = stage;
     this.resultIndicator = new TextIndicator(this.stage);
 }
@@ -16,26 +16,6 @@ function TextIndicator(stage){
 
 TextIndicator.prototype = {
     shoot: function(sprite, duration, distance, location){
-        //switch(key){
-        //    case("KeyW"):
-        //        this.x = this.stage.p4.x;
-        //        this.y = this.stage.p4.y;
-        //        break;
-        //    case("ArrowUp"):
-        //        this.x = this.stage.p5.x;
-        //        this.y = this.stage.p5.y;
-        //        break;
-        //    case("KeyD"):
-        //        this.x = this.stage.p6.x;
-        //        this.y = this.stage.p6.y;
-        //        break;
-        //    case("ArrowLeft"):
-        //        this.x = this.stage.p7.x;
-        //        this.y = this.stage.p7.y;
-        //        break;
-        //    default:
-        //        log("You got to the default. How?")
-        //}
         this.x = location[0];
         this.y = location[1];
         this.indicators.create(this.x, this.y, sprite);

@@ -2,8 +2,8 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
+        this.trackInfo = tracks.btstu;
         music.bgm.stop();
-        this.trackInfo = tracks.enter;
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
         this.SPACE = controls.SPACE.onDown.add(pause_game, this);
         this.G = controls.G.onDown.add(step_game);
@@ -84,7 +84,6 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        game.debug.text("Grill Rep: "+this.chef.grill.rep, 32, 32);
         //i=2;
         //for(hungry in this.hm.hungerCount){
         //    game.debug.text("dude "+ hungry+ ", Fed count: "+ this.hm.hungerCount[hungry].fedCount+ ", impatience level: "+ this.hm.hungerCount[hungry].impatience+ ", tolerance level: "+ this.hm.hungerCount[hungry].tolerance, 32, 32*i);

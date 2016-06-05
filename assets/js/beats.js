@@ -1,26 +1,30 @@
-//regBeatObj.prototype.expectBeat = function() {
-//    this.neb = this.eb[this.sequenceExpectation];
-//    if (this.neb == this.nextBeat) {
-//        this.sequenceExpectation++;
-//        this.neb = this.eb[this.sequenceExpectation];
-//        this.startAcceptingInput = this.nextNotePrediction - this.qualityNumbers[4];
-//        this.stopAcceptingInput = this.nextNotePrediction + this.qualityNumbers[4];
-//        game.time.events.add(this.bpm * this.interval - this.qualityNumbers[4], function () {
-//            this.indicator.glow(this.bpm * this.interval - this.qualityNumbers[4])
-//        }, this);
-//    }
-//};
-//
-//regBeatObj.prototype.acceptInput = function(time){
-//    if((time.ms >= this.startAcceptingInput) && (time.ms <= this.stopAcceptingInput)){
-//        this.acceptingInput = true
-//    }else{this.acceptingInput = false}
-//};
+function compareTiming(musicTime, goal, qualities, resultNames){
+    myBeatTime = musicTime;
+    difference = Math.abs(goal - myBeatTime);
 
-BeatObj = function(trackInfo, division, qualityNumbers, qualityNames, type){
+    this.compareResult = {};
+    this.compareResult.score = 1;
+    this.compareResult.sprite = new BmpText('carrierCommand', resultNames[resultNames.length-1],12);
+    this.compareResult.string = resultNames[resultNames.length-1];
+
+    for (quality in qualities){
+        iterator = quality;
+        if(difference < qualities[iterator]){
+            this.compareResult.sprite = new BmpText('carrierCommand', resultNames[iterator],12);
+            this.compareResult.score ++;
+            this.compareResult.string = resultNames[iterator];
+        }
+    }
+
+    if(this.compareResult.string)
+    return this.compareResult;
+}
+
+BeatObj = function(trackInfo, division, qualityNumbers, qualityNames, bgKey){
+    this.bgKey = bgKey
     this.currentBeat = 1;
     this.timeOfBeat = 0;
-    this.division = division
+    this.division = division;
     this.trackInfo = trackInfo;
     this.qualityNames = qualityNames;
     this.qualityNumbers = qualityNumbers;
@@ -42,10 +46,10 @@ MusicObj = function(trackInfo, stage, im, hm, time, inputConductor){
     this.duration = trackInfo.durationMS;
     this.durationMeasure = this.bpm*4;
     this.totalMeasures = Math.floor(this.duration / this.durationMeasure);
-    this.beat32 = new BeatObj(trackInfo, 8, [(this.trackInfo.bpm/8) *.3], ["Good!","Bad"]);
-    this.beat16 = new BeatObj(trackInfo, 4, [(this.trackInfo.bpm/4) * .30, (this.trackInfo.bpm/4) * .10], ["OK","Great!!","Bad"]);
-    this.beat8 = new BeatObj(trackInfo, 2, [(this.trackInfo.bpm/2) *.3, (this.trackInfo.bpm/2) *.2, (this.trackInfo.bpm/2) * .1], ["OK", "Good!", "Great!!","Bad"]);
-    this.beat4 = new BeatObj(trackInfo, 1, [this.trackInfo.bpm * .3 , this.trackInfo.bpm *.22, this.trackInfo.bpm *.14, this.trackInfo.bpm *.08], ["OK", "Good!", "Great!!", "PERFECT!!!", "Bad"]);
+    this.beat32 = new BeatObj(trackInfo, 8, [(this.trackInfo.bpm/8) *.3], ["Good!","Bad"], "bg32");
+    this.beat16 = new BeatObj(trackInfo, 4, [(this.trackInfo.bpm/4) * .30, (this.trackInfo.bpm/4) * .10], ["OK","Great!!","Bad"], "bg16");
+    this.beat8 = new BeatObj(trackInfo, 2, [(this.trackInfo.bpm/2) *.3, (this.trackInfo.bpm/2) *.2, (this.trackInfo.bpm/2) * .1], ["OK", "Good!", "Great!!","Bad"], "bg8");
+    this.beat4 = new BeatObj(trackInfo, 1, [this.trackInfo.bpm * .3 , this.trackInfo.bpm *.22, this.trackInfo.bpm *.14, this.trackInfo.bpm *.08], ["OK", "Good!", "Great!!", "PERFECT!!!", "Bad"], "bg4");
     this.measureCount= 1;
     this.nextMeasure = this.durationMeasure;
     this.signal = new Phaser.Signal();
@@ -80,11 +84,8 @@ MusicObj.prototype.update = function(time){
             this.beat32.timeOfBeat = this.theTime;
             this.beat32.currentBeat ++;
             this.beat32.nextBeat = this.theTime + this.beat32.duration;
-            //this.im.ts.indicate(this.beat32.duration);
-            //flash(this.stage.wButton, this.bpm *.01, 1, 2);
 
-            //this.ic.inputOne.beat(this.beat32.duration, this.bpm *.02, 1, 2);
-            //flash(this.ic.inputOne.sprite, this.bpm *.02, 1, 2);
+            this.signal.dispatch(8);
 
             this.hm.update('sixteenth');
 
@@ -93,15 +94,11 @@ MusicObj.prototype.update = function(time){
                 this.beat16.currentBeat ++;
                 this.beat16.nextBeat = this.theTime + this.beat16.duration;
                 this.signal.dispatch(4);
-                //this.im.ss.indicate(this.beat16.duration);
-                //flash(this.stage.upButton, this.bpm *.02, 1, 2);
-                //this.ic.inputTwo.beat(this.beat16.duration, this.bpm *.02, 1, 2);
 
                 if(this.theTime >= this.beat8.nextBeat){
                     this.beat8.timeOfBeat = this.theTime;
                     this.beat8.currentBeat ++;
                     this.beat8.nextBeat = this.theTime + this.beat8.duration;
-                    //this.im.es.indicate(this.beat8.duration);
                     this.signal.dispatch(2);
                     if(this.theTime >= this.beat4.nextBeat){
                         if(this.beat4.currentBeat % 4 == 0){
@@ -111,7 +108,6 @@ MusicObj.prototype.update = function(time){
                         this.beat4.timeOfBeat = this.theTime;
                         this.beat4.currentBeat ++;
                         this.beat4.nextBeat = this.theTime + this.bpm;
-                        //this.im.qs.indicate(this.bpm);
                         this.signal.dispatch(1);
                         tweenTint(this.stage.bgSprite, 0xaa2222,0xcc3300, this.bpm *.5)
                         this.hm.update('quarter');
@@ -128,26 +124,6 @@ MusicObj.prototype.update = function(time){
     //    this.upcomingBeat = this.beatsMS[this.beatsMSCounter]
     //}
 };
-
-function compareTiming(musicTime, goal, qualities, resultNames){
-    myBeatTime = musicTime;
-    difference = Math.abs(goal - myBeatTime);
-
-    this.compareResult = {};
-    this.compareResult.score = 1;
-    this.compareResult.sprite = new BmpText('carrierCommand', resultNames[resultNames.length-1],12);
-    this.compareResult.string = resultNames[resultNames.length-1];
-
-    for (quality in qualities){
-        iterator = quality;
-        if(difference < qualities[iterator]){
-            this.compareResult.sprite = new BmpText('carrierCommand', resultNames[iterator],12);
-            this.compareResult.score ++;
-            this.compareResult.string = resultNames[iterator];
-        }
-    }
-    return this.compareResult;
-}
 
 //MusicObj.prototype.setupMeasure = function(animDuration) {
 //    this.measureGraphics.addMeasure(animDuration, this.trackInfo.measures[this.measureCount-1/*for zero indexing*/]);

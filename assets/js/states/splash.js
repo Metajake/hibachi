@@ -13,7 +13,6 @@ Splash.prototype = {
     },
     loadScripts: function(){
         game.load.script('thegame', 'assets/js/states/thegame.js');
-        game.load.script('music', 'assets/js/music.js');
         game.load.script('hungry', 'assets/js/hungry.js');
         game.load.script('food', 'assets/js/food.js');
         game.load.script('beats', 'assets/js/beats.js');
@@ -25,7 +24,6 @@ Splash.prototype = {
         game.load.audio('carlos', 'assets/mp3/carlos.mp3');
         game.load.audio('rattrap', 'assets/mp3/rattrap.mp3');
         game.load.audio('notype', 'assets/mp3/notype.mp3');
-        game.load.audio('btstu', 'assets/mp3/btstu.mp3');
         game.load.audio('realiti', 'assets/mp3/realiti.mp3');
         game.load.audio('mch', 'assets/mp3/mch.mp3');
     },

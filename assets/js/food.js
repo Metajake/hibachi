@@ -1,6 +1,6 @@
-    function Chef(stage) {
+function Chef(stage) {
     this.stage = stage;
-    this.grill = new Grill();
+    this.grill = new Grill(this.stage);
 }
 
 Chef.prototype = {
@@ -64,18 +64,29 @@ function Food(x,y,name,speed, scale,value, combinationList, stage){
     }
 }
 
-function Grill(){
+function Grill(stage){
+    this.stage = stage;
     this.currentFood = [];
     this.smell = 0; // USE THIS TO EFFECT NEARBY HUNGRY
     this.rep = 0;
+    this.averageTiming = 0;
+    this.timingScores = 0;
+    this.totalHits = 0;
     this.log = {
-        perfect:[],
-        great:[],
-        good:[],
-        ok:[],
-        bad:[],
-        poor:[]
+        perfect:{count:0,string:"Perfect"},
+        great:{count:0,string:"Great"},
+        good:{count:0,string:"Good"},
+        ok:{count:0,string:"Ok"},
+        bad:{count:0,string:"Bad"},
+        poor:{count:0,string:"Poor"}
     };
+    this.repTextShadow = game.add.bitmapText(this.stage.colWidth+2, this.stage.colWidth*3+2, 'carrierCommand', 'Rep:'+ this.rep, 14);
+    this.repTextShadow.tint = 0x000000;
+    this.repText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*3, 'carrierCommand', 'Rep:'+ this.rep, 14);
+    this.averageTextShadow = game.add.bitmapText(this.stage.colWidth+2, this.stage.colWidth*3.5+2, 'carrierCommand', 'Average:'+ this.averageTiming, 14);
+    this.averageTextShadow.tint = 0x000000;
+    this.averageText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*3.5, 'carrierCommand', 'Average:'+ this.averageTiming, 14);
+    this.recentQualities = [];
     this.positions = {
         one: {
             currentFood: undefined,
@@ -105,18 +116,61 @@ function Grill(){
             currentFood: undefined,
             location: [700,420]
         }
-    }
+    };
 }
 
 Grill.prototype = {
-    logResult: function(string){
-        switch(string){
-            case("PERFECT!!!"):
-                this.log.perfect.push("PERFECT!!!");
-        }
+    updateLog: function(score, string){
+        this.timingScores += score;
+        this.totalHits++;
+        this.averageTiming = this.timingScores/ this.totalHits;
+        log(score)
+        log(this.averageTiming);
+        this.averageTextShadow.text = "Average:"+this.averageTiming;
+        this.averageText.text = "Average:"+this.averageTiming;
+
+        this.recentQualities.push(string);
+
+        //switch(string){
+        //    case("PERFECT!!!"):
+        //        this.log.perfect ++;
+        //        break;
+        //    case("Great!!"):
+        //        this.log.great ++;
+        //        break;
+        //    case("Good!"):
+        //        this.log.good ++;
+        //        break;
+        //    case("OK"):
+        //        this.log.ok ++;
+        //        break;
+        //    case("Bad"):
+        //        this.log.bad ++;
+        //        break;
+        //    case("POOR"):
+        //        this.log.poor ++;
+        //
+        //\     break;
+        //};
+        //log(this.log.perfect)
+        //let average = this.log[0].count;
+        //for(score in this.log){
+        //    if(this.log[score].count > this.average){
+        //        this.averageTiming = this.log[score].string;
+        //    }
+        //};
+    },
+    addRep: function(amount){
+        this.rep += amount;
+        this.repTextShadow.text = "Rep:"+this.rep
+        this.repText.text = "Rep:"+this.rep
+    },
+    subtractRep: function(amount){
+        this.rep -= amount;
+        this.repTextShadow.text = "Rep:"+this.rep
+        this.repText.text = "Rep:"+this.rep
     }
 };
-
 
 /*
 function MultiplierFood(name, value, combinationList){
