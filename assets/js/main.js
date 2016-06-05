@@ -13,6 +13,7 @@ Main.prototype = {
         game.load.script('gMeasurements', 'assets/js/gMeasurements.js');
         game.load.script('typography', 'assets/js/typography.js');
         game.load.script('input', 'assets/js/inputConductor.js');
+        game.load.script('sound', 'assets/js/sound.js');
 
         game.load.image('sidewalk', 'assets/img/sidewalk.png');
         game.load.image('logo', 'assets/img/logo.png');
@@ -20,10 +21,9 @@ Main.prototype = {
         game.load.image('circle', 'assets/img/greyElipse.png');
         game.load.image('iconTrick', 'assets/img/iconTrickKnife.png');
         game.load.image('iconBaseFood', 'assets/img/iconBaseFood.png');
-        game.load.image('bg4', 'assets/img/bg4.png');
-        game.load.image('bg8', 'assets/img/bg8.png');
-        game.load.image('bg16', 'assets/img/bg16.png');
         game.load.image('buttonW', 'assets/img/buttonW.png');
+        game.load.image('buttonD', 'assets/img/buttonD.png');
+        game.load.image('buttonUP', 'assets/img/buttonUP.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
         game.load.spritesheet('chef', 'assets/img/chef.png', 48,48);

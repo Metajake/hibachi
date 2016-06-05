@@ -39,7 +39,8 @@ Game.prototype = {
 
         this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
-        this.musicObj.signal.add(this.ic.beat, this.ic);
+        this.musicObj.signalBeat.add(this.ic.beat, this.ic);
+        this.musicObj.signalInput.add(this.ic.hit, this.ic);
 
     },
     startRhythm: function(){
@@ -83,6 +84,8 @@ Game.prototype = {
         //game.debug.geom(this.stage.p2);
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
+
+        //game.debug.text("Grill Successful Hits: "+this.chef.grill.log.successfulHits, 32, 32*3)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

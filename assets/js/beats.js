@@ -1,22 +1,32 @@
 function compareTiming(musicTime, goal, qualities, resultNames){
+    //--Determine comparison difference
     myBeatTime = musicTime;
     difference = Math.abs(goal - myBeatTime);
 
+    //--Set base result values
     this.compareResult = {};
     this.compareResult.score = 1;
     this.compareResult.sprite = new BmpText('carrierCommand', resultNames[resultNames.length-1],12);
     this.compareResult.string = resultNames[resultNames.length-1];
+    this.compareResult.success = false;
 
-    for (quality in qualities){
+    //--set text sprite, score, and string depending on compare difference
+    for (quality in qualities) {
         iterator = quality;
-        if(difference < qualities[iterator]){
-            this.compareResult.sprite = new BmpText('carrierCommand', resultNames[iterator],12);
-            this.compareResult.score ++;
+        if (difference < qualities[iterator]) {
+            this.compareResult.sprite = new BmpText('carrierCommand', resultNames[iterator], 12);
+            this.compareResult.score++;
             this.compareResult.string = resultNames[iterator];
         }
     }
 
-    if(this.compareResult.string)
+    //--Declare hit successful if result in list of top three results
+    if(["Good!", "Great!!", "PERFECT!!!"].indexOf(this.compareResult.string) !== -1){
+        this.compareResult.success = true
+    }
+
+    //--Determine Average result depending on timing and length of qualities
+    this.compareResult.average = this.compareResult.score / resultNames.length;
     return this.compareResult;
 }
 
@@ -52,7 +62,8 @@ MusicObj = function(trackInfo, stage, im, hm, time, inputConductor){
     this.beat4 = new BeatObj(trackInfo, 1, [this.trackInfo.bpm * .3 , this.trackInfo.bpm *.22, this.trackInfo.bpm *.14, this.trackInfo.bpm *.08], ["OK", "Good!", "Great!!", "PERFECT!!!", "Bad"], "bg4");
     this.measureCount= 1;
     this.nextMeasure = this.durationMeasure;
-    this.signal = new Phaser.Signal();
+    this.signalBeat = new Phaser.Signal();
+    this.signalInput = new Phaser.Signal();
 
     //TEMP. REMOVED this.beatsMS = currentTrackInfo.beatsMS; // Expected Beats (based off audacity beat detector)
     //TEMP. REMOVED this.upcomingBeat = this.beatsMS[this.beatsMSCounter];
@@ -67,25 +78,30 @@ MusicObj.prototype.update = function(time){
         if (this.theTime >= this.beat32.declareHitGoal) {
             this.beat32.declareHitGoal = this.beat32.nextBeat + this.beat32.qualityNumbers[0];
             this.beat32.hitGoal = this.beat32.nextBeat;
+            this.signalInput.dispatch(8);
         }
         if (this.theTime >= this.beat16.declareHitGoal) {
             this.beat16.declareHitGoal = this.beat16.nextBeat + this.beat16.qualityNumbers[0];
             this.beat16.hitGoal = this.beat16.nextBeat;
+            this.signalInput.dispatch(4);
         }
         if (this.theTime >= this.beat8.declareHitGoal) {
             this.beat8.declareHitGoal = this.beat8.nextBeat + this.beat8.qualityNumbers[0];
             this.beat8.hitGoal = this.beat8.nextBeat;
+            this.signalInput.dispatch(2);
         }
         if (this.theTime >= this.beat4.declareHitGoal) {
             this.beat4.declareHitGoal = this.beat4.nextBeat + this.beat4.qualityNumbers[0];
             this.beat4.hitGoal = this.beat4.nextBeat;
+            this.signalInput.dispatch(1);
         }
+
         if(this.theTime >= this.beat32.nextBeat){
             this.beat32.timeOfBeat = this.theTime;
             this.beat32.currentBeat ++;
             this.beat32.nextBeat = this.theTime + this.beat32.duration;
 
-            this.signal.dispatch(8);
+            this.signalBeat.dispatch(8);
 
             this.hm.update('sixteenth');
 
@@ -93,13 +109,13 @@ MusicObj.prototype.update = function(time){
                 this.beat16.timeOfBeat = this.theTime;
                 this.beat16.currentBeat ++;
                 this.beat16.nextBeat = this.theTime + this.beat16.duration;
-                this.signal.dispatch(4);
+                this.signalBeat.dispatch(4);
 
                 if(this.theTime >= this.beat8.nextBeat){
                     this.beat8.timeOfBeat = this.theTime;
                     this.beat8.currentBeat ++;
                     this.beat8.nextBeat = this.theTime + this.beat8.duration;
-                    this.signal.dispatch(2);
+                    this.signalBeat.dispatch(2);
                     if(this.theTime >= this.beat4.nextBeat){
                         if(this.beat4.currentBeat % 4 == 0){
                             //this.setupMeasure(this.trackInfo.bpm*8);
@@ -108,7 +124,7 @@ MusicObj.prototype.update = function(time){
                         this.beat4.timeOfBeat = this.theTime;
                         this.beat4.currentBeat ++;
                         this.beat4.nextBeat = this.theTime + this.bpm;
-                        this.signal.dispatch(1);
+                        this.signalBeat.dispatch(1);
                         tweenTint(this.stage.bgSprite, 0xaa2222,0xcc3300, this.bpm *.5)
                         this.hm.update('quarter');
                     }

@@ -12,11 +12,9 @@ Chef.prototype = {
                 break;
             }
         }
-        log("next open grill spot: "+ this.number);
         return this.number;
     },
     addFood: function(name,speed, scale, value, combinationList){
-        log("Chef adding food to..");
         this.number = this.checkGrill();
         if(this.number !== undefined){
             addedFood = new Food(this.grill.positions[this.number].location[0], this.grill.positions[this.number ].location[1], name, speed, scale, value, combinationList, this.stage);
@@ -68,25 +66,22 @@ function Grill(stage){
     this.stage = stage;
     this.currentFood = [];
     this.smell = 0; // USE THIS TO EFFECT NEARBY HUNGRY
-    this.rep = 0;
+    this.rep = 0; // Effect number of hungry
     this.averageTiming = 0;
-    this.timingScores = 0;
     this.totalHits = 0;
     this.log = {
-        perfect:{count:0,string:"Perfect"},
-        great:{count:0,string:"Great"},
-        good:{count:0,string:"Good"},
-        ok:{count:0,string:"Ok"},
-        bad:{count:0,string:"Bad"},
-        poor:{count:0,string:"Poor"}
+        successfulHits:0,
+        trickHitAmounts: [],
+        trickHitAverage: 0,
+        hitList: [],
     };
     this.repTextShadow = game.add.bitmapText(this.stage.colWidth+2, this.stage.colWidth*3+2, 'carrierCommand', 'Rep:'+ this.rep, 14);
     this.repTextShadow.tint = 0x000000;
     this.repText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*3, 'carrierCommand', 'Rep:'+ this.rep, 14);
-    this.averageTextShadow = game.add.bitmapText(this.stage.colWidth+2, this.stage.colWidth*3.5+2, 'carrierCommand', 'Average:'+ this.averageTiming, 14);
-    this.averageTextShadow.tint = 0x000000;
-    this.averageText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*3.5, 'carrierCommand', 'Average:'+ this.averageTiming, 14);
-    this.recentQualities = [];
+    this.successTextShadow = game.add.bitmapText(this.stage.colWidth+2, this.stage.colWidth*3.5+2, 'carrierCommand', 'Successful Hit Count:'+ this.log.successfulHits, 14);
+    this.successTextShadow.tint = 0x000000;
+    this.successText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*3.5, 'carrierCommand', 'Successful Hit Count:'+ this.log.successfulHits, 14);
+    this.hitListText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*4, 'carrierCommand', 'Recent Hits:'+ this.log.hitList.slice(Math.max(this.log.hitList.length - 4, 0)), 10);
     this.positions = {
         one: {
             currentFood: undefined,
@@ -120,45 +115,21 @@ function Grill(stage){
 }
 
 Grill.prototype = {
-    updateLog: function(score, string){
-        this.timingScores += score;
+    updateLog: function(result, type){
         this.totalHits++;
-        this.averageTiming = this.timingScores/ this.totalHits;
-        log(score)
-        log(this.averageTiming);
-        this.averageTextShadow.text = "Average:"+this.averageTiming;
-        this.averageText.text = "Average:"+this.averageTiming;
 
-        this.recentQualities.push(string);
+        if(result.success == true){this.log.successfulHits ++};
+        this.successTextShadow.text = 'Successful Hits:'+ this.log.successfulHits;
+        this.successText.text = 'Successful Hits:'+ this.log.successfulHits;
 
-        //switch(string){
-        //    case("PERFECT!!!"):
-        //        this.log.perfect ++;
-        //        break;
-        //    case("Great!!"):
-        //        this.log.great ++;
-        //        break;
-        //    case("Good!"):
-        //        this.log.good ++;
-        //        break;
-        //    case("OK"):
-        //        this.log.ok ++;
-        //        break;
-        //    case("Bad"):
-        //        this.log.bad ++;
-        //        break;
-        //    case("POOR"):
-        //        this.log.poor ++;
-        //
-        //\     break;
-        //};
-        //log(this.log.perfect)
-        //let average = this.log[0].count;
-        //for(score in this.log){
-        //    if(this.log[score].count > this.average){
-        //        this.averageTiming = this.log[score].string;
-        //    }
-        //};
+        this.log.hitList.push(result.string);
+        this.hitListText.text = 'Recent Hits:'+ this.log.hitList.slice(Math.max(this.log.hitList.length - 4, 0));
+
+        if(type == "iconTrick"){
+            //this.log.trickHitList.push(result.string);
+            this.log.trickHitAmounts.push(result.average);
+            this.log.trickHitAverage = this.log.trickHitAmounts.slice(Math.max(this.log.trickHitAmounts.length - 4, 0)).reduce(function(a,b){return a+b}, 0) / this.log.trickHitAmounts.slice(Math.max(this.log.trickHitAmounts.length - 4, 0)).length;
+        }
     },
     addRep: function(amount){
         this.rep += amount;

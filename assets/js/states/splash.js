@@ -16,7 +16,6 @@ Splash.prototype = {
         game.load.script('hungry', 'assets/js/hungry.js');
         game.load.script('food', 'assets/js/food.js');
         game.load.script('beats', 'assets/js/beats.js');
-        game.load.script('sound', 'assets/js/sound.js');
         game.load.script('analyser', 'assets/js/vendor/soundAnalyse.js');
     },
     loadBgm: function(){
@@ -38,14 +37,14 @@ Splash.prototype = {
 
     },
     createControls: function(){
-        controls.W = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        controls.W = {control:game.input.keyboard.addKey(Phaser.Keyboard.W),key:"buttonW"};
         controls.A = game.input.keyboard.addKey(Phaser.Keyboard.A);
         controls.S = game.input.keyboard.addKey(Phaser.Keyboard.S);
-        controls.D = game.input.keyboard.addKey(Phaser.Keyboard.D);
+        controls.D = {control:game.input.keyboard.addKey(Phaser.Keyboard.D),key:"buttonD"};
         controls.E = game.input.keyboard.addKey(Phaser.Keyboard.E);
         //DONT STEAL R FROM BROWSER controls.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
         controls.G = game.input.keyboard.addKey(Phaser.Keyboard.G);
-        controls.UP = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        controls.UP = {control:game.input.keyboard.addKey(Phaser.Keyboard.UP),key:"buttonUP"};
         controls.LEFT = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         controls.RIGHT = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         controls.DOWN = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
@@ -54,8 +53,8 @@ Splash.prototype = {
         controls.P = game.input.keyboard.addKey(Phaser.Keyboard.P);
 
         controls.P.onUp.add(gofull)
-        controls.W.onDown.addOnce(function(){game.state.start('Game');});
-        controls.UP.onDown.addOnce(function(){game.state.start('Game');});
+        controls.W.control.onDown.addOnce(function(){game.state.start('Game');});
+        controls.UP.control.onDown.addOnce(function(){game.state.start('Game');});
     },
     preload: function(){
         this.sky = gradient_bg(0x0D51a8, 0xe7a36E);
