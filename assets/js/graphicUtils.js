@@ -37,10 +37,14 @@ function BmpCirc(x, y, size, color, toSprite){
 }
 
 function ModSprite(x,y,key,hash){
+    //!--This one first
     if(typeof(hash.make) !== 'undefined'){
         this.sprite = game.make.sprite(x,y,key);
     }else{
         this.sprite = game.add.sprite(x,y,key);
+    }
+    if(typeof(hash.rotation) !== 'undefined'){
+        this.sprite.rotation = hash.rotation*(Math.PI/180);
     }
     if(typeof(hash.scale) !== "undefined"){
         this.sprite.smoothed = false;

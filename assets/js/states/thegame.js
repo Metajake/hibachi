@@ -2,16 +2,19 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
-        this.trackInfo = tracks.btstu;
+        this.trackInfo = tracks.yamborghini;
         music.bgm.stop();
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
-        this.SPACE = controls.SPACE.onDown.add(pause_game, this);
-        this.G = controls.G.onDown.add(step_game);
-        this.P = controls.P.onUp.add(gofull)
+    },
+    loadControls: function(){
+        this.SPACE = controls.SPACE.control.onDown.add(pause_game, this);
+        this.G = controls.G.control.onDown.add(step_game);
+        this.P = controls.P.control.onUp.add(gofull)
     },
     loadAudio: function(){
         music.bgm = game.add.audio(this.trackInfo.name);
         music.bgm.volume = this.trackInfo.volume;
+        //music.bgm.volume = 0.2;
         music.bgm.onStop.add(function(){game.playing = false;});
 
         this.sm = new SoundManager();
@@ -34,13 +37,12 @@ Game.prototype = {
         //circle.anchor.setTo(0.5,0.5)
         //circle.tint = 0xff0000
 
-
-        this.musicObj = new MusicObj(this.trackInfo, this.stage, this.im, this.hm,  music.bgm.currentTime, this.ic);
+        this.musicObj = new MusicObj(this.trackInfo, this.stage, this.im, this.hm,  music.bgm.currentTime, this.ic, this.chef);
 
         this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
         this.musicObj.signalBeat.add(this.ic.beat, this.ic);
-        this.musicObj.signalInput.add(this.ic.hit, this.ic);
+        this.musicObj.signalInput.add(this.ic.canHit, this.ic);
 
     },
     startRhythm: function(){
@@ -58,6 +60,7 @@ Game.prototype = {
         //},this);
     },
     preload: function(){
+        this.loadControls();
         this.loadAudio();
     },
     create: function(){
@@ -85,7 +88,7 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        //game.debug.text("Grill Successful Hits: "+this.chef.grill.log.successfulHits, 32, 32*3)
+        //game.debug.text("Grill Grill: "+this.chef.grill.positions.currentFood. - this.chef.grill.positions.one.cooked, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

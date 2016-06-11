@@ -38,21 +38,21 @@ Splash.prototype = {
     },
     createControls: function(){
         controls.W = {control:game.input.keyboard.addKey(Phaser.Keyboard.W),key:"buttonW"};
-        controls.A = game.input.keyboard.addKey(Phaser.Keyboard.A);
-        controls.S = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        controls.A = {control:game.input.keyboard.addKey(Phaser.Keyboard.A),key:"buttonA"};
+        controls.S = {control:game.input.keyboard.addKey(Phaser.Keyboard.S),key:"buttonS"};
         controls.D = {control:game.input.keyboard.addKey(Phaser.Keyboard.D),key:"buttonD"};
-        controls.E = game.input.keyboard.addKey(Phaser.Keyboard.E);
+        controls.E = {control:game.input.keyboard.addKey(Phaser.Keyboard.E),key:"buttonE"};
         //DONT STEAL R FROM BROWSER controls.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
-        controls.G = game.input.keyboard.addKey(Phaser.Keyboard.G);
+        controls.G = {control:game.input.keyboard.addKey(Phaser.Keyboard.G),key:"buttonG"};
         controls.UP = {control:game.input.keyboard.addKey(Phaser.Keyboard.UP),key:"buttonUP"};
-        controls.LEFT = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-        controls.RIGHT = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-        controls.DOWN = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-        controls.SPACE = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        controls.F = game.input.keyboard.addKey(Phaser.Keyboard.F);
-        controls.P = game.input.keyboard.addKey(Phaser.Keyboard.P);
+        controls.LEFT = {control:game.input.keyboard.addKey(Phaser.Keyboard.LEFT),key:"buttonLEFT"};
+        //controls.RIGHT = {control:game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),key:"buttonRIGHT"};
+        controls.DOWN = {control:game.input.keyboard.addKey(Phaser.Keyboard.DOWN),key:"buttonDOWN"};
+        controls.SPACE = {control:game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),key:"buttonSPACE"};
+        controls.F = {control:game.input.keyboard.addKey(Phaser.Keyboard.F),key:"buttonF"};
+        controls.P = {control:game.input.keyboard.addKey(Phaser.Keyboard.P),key:"buttonP"};
 
-        controls.P.onUp.add(gofull)
+        controls.P.control.onUp.add(gofull);
         controls.W.control.onDown.addOnce(function(){game.state.start('Game');});
         controls.UP.control.onDown.addOnce(function(){game.state.start('Game');});
     },

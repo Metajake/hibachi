@@ -44,7 +44,7 @@ BeatObj = function(trackInfo, division, qualityNumbers, qualityNames, bgKey){
     this.declareHitGoal = this.hitGoal + this.qualityNumbers[0];
 };
 
-MusicObj = function(trackInfo, stage, im, hm, time, inputConductor){
+MusicObj = function(trackInfo, stage, im, hm, time, inputConductor, chef){
     this.trackInfo = trackInfo;
     this.theTime = time - this.trackInfo.delay;
     this.stage = stage;
@@ -52,6 +52,7 @@ MusicObj = function(trackInfo, stage, im, hm, time, inputConductor){
     this.im = im;
     this.hm = hm;
     this.ic = inputConductor;
+    this.chef = chef;
     this.bpm = trackInfo.bpm;
     this.duration = trackInfo.durationMS;
     this.durationMeasure = this.bpm*4;
@@ -104,6 +105,9 @@ MusicObj.prototype.update = function(time){
             this.signalBeat.dispatch(8);
 
             this.hm.update('sixteenth');
+
+            // UPDATE - Increase cook time of Chef's Grill's current food
+            this.chef.grill.cook()
 
             if(this.theTime >= this.beat16.nextBeat){
                 this.beat16.timeOfBeat = this.theTime;

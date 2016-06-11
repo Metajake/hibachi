@@ -21,9 +21,12 @@ Main.prototype = {
         game.load.image('circle', 'assets/img/greyElipse.png');
         game.load.image('iconTrick', 'assets/img/iconTrickKnife.png');
         game.load.image('iconBaseFood', 'assets/img/iconBaseFood.png');
+        game.load.image('iconServe', 'assets/img/iconServe.png');
+        game.load.image('iconAdvancedTrick', 'assets/img/iconAdvancedTrick.png');
         game.load.image('buttonW', 'assets/img/buttonW.png');
         game.load.image('buttonD', 'assets/img/buttonD.png');
         game.load.image('buttonUP', 'assets/img/buttonUP.png');
+        game.load.image('buttonLEFT', 'assets/img/buttonLEFT.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
         game.load.spritesheet('chef', 'assets/img/chef.png', 48,48);
@@ -36,6 +39,7 @@ Main.prototype = {
         game.load.audio('enter', 'assets/mp3/enterTheNinja.mp3');
         game.load.audio('work', 'assets/mp3/work.mp3');
         game.load.audio('btstu', 'assets/mp3/btstu.mp3');
+        game.load.audio('yamborghini', 'assets/mp3/yamborghini.mp3');
 
         game.load.audio('shking_soft_short1', 'assets/mp3/effects/shking_soft_short1.mp3');
         game.load.audio('sharpen_long1', 'assets/mp3/effects/sharpen_long1.mp3');
