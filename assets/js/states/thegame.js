@@ -42,7 +42,7 @@ Game.prototype = {
         this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
         this.musicObj.signalBeat.add(this.ic.beat, this.ic);
-        this.musicObj.signalInput.add(this.ic.canHit, this.ic);
+        this.musicObj.signalInput.add(this.ic.makeAllHittable, this.ic);
 
     },
     startRhythm: function(){
@@ -72,6 +72,7 @@ Game.prototype = {
     },
     update: function(){
         this.musicObj.update(music.bgm.currentTime);
+        this.ic.update();
 
         if(game.playing == false){
             game.state.start('splash');
@@ -88,7 +89,7 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        //game.debug.text("Grill Grill: "+this.chef.grill.positions.currentFood. - this.chef.grill.positions.one.cooked, 32, 32*3.5)
+        //game.debug.text("input four enabled: "+this.ic.inputs.four.input.control.enabled, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

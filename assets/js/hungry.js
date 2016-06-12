@@ -11,14 +11,15 @@ function HungryManager(stage, chef){
 HungryManager.prototype = {
     update: function(beatType){
         if(beatType == 'quarter'){
-            this.checkForHungry();
+            //--Check and Add new Hungry customer
+            this.checkAddHungry();
+            //--Step forward each Hungry (Walks forward, Increase Impatience, Leave Grill if Impatience threshold reached
             for(hungry in this.hungerCount){
-                //log("dude: "+ hungry+ "hunger count: "+ this.hungerCount[hungry].fedCount);
                 step(this.hungerCount[hungry], hungry)
             }
-        } else { return }
+        }
     },
-    checkForHungry: function() {
+    checkAddHungry: function() {
         if (Object.keys(this.hungerCount).length < 5) {
             this.addHungry();
         }
@@ -49,23 +50,22 @@ HungryManager.prototype = {
 };
 
 HungryManager.prototype.addHungry = function(){
-    this.hungry = new Hungry(this, this.startingPoint, this.endingPoint, this.stage);
+    this.hungry = new Hungry(this, this.startingPoint, this.endingPoint, this.stage, this.totalCustomers);
     this.hungerCount[this.totalCustomers] = this.hungry;
     this.totalCustomers ++;
     return this.hungry;
 };
 
-function Hungry(manager, originX, endX, stage){
+function Hungry(manager, originX, endX, stage, index){
     this.manager = manager;
-    this.animSprite = new AnimSprite(originX,510,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
+    this.animSprite = new AnimSprite(originX,515,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
     this.animSprite.walk = this.animSprite.sprite.animations.add('walk', [0,1,2,3,4]);
     this.destination = endX;
     this.waiting = false;
+    this.index = index;
     this.tolerance = 50 + (randInt(3)*50);
     this.hunger = 0;
-    this.readyToEat = false;
     this.impatience = 0;
-    this.fedCount = 0;
     this.ammused = 0;
     this.dissappointed = false;
 }
@@ -87,31 +87,30 @@ Hungry.prototype = {
             default:
                 multiplier = 1;
         }
-        this.impatience -= feedAmount * multiplier;
-        this.fedCount += 1;
+        //!!!!! TO BE REPLACED WITH "appeased" function when doing Tricks
+        //this.impatience -= feedAmount * multiplier;
+        this.manager.chef.grill.rep += 10;
+        // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()
+        this.animSprite.sprite.kill();
+        this.manager.removeItem(this.index);
     }
 };
 
 function step(hungry, index){
-    if (hungry.fedCount >= 10) {
-        hungry.manager.chef.grill.rep += 10;
-        // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()
-        hungry.animSprite.sprite.kill();
-        hungry.manager.removeItem(index);
-        return
-    }
     currentX = hungry.animSprite.sprite.position.x;
     if (hungry.animSprite.sprite.position.x > hungry.destination) {
         //music.bgm.stop();
         //game.state.start('splash');
         hungry.moveLeft = game.add.tween(hungry.animSprite.sprite);
         hungry.moveLeft.to({x:currentX-100},1000,Phaser.Easing.Linear.None);
-        hungry.moveLeft.onComplete.add(function(){hungry.animSprite.idle.play()},this); //TROUBLE LINE (with KILL/DESTROY)
+        hungry.moveLeft.onComplete.add(function(){
+            hungry.animSprite.idle.play();
+            if(hungry.animSprite.sprite.position.x <= hungry.destination){hungry.waiting = true;}
+        },this); //TROUBLE LINE (with KILL/DESTROY)
         hungry.moveLeft.start();
         hungry.animSprite.walk.play(4,true);
 
     } else{
-        hungry.waiting = true;
         hungry.impatience += 20;
         if(hungry.impatience > hungry.tolerance){
             hungry.manager.chef.grill.rep -= 10;

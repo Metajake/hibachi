@@ -6,10 +6,10 @@ function InputConductor(stage,chef, hm, mu, sm, tm){
     this.sm = sm;
     this.tm = tm;
     this.inputs = {
-        one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm, true),
+        one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm, /*is interval*/true),
         two:new InputEnsemble("iconAdvancedTrick", this.stage.colWidth*7, this.stage.colWidth*9, 50, controls.D, this, this.mu.beat16, this.tm),
         three: new InputEnsemble("iconTrick", this.stage.colWidth*8.5, this.stage.colWidth*9, 50, controls.LEFT, this, this.mu.beat32, this.tm, true),
-        four:new InputEnsemble("iconServe", this.stage.colWidth*10, this.stage.colWidth*8.25, 100, controls.UP, this, this.mu.beat4, this.tm, true),
+        four:new InputEnsemble("iconServe", this.stage.colWidth*10, this.stage.colWidth*8.25, 100, controls.UP, this, this.mu.beat4, this.tm, false, /*is disabled*/true),
         five:{},
         six:{},
         seven:{},
@@ -20,7 +20,7 @@ function InputConductor(stage,chef, hm, mu, sm, tm){
 };
 
 InputConductor.prototype = {
-    action: function(goal, qualityNumbers, qualityNames, location, type){
+    action: function(goal, qualityNumbers, qualityNames, location, type, input, isInterval){
         //--Get Quality of Input Timing
         this.qualityResult = compareTiming(this.mu.theTime, goal, qualityNumbers, qualityNames, type);
 
@@ -37,29 +37,28 @@ InputConductor.prototype = {
         //    this.inputs.two = new InputEnsemble("iconBaseFood", this.stage.colWidth*8, this.stage.colWidth*8.75, 80, controls.UP, this, this.mu.beat4, this.tm);
         //}
 
-        //--Add food if grill is not full, Serve food
-        if(type == "iconBaseFood") {
-            this.chef.addFood(/*name*/"noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2,/*combo-list*/ ["shortcake"], /*isCooked*/100);
-        }else if(type == "iconServe"){
-            this.chef.serveFood()
-        }
-
         //--Get Hungriest customer
         this.hungerCountPos = this.hm.checkHungriest();
+
+        //--Check Type (add food, trick, serve food, etc.)
+        if(type == "iconBaseFood") {
+            //--Add Food to grill
+            this.chef.addFood("noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2, ["shortcake"], /*isCooked*/100);
+        }else if(type == "iconServe"){
+            //--Serve Food
+            this.foodAmount = this.chef.serveFood();
+            //--Feed Hungry
+            this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
+        }
 
         //--Updage Grill Log
         this.chef.grill.updateLog(this.qualityResult, type);
 
-        //--Feed Hungry (depending on input timing quality)
-        //if(this.qualityResult.score > 0){
-        if(this.hm.hungerCount[this.hungerCountPos] !== undefined){
-            this.hm.hungerCount[this.hungerCountPos].feed(15, this.qualityResult.score);
-        }
-        //} else{this.chef.grill.subtractRep(1);}
-
         //--Update Grill Rep
         this.chef.grill.addRep(this.qualityResult.score);
 
+        //--Set canHit to false if this is an "interval" note
+        if(isInterval == true){input.canHit = false;};
         return this.qualityResult
     },
     beat: function(type){
@@ -77,11 +76,22 @@ InputConductor.prototype = {
         //    this.removeEnsemble("three")
         //}
     },
-    canHit: function(type){
+    makeAllHittable: function(type){
         for (input in this.inputs){
             if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == type){
                 this.inputs[input].canHit = true;
             }
+        }
+    },
+    update: function(){
+        for(hungry in this.hm.hungerCount){
+            if(this.hm.hungerCount[hungry].waiting == true && this.chef.grill.containsFood == true){
+                this.inputs.four.control.enabled = true;
+                break;
+            }else{
+                this.inputs.four.control.enabled = false;
+                break;
+            };
         }
     },
     updateEnsemble: function(input, type, x, y, distance, control, beatObj){
@@ -100,7 +110,7 @@ InputConductor.prototype = {
     }
 };
 
-function InputEnsemble(type, x, y, distance, input, parent, beat, tm, canHitMaster){
+function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval, isDisabled){
     this.x = x;
     this.y = y;
     this.type = type;
@@ -115,20 +125,16 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, canHitMast
     this.graphics = game.add.graphics(0,0);
     this.graphics.lineStyle(4, 0x00ff00);
     this.comboCount = 0;
-    if(typeof(canHitMaster)!== "undefined"){
-        this.input = input.control.onDown.add(function(){
-            if(this.canHit == true){
-                this.hitResult = parent.action(this.beatObj.hitGoal, this.beatObj.qualityNumbers, this.beatObj.qualityNames, [this.x, this.y+25], this.type);
-                this.hit(this.hitResult)
-                this.canHit = false;
-            }
-        }, this);
-    }else{
-        this.input = input.control.onDown.add(function(){
-            this.hitResult = parent.action(this.beatObj.hitGoal, this.beatObj.qualityNumbers, this.beatObj.qualityNames, [this.x, this.y+25], this.type);
-            this.hit(this.hitResult)
-        }, this);
-    }
+    this.control = input.control;
+    if(typeof(isDisabled) !== 'undefined'){this.control.enabled = false}
+    this.input = input.control.onDown.add(function(){
+        //!!! I might be able to reduce this to just "this.control.disabled" eventually.
+        if(this.canHit == true){
+            this.hitResult = parent.action(this.beatObj.hitGoal, this.beatObj.qualityNumbers, this.beatObj.qualityNames, [this.x, this.y+25], this.type, this, isInterval);
+            //!!!!THIS ISN"T DOING ANYTHING RIGHT NOW, I THINK IT"S FOR POINTS
+            // this.hit(this.hitResult)
+        }
+    }, this);
     game.world.bringToTop(tm.resultIndicator.indicators);
 }
 

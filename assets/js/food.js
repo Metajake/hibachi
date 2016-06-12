@@ -6,9 +6,8 @@ function Chef(stage) {
 }
 
 Chef.prototype = {
-    checkGrill: function(){
+    checkOpenPosition: function(){
         this.number = undefined;
-        log(this.grill.positions)
         for(food in this.grill.positions){
             if(this.grill.positions[food].currentFood == undefined){
                 this.number = food;
@@ -18,7 +17,7 @@ Chef.prototype = {
         return this.number;
     },
     addFood: function(name,speed, scale, value, combinationList, isCooked){
-        this.openPosition = this.checkGrill();
+        this.openPosition = this.checkOpenPosition();
         if(this.openPosition !== undefined){
             addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked);
             //foodId = 'id_'+this.foodCount;
@@ -28,12 +27,7 @@ Chef.prototype = {
             this.grill.positions[this.openPosition].currentFoodName = addedFood.name;
         }
 
-        //if (this.grill.currentFood.indexOf(name) !== -1) {} else {
-        //    food = new Food(x, y, name, speed, scale, value, combinationList, this.stage);
-        //    this.grill.currentFood.push(food.name);
-        //}
-
-        //log("The Grill contains: "+this.grill.currentFood);
+        this.grill.containsFood = true;
     },
     checkDone: function(){
         this.position = undefined;
@@ -62,12 +56,23 @@ Chef.prototype = {
         return this.position
     },
     serveFood: function(){
+        this.foodAmount = 0;
+        //--determine food closest to it's cooked time
         mostCookedFood = this.checkDone();
+        //--serve, and remove food from grill if there is one
         if(mostCookedFood !== undefined){
+            this.foodAmount = this.grill.positions[mostCookedFood].currentFood.value;
             this.grill.positions[mostCookedFood].currentFood.animSprite.sprite.kill();
             delete this.grill.positions[mostCookedFood].currentFood;
             this.grill.positions[mostCookedFood].currentFoodName = undefined;
         }
+        for(position in this.grill.positions){
+            if(this.grill.positions[position].currentFoodName !== undefined){
+                this.grill.containsFood = true;
+                break;
+            }else{this.grill.containsFood = false;}
+        }
+        return this.foodAmount
     }
 };
 
@@ -118,6 +123,7 @@ function Grill(stage){
     this.rep = 0; // Effect number of hungry
     this.averageTiming = 0;
     this.totalHits = 0;
+    this.containsFood = false;
     this.log = {
         successfulHits:0,
         trickHitAmounts: [],
