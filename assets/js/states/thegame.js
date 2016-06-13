@@ -2,7 +2,7 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
-        this.trackInfo = tracks.yamborghini;
+        this.trackInfo = tracks.enter;
         music.bgm.stop();
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
     },

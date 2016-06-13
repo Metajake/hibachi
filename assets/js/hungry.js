@@ -46,19 +46,19 @@ HungryManager.prototype = {
         } else {
             this.hungerCount.splice(key, 1)
         }
+    },
+    addHungry: function(){
+        this.hungry = new Hungry(this, this.startingPoint, this.endingPoint, this.stage, this.totalCustomers);
+        this.hungerCount[this.totalCustomers] = this.hungry;
+        this.totalCustomers ++;
+        return this.hungry;
     }
-};
-
-HungryManager.prototype.addHungry = function(){
-    this.hungry = new Hungry(this, this.startingPoint, this.endingPoint, this.stage, this.totalCustomers);
-    this.hungerCount[this.totalCustomers] = this.hungry;
-    this.totalCustomers ++;
-    return this.hungry;
 };
 
 function Hungry(manager, originX, endX, stage, index){
     this.manager = manager;
     this.animSprite = new AnimSprite(originX,515,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
+    this.midSprite = new ModSprite(stage.colWidth*game.rnd.integerInRange(7,12),30,"hungryMid",{static:1,scale:[2.65,2.65],make:true,mask:stage.cropRectB});
     this.animSprite.walk = this.animSprite.sprite.animations.add('walk', [0,1,2,3,4]);
     this.destination = endX;
     this.waiting = false;
@@ -92,6 +92,7 @@ Hungry.prototype = {
         this.manager.chef.grill.rep += 10;
         // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()
         this.animSprite.sprite.kill();
+        this.midSprite.destroy();
         this.manager.removeItem(this.index);
     }
 };
@@ -105,7 +106,10 @@ function step(hungry, index){
         hungry.moveLeft.to({x:currentX-100},1000,Phaser.Easing.Linear.None);
         hungry.moveLeft.onComplete.add(function(){
             hungry.animSprite.idle.play();
-            if(hungry.animSprite.sprite.position.x <= hungry.destination){hungry.waiting = true;}
+            if(hungry.animSprite.sprite.position.x <= hungry.destination){
+                hungry.waiting = true;
+                game.add.existing(hungry.midSprite);
+            }
         },this); //TROUBLE LINE (with KILL/DESTROY)
         hungry.moveLeft.start();
         hungry.animSprite.walk.play(4,true);
@@ -115,6 +119,7 @@ function step(hungry, index){
         if(hungry.impatience > hungry.tolerance){
             hungry.manager.chef.grill.rep -= 10;
             // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()
+            hungry.midSprite.destroy();
             hungry.animSprite.sprite.kill();
             hungry.manager.removeItem(index);
         }

@@ -3,6 +3,7 @@ function Chef(stage) {
     this.grill = new Grill(this.stage);
     this.food = {};
     this.foodCount = 0;
+    this.sprite = new AnimSprite(40,5, "chef",[0,1],[0,1],1,3,this.stage.cropRectA);
 }
 
 Chef.prototype = {

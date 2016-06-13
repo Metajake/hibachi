@@ -6,9 +6,9 @@ function InputConductor(stage,chef, hm, mu, sm, tm){
     this.sm = sm;
     this.tm = tm;
     this.inputs = {
-        one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm, /*is interval*/true),
+        one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm),
         two:new InputEnsemble("iconAdvancedTrick", this.stage.colWidth*7, this.stage.colWidth*9, 50, controls.D, this, this.mu.beat16, this.tm),
-        three: new InputEnsemble("iconTrick", this.stage.colWidth*8.5, this.stage.colWidth*9, 50, controls.LEFT, this, this.mu.beat32, this.tm, true),
+        three: new InputEnsemble("iconTrick", this.stage.colWidth*8.5, this.stage.colWidth*9, 50, controls.LEFT, this, this.mu.beat32, this.tm, /*is interval*/true),
         four:new InputEnsemble("iconServe", this.stage.colWidth*10, this.stage.colWidth*8.25, 100, controls.UP, this, this.mu.beat4, this.tm, false, /*is disabled*/true),
         five:{},
         six:{},
@@ -48,7 +48,9 @@ InputConductor.prototype = {
             //--Serve Food
             this.foodAmount = this.chef.serveFood();
             //--Feed Hungry
-            this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
+            if(this.hungerCountPos !== undefined){
+                this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
+            }
         }
 
         //--Updage Grill Log
@@ -87,9 +89,13 @@ InputConductor.prototype = {
         for(hungry in this.hm.hungerCount){
             if(this.hm.hungerCount[hungry].waiting == true && this.chef.grill.containsFood == true){
                 this.inputs.four.control.enabled = true;
+                this.inputs.four.disabledSprite.visible = false;
+                this.inputs.four.si.indicators.alpha = 1;
                 break;
             }else{
                 this.inputs.four.control.enabled = false;
+                this.inputs.four.disabledSprite.visible = true;
+                this.inputs.four.si.indicators.alpha = 0;
                 break;
             };
         }
@@ -115,8 +121,12 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
     this.y = y;
     this.type = type;
     this.beatObj = beat;
-    //this.bg = new ModSprite(x,y+25,beat.bgKey,{anchor:[0,1]});
     this.button = new ModSprite(x+25,y+25,input.key, {anchor:[.5,.5],alpha:1,scale:[1,1]});
+    this.disabledButton = game.make.bitmapData();
+    this.disabledButton.load(input.key);
+    this.disabledSprite =  this.disabledButton.addToWorld(x, y);
+    this.disabledSprite.visible = false;
+    this.disabledButton.shiftHSL(null, -1.0, null);
     this.icon = new ModSprite(x,y, this.type, {scale:[1,1],make:true});
     this.iconTexture = this.icon.generateTexture();
     this.icon.destroy();
@@ -126,7 +136,11 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
     this.graphics.lineStyle(4, 0x00ff00);
     this.comboCount = 0;
     this.control = input.control;
-    if(typeof(isDisabled) !== 'undefined'){this.control.enabled = false}
+    if(typeof(isDisabled) !== 'undefined'){
+        this.control.enabled = false;
+        this.disabledSprite.visible = true;
+        this.si.indicators.alpha = 0;
+    }
     this.input = input.control.onDown.add(function(){
         //!!! I might be able to reduce this to just "this.control.disabled" eventually.
         if(this.canHit == true){
@@ -141,7 +155,9 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
 InputEnsemble.prototype = {
     beat: function(beatObjDuration, duration, alpha, scale){
         this.si.indicate(beatObjDuration);
-        flash(this.button, duration, alpha, scale)
+        if(this.control.enabled == true){
+            flash(this.button, duration, alpha, scale)
+        }
     },
     hit: function(result){
         //if(result.average == 1){
@@ -163,4 +179,3 @@ InputEnsemble.prototype = {
         //}
     }
 };
-

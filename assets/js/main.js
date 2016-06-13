@@ -27,11 +27,13 @@ Main.prototype = {
         game.load.image('buttonD', 'assets/img/buttonD.png');
         game.load.image('buttonUP', 'assets/img/buttonUP.png');
         game.load.image('buttonLEFT', 'assets/img/buttonLEFT.png');
+        game.load.image('midBg', 'assets/img/midBg.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
         game.load.spritesheet('chef', 'assets/img/chef.png', 48,48);
         game.load.spritesheet('walkerGuy', 'assets/img/walkLeft_guy.png', 64,64);
         game.load.spritesheet('oil', 'assets/img/walkLeft_guy.png', 64,64);
+        game.load.spritesheet('hungryMid', 'assets/img/hungryMid.png', 48,48);
 
         game.load.audio('ivy', 'assets/mp3/ivy.mp3');
         game.load.audio('hype', 'assets/mp3/hype.mp3');
