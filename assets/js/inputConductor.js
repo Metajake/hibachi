@@ -99,6 +99,15 @@ InputConductor.prototype = {
                 break;
             };
         }
+        if(this.chef.grill.isFull == true){
+            this.inputs.one.control.enabled = false;
+            this.inputs.one.disabledSprite.visible = true;
+            this.inputs.one.si.indicators.alpha = 0;
+        }else{
+            this.inputs.one.control.enabled = true;
+            this.inputs.one.disabledSprite.visible = false;
+            this.inputs.one.si.indicators.alpha = 1;
+        }
     },
     updateEnsemble: function(input, type, x, y, distance, control, beatObj){
         this.inputs[input].input._destroy();
@@ -145,7 +154,7 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
         //!!! I might be able to reduce this to just "this.control.disabled" eventually.
         if(this.canHit == true){
             this.hitResult = parent.action(this.beatObj.hitGoal, this.beatObj.qualityNumbers, this.beatObj.qualityNames, [this.x, this.y+25], this.type, this, isInterval);
-            //!!!!THIS ISN"T DOING ANYTHING RIGHT NOW, I THINK IT"S FOR POINTS
+            //!!DISABLED -- It is for registering "combos" etc.
             // this.hit(this.hitResult)
         }
     }, this);

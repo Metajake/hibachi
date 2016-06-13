@@ -27,6 +27,7 @@ function compareTiming(musicTime, goal, qualities, resultNames){
 
     //--Determine Average result depending on timing and length of qualities
     this.compareResult.average = this.compareResult.score / resultNames.length;
+
     return this.compareResult;
 }
 
@@ -72,10 +73,10 @@ MusicObj = function(trackInfo, stage, im, hm, time, inputConductor, chef){
     //TEMP. REMOVED this.beatsMSCounter = 0;
 };
 
-MusicObj.prototype.update = function(time){
-    this.theTime = time - this.trackInfo.delay;
+MusicObj.prototype = {
+    update: function (time) {
+        this.theTime = time - this.trackInfo.delay;
 
-    //if(time >= this.trackInfo.startMS){
         if (this.theTime >= this.beat32.declareHitGoal) {
             this.beat32.declareHitGoal = this.beat32.nextBeat + this.beat32.qualityNumbers[0];
             this.beat32.hitGoal = this.beat32.nextBeat;
@@ -97,9 +98,9 @@ MusicObj.prototype.update = function(time){
             this.signalInput.dispatch(1);
         }
 
-        if(this.theTime >= this.beat32.nextBeat){
+        if (this.theTime >= this.beat32.nextBeat) {
             this.beat32.timeOfBeat = this.theTime;
-            this.beat32.currentBeat ++;
+            this.beat32.currentBeat++;
             this.beat32.nextBeat = this.theTime + this.beat32.duration;
 
             this.signalBeat.dispatch(8);
@@ -109,42 +110,41 @@ MusicObj.prototype.update = function(time){
             // UPDATE - Increase cook time of Chef's Grill's current food
             this.chef.grill.cook()
 
-            if(this.theTime >= this.beat16.nextBeat){
+            if (this.theTime >= this.beat16.nextBeat) {
                 this.beat16.timeOfBeat = this.theTime;
-                this.beat16.currentBeat ++;
+                this.beat16.currentBeat++;
                 this.beat16.nextBeat = this.theTime + this.beat16.duration;
                 this.signalBeat.dispatch(4);
 
-                if(this.theTime >= this.beat8.nextBeat){
+                if (this.theTime >= this.beat8.nextBeat) {
                     this.beat8.timeOfBeat = this.theTime;
-                    this.beat8.currentBeat ++;
+                    this.beat8.currentBeat++;
                     this.beat8.nextBeat = this.theTime + this.beat8.duration;
                     this.signalBeat.dispatch(2);
-                    if(this.theTime >= this.beat4.nextBeat){
-                        if(this.beat4.currentBeat % 4 == 0){
+                    if (this.theTime >= this.beat4.nextBeat) {
+                        if (this.beat4.currentBeat % 4 == 0) {
                             //this.setupMeasure(this.trackInfo.bpm*8);
-                            this.measureCount ++;
+                            this.measureCount++;
                         }
                         this.beat4.timeOfBeat = this.theTime;
-                        this.beat4.currentBeat ++;
+                        this.beat4.currentBeat++;
                         this.beat4.nextBeat = this.theTime + this.bpm;
                         this.signalBeat.dispatch(1);
-                        tweenTint(this.stage.bgSprite, 0xaa2222,0xcc3300, this.bpm *.5)
+                        tweenTint(this.stage.bgSprite, 0xaa2222, 0xcc3300, this.bpm * .5)
                         this.hm.update('quarter');
                     }
                 }
             }
         }
-    //} // end if (time>= music.startMS)
 
-    // NEEDS AN INDICATOR OBJECT (TEMP. REMOVED)
-    //if(time >= this.upcomingBeat){
-    //    this.indicator.flash(100)
-    //    this.beatsMSCounter ++
-    //    this.upcomingBeat = this.beatsMS[this.beatsMSCounter]
-    //}
+        // FOR "EXPECTED BEATS" (NEEDS AN INDICATOR OBJECT (TEMP. REMOVED))
+        //if(time >= this.upcomingBeat){
+        //    this.indicator.flash(100)
+        //    this.beatsMSCounter ++
+        //    this.upcomingBeat = this.beatsMS[this.beatsMSCounter]
+        //}
+    },
+    setupMeasure: function (animDuration) {
+        this.measureGraphics.addMeasure(animDuration, this.trackInfo.measures[this.measureCount - 1/*for zero indexing*/]);
+    },
 };
-
-//MusicObj.prototype.setupMeasure = function(animDuration) {
-//    this.measureGraphics.addMeasure(animDuration, this.trackInfo.measures[this.measureCount-1/*for zero indexing*/]);
-//};

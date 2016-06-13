@@ -1,8 +1,6 @@
 function Chef(stage) {
     this.stage = stage;
     this.grill = new Grill(this.stage);
-    this.food = {};
-    this.foodCount = 0;
     this.sprite = new AnimSprite(40,5, "chef",[0,1],[0,1],1,3,this.stage.cropRectA);
 }
 
@@ -21,14 +19,13 @@ Chef.prototype = {
         this.openPosition = this.checkOpenPosition();
         if(this.openPosition !== undefined){
             addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked);
-            //foodId = 'id_'+this.foodCount;
-            //this.food[foodId] = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked);
-            //this.foodCount ++;
             this.grill.positions[this.openPosition].currentFood = addedFood;
             this.grill.positions[this.openPosition].currentFoodName = addedFood.name;
         }
 
         this.grill.containsFood = true;
+
+        this.grill.checkFull();
     },
     checkDone: function(){
         this.position = undefined;
@@ -46,20 +43,15 @@ Chef.prototype = {
                 };
             }
         }
-       /* for(food in this.grill.positions){
-            if(this.grill.positions[food].currentFoodName !== undefined){
-                if(this.grill.positions[food].currentFood.isCooked - this.grill.positions[food].currentFood.cooked < this.difference) {
-                    this.result = food;
-                    break;
-                }
-            }
-        }*/
+
         return this.position
     },
     serveFood: function(){
         this.foodAmount = 0;
+
         //--determine food closest to it's cooked time
         mostCookedFood = this.checkDone();
+
         //--serve, and remove food from grill if there is one
         if(mostCookedFood !== undefined){
             this.foodAmount = this.grill.positions[mostCookedFood].currentFood.value;
@@ -73,6 +65,9 @@ Chef.prototype = {
                 break;
             }else{this.grill.containsFood = false;}
         }
+
+        this.grill.checkFull();
+
         return this.foodAmount
     }
 };
@@ -85,8 +80,11 @@ function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked){
     this.maxCooked = maxCooked;
     this.isCooked = this.maxCooked - (this.maxCooked / 4);
     this.animSprite = new AnimSprite(x,y,name,utils.arrayRange(0,14),[14],speed,scale, stage.cropRectC);
-    this.animSprite.sprite.anchor.setTo(0.5,1)
-    this.combine = function(otherFood){
+    this.animSprite.sprite.anchor.setTo(0.5,1);
+}
+
+Food.prototype = {
+    combine: function(otherFood){
         if(this.combinationList.indexOf(otherFood.getName()) != -1){
             isValid = true;
             this.decoratedFood = otherFood;
@@ -94,25 +92,22 @@ function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked){
             isValid=false;
         }
         return isValid;
-    };
-    this.eat = function(){
+    },
+    eat: function(){
         if(!this.decoratedFood){
             return this.value;
         }
         else{
             return this.decoratedFood.eat() + this.value;
         }
-    };
-    this.getName = function(){
+    },
+    getName: function(){
         if(!this.decoratedFood){
             return this.name;
         } else {
             return this.name + " and " + this.decoratedFood.getName()
         }
-    }
-}
-
-Food.prototype = {
+    },
     cook: function(){
         this.cooked += 2;
     }
@@ -125,6 +120,7 @@ function Grill(stage){
     this.averageTiming = 0;
     this.totalHits = 0;
     this.containsFood = false;
+    this.isFull = false;
     this.log = {
         successfulHits:0,
         trickHitAmounts: [],
@@ -171,6 +167,16 @@ function Grill(stage){
 }
 
 Grill.prototype = {
+    checkFull: function(){
+        for(position in this.positions){
+            if(this.positions[position].currentFoodName == undefined){
+                this.isFull = false;
+                break;
+            }else{
+                this.isFull = true;
+            }
+        }
+    },
     updateLog: function(result, type){
         this.totalHits++;
 
@@ -205,6 +211,8 @@ Grill.prototype = {
                     this.positions[food].currentFood.animSprite.sprite.kill();
                     delete this.positions[food].currentFood;
                     this.positions[food].currentFoodName = undefined;
+
+                    this.checkFull()
                 }
             }
         }
