@@ -2,7 +2,7 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
-        this.trackInfo = tracks.enter;
+        this.trackInfo = tracks.btstu;
         music.bgm.stop();
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
     },
@@ -30,7 +30,7 @@ Game.prototype = {
 
         this.chef = new Chef(this.stage);
 
-        this.hm = new HungryManager(this.stage, this.chef, this.hm);
+        this.hm = new HungryManager(this.stage, this.chef, this.trackInfo);
 
         this.tm = new TextManager(this.stage);
         //circle = game.add.sprite(400, 300, 'circle');

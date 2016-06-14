@@ -54,8 +54,8 @@ function ModSprite(x,y,key,hash){
         this.sprite.mask = hash.mask;
     }
     if(typeof(hash.static) !== "undefined"){
-        staticAnim = this.sprite.animations.add("static");
-        staticAnim.frame = hash.static;
+        this.staticAnim = this.sprite.animations.add("static");
+        this.staticAnim.frame = hash.static;
     }
     if(typeof(hash.alpha) !== "undefined"){
         this.sprite.alpha = hash.alpha

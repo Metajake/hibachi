@@ -1,11 +1,11 @@
-function HungryManager(stage, chef){
+function HungryManager(stage, chef, trackInfo){
     this.chef = chef;
     this.startingPoint = game.width - 100;
     this.endingPoint = 100;
     this.totalCustomers = 0;
-    this.dissatisfied = 0;
     this.hungerCount = {};
     this.stage = stage;
+    this.trackInfo = trackInfo
 }
 
 HungryManager.prototype = {
@@ -58,16 +58,15 @@ HungryManager.prototype = {
 function Hungry(manager, originX, endX, stage, index){
     this.manager = manager;
     this.animSprite = new AnimSprite(originX,515,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
-    this.midSprite = new ModSprite(stage.colWidth*game.rnd.integerInRange(7,12),30,"hungryMid",{static:1,scale:[2.65,2.65],make:true,mask:stage.cropRectB});
+    this.midSprite = new ModSprite(stage.colWidth*game.rnd.integerInRange(7,12),30,"hungryMid",{static:0,scale:[2.65,2.65],make:true,mask:stage.cropRectB});
     this.animSprite.walk = this.animSprite.sprite.animations.add('walk', [0,1,2,3,4]);
     this.destination = endX;
     this.waiting = false;
     this.index = index;
     this.tolerance = 50 + (randInt(3)*50);
-    this.hunger = 0;
     this.impatience = 0;
-    this.ammused = 0;
-    this.dissappointed = false;
+    this.sink = game.add.tween(this.midSprite);
+    this.sink.to({y:100},this.manager.trackInfo.bpm*3.85,Phaser.Easing.Linear.None);
 }
 
 Hungry.prototype = {
@@ -100,8 +99,6 @@ Hungry.prototype = {
 function step(hungry, index){
     currentX = hungry.animSprite.sprite.position.x;
     if (hungry.animSprite.sprite.position.x > hungry.destination) {
-        //music.bgm.stop();
-        //game.state.start('splash');
         hungry.moveLeft = game.add.tween(hungry.animSprite.sprite);
         hungry.moveLeft.to({x:currentX-100},1000,Phaser.Easing.Linear.None);
         hungry.moveLeft.onComplete.add(function(){
@@ -116,9 +113,13 @@ function step(hungry, index){
 
     } else{
         hungry.impatience += 20;
+        if(hungry.impatience > hungry.tolerance / 2){
+            hungry.midSprite.animations.currentAnim.frame = 1;
+            hungry.sink.start();
+        }
         if(hungry.impatience > hungry.tolerance){
             hungry.manager.chef.grill.rep -= 10;
-            // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()
+            // CHANGE THIS TO DESTROY SOMEWHERE ELSE OR SOMETHING (for memory, but because it fucks up Step()(???IS THIS TRUE???)
             hungry.midSprite.destroy();
             hungry.animSprite.sprite.kill();
             hungry.manager.removeItem(index);
