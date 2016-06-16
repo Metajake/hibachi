@@ -5,6 +5,9 @@ function Chef(stage) {
 }
 
 Chef.prototype = {
+    update: function(){
+        this.grill.checkFull();
+    },
     checkOpenPosition: function(){
         this.number = undefined;
         for(food in this.grill.positions){
@@ -23,9 +26,7 @@ Chef.prototype = {
             this.grill.positions[this.openPosition].currentFoodName = addedFood.name;
         }
 
-        this.grill.containsFood = true;
-
-        this.grill.checkFull();
+        this.grill.checkContains();
     },
     checkDone: function(){
         this.position = undefined;
@@ -66,7 +67,7 @@ Chef.prototype = {
             }else{this.grill.containsFood = false;}
         }
 
-        this.grill.checkFull();
+        //this.grill.checkFull();
 
         return this.foodAmount
     }
@@ -177,6 +178,18 @@ Grill.prototype = {
             }
         }
     },
+    checkContains: function(){
+        for (position in this.positions){
+            if(this.positions[position].currentFoodName !== undefined){
+                log(this.positions[position].currentFoodName)
+                this.containsFood = true;
+                return
+            }else{
+                //log(this.positions[position].currentFoodName)
+                this.containsFood = false;
+            }
+        }
+    },
     updateLog: function(result, type){
         this.totalHits++;
 
@@ -211,11 +224,11 @@ Grill.prototype = {
                     this.positions[food].currentFood.animSprite.sprite.kill();
                     delete this.positions[food].currentFood;
                     this.positions[food].currentFoodName = undefined;
-
-                    this.checkFull()
+                    this.checkContains();
                 }
             }
         }
+
     }
 };
 

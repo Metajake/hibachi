@@ -67,6 +67,10 @@ MusicObj = function(trackInfo, stage, im, hm, time, inputConductor, chef){
     this.signalBeat = new Phaser.Signal();
     this.signalInput = new Phaser.Signal();
 
+    //this.timeRemaining = this.trackInfo.
+    this.timeRemainingMake = new BmpText("carrierCommand","jaynocoBaby",14);
+    this.timeRemainingAdd =  game.add.sprite(this.stage.colWidth*2, this.stage.colWidth*4.5, this.timeRemainingBmp);
+
     //TEMP. REMOVED this.beatsMS = currentTrackInfo.beatsMS; // Expected Beats (based off audacity beat detector)
     //TEMP. REMOVED this.upcomingBeat = this.beatsMS[this.beatsMSCounter];
     //TEMP. REMOVED this.indicator = indicator;

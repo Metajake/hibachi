@@ -2,7 +2,7 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
-        this.trackInfo = tracks.btstu;
+        this.trackInfo = tracks.yamborghini;
         music.bgm.stop();
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
     },
@@ -72,6 +72,7 @@ Game.prototype = {
     },
     update: function(){
         this.musicObj.update(music.bgm.currentTime);
+        this.chef.update();
         this.ic.update();
 
         if(game.playing == false){
@@ -89,7 +90,10 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        //game.debug.text("input four enabled: "+this.ic.inputs.four.input.control.enabled, 32, 32*3.5)
+        this.multipliedDuration = music.bgm.duration * 100;
+        //game.debug.text("timeREmainging: "+(Math.floor(this.multipliedDuration) - music.bgm.currentTime), 32, 32*3.5)
+        game.debug.text("grill contains food: "+this.chef.grill.containsFood, 32, 32*3.5)
+        //game.debug.text("timeREmainging: "+this.trackInfo.durationMS - music.bgm.currentTime, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){
