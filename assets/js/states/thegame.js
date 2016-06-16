@@ -42,7 +42,7 @@ Game.prototype = {
         this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
         this.musicObj.signalBeat.add(this.ic.beat, this.ic);
-        this.musicObj.signalInput.add(this.ic.makeAllHittable, this.ic);
+        this.musicObj.signalInput.add(this.ic.resetHit, this.ic);
 
     },
     startRhythm: function(){
@@ -90,10 +90,7 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        this.multipliedDuration = music.bgm.duration * 100;
-        //game.debug.text("timeREmainging: "+(Math.floor(this.multipliedDuration) - music.bgm.currentTime), 32, 32*3.5)
-        game.debug.text("grill contains food: "+this.chef.grill.containsFood, 32, 32*3.5)
-        //game.debug.text("timeREmainging: "+this.trackInfo.durationMS - music.bgm.currentTime, 32, 32*3.5)
+        game.debug.text("Trick Combo Count : "+this.ic.inputs.three.comboCount, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

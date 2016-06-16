@@ -31,12 +31,6 @@ InputConductor.prototype = {
         //--Display Input Timing Quality
         this.tm.resultIndicator.shoot(this.qualityResult.sprite, 600, 100, location);
 
-        //--Update Inputs according to quality
-        //if(this.chef.grill.log.successfulHits >= 3 && this.inputs.two.beatObj == undefined){ // check for two.beatObj==undefined because otherwise it was throwing errors creating the second input (or something like that)
-        //    this.updateEnsemble("one", "iconTrick", this.stage.colWidth*6.5, this.stage.colWidth*8.75, 40, controls.W, this.mu.beat16)
-        //    this.inputs.two = new InputEnsemble("iconBaseFood", this.stage.colWidth*8, this.stage.colWidth*8.75, 80, controls.UP, this, this.mu.beat4, this.tm);
-        //}
-
         //--Get Hungriest customer
         this.hungerCountPos = this.hm.checkHungriest();
 
@@ -51,6 +45,9 @@ InputConductor.prototype = {
             if(this.hungerCountPos !== undefined){
                 this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
             }
+        }else if(type=="iconTrick") {
+            //--Send Results to Input.Hit() for determining "combos"
+            input.hit(this.qualityResult)
         }
 
         //--Updage Grill Log
@@ -59,14 +56,15 @@ InputConductor.prototype = {
         //--Update Grill Rep
         this.chef.grill.addRep(this.qualityResult.score);
 
+
         //--Set canHit to false if this is an "interval" note
         if(isInterval == true){input.canHit = false;};
         return this.qualityResult
     },
-    beat: function(type){
+    beat: function(division){
         //--"Beat" the Indicators depending on type
         for (input in this.inputs){
-            if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == type){
+            if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == division){
                 this.inputs[input].beat(this.inputs[input].beatObj.duration, this.mu.trackInfo.bpm *.02, 1, 2)
             }
         }
@@ -78,11 +76,25 @@ InputConductor.prototype = {
         //    this.removeEnsemble("three")
         //}
     },
-    makeAllHittable: function(type){
+    resetHit: function(division){
         for (input in this.inputs){
-            if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == type){
+            if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == division){
                 this.inputs[input].canHit = true;
             }
+        }
+        if(division == 8){
+            if(this.inputs.three.isHit == true && this.inputs.three.comboCount <= 3){
+                this.inputs.three.comboUncount = 0;
+                this.inputs.three.comboCount ++;
+            }else if(this.inputs.three.isHit == false && this.inputs.three.comboCount > 0){
+                this.inputs.three.comboUncount ++;
+                if(this.inputs.three.comboUncount == 8){
+                    this.inputs.three.comboCount --;
+                    this.inputs.three.comboUncount = 0;
+                }
+            }
+            this.inputs.three.checkCombo();
+            this.inputs.three.isHit = false;
         }
     },
     update: function(){
@@ -108,6 +120,15 @@ InputConductor.prototype = {
             this.inputs.one.disabledSprite.visible = false;
             this.inputs.one.si.indicators.alpha = 1;
         }
+        if(this.inputs.three.comboCount == 4){
+            this.inputs.two.control.enabled = true;
+            this.inputs.two.disabledSprite.visible = false;
+            this.inputs.two.si.indicators.alpha = 1;
+        }else{
+            this.inputs.two.control.enabled = false;
+            this.inputs.two.disabledSprite.visible = true;
+            this.inputs.two.si.indicators.alpha = 0;
+        }
     },
     updateEnsemble: function(input, type, x, y, distance, control, beatObj){
         this.inputs[input].input._destroy();
@@ -130,6 +151,8 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
     this.y = y;
     this.type = type;
     this.beatObj = beat;
+    this.graphics = game.add.graphics(0,0);
+    this.graphics.lineStyle(4, 0x00ff00);
     this.button = new ModSprite(x+25,y+25,input.key, {anchor:[.5,.5],alpha:1,scale:[1,1]});
     this.disabledButton = game.make.bitmapData();
     this.disabledButton.load(input.key);
@@ -141,9 +164,9 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
     this.icon.destroy();
     this.si = new SlidingIndicator(x,y-distance, distance, this.iconTexture);
     this.canHit = true;
-    this.graphics = game.add.graphics(0,0);
-    this.graphics.lineStyle(4, 0x00ff00);
     this.comboCount = 0;
+    this.comboUncount = 0;
+    this.isHit = false;
     this.control = input.control;
     if(typeof(isDisabled) !== 'undefined'){
         this.control.enabled = false;
@@ -154,8 +177,6 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
         //!!! I might be able to reduce this to just "this.control.disabled" eventually.
         if(this.canHit == true){
             this.hitResult = parent.action(this.beatObj.hitGoal, this.beatObj.qualityNumbers, this.beatObj.qualityNames, [this.x, this.y+25], this.type, this, isInterval);
-            //!!DISABLED -- It is for registering "combos" etc.
-            // this.hit(this.hitResult)
         }
     }, this);
     game.world.bringToTop(tm.resultIndicator.indicators);
@@ -169,22 +190,37 @@ InputEnsemble.prototype = {
         }
     },
     hit: function(result){
-        //if(result.average == 1){
-        //    switch(this.comboCount){
-        //        case(0):
-        //            this.graphics.arc(this.x+25, this.y+25,28,270*(Math.PI/180),0);
-        //            break;
-        //        case(1):
-        //            this.graphics.arc(this.x+25, this.y+25,28,0,90*(Math.PI/180));
-        //            break;
-        //        case(2):
-        //            this.graphics.arc(this.x+25, this.y+25,28,90*(Math.PI/180),180*(Math.PI/180));
-        //            break;
-        //        case(3):
-        //            this.graphics.arc(this.x+25, this.y+25,28,180*(Math.PI/180),270*(Math.PI/180));
-        //            break;
-        //    };
-        //    this.comboCount ++;
-        //}
+        if(result.success == true){
+            this.isHit = true;
+        }else{
+            this.comboCount --;
+        }
+    },
+    checkCombo: function(){
+        switch(this.comboCount){
+            case(0):
+                this.graphics.clear();
+                break;
+            case(1):
+                this.graphics.clear();
+                this.graphics.lineStyle(4, 0x00ff00);
+                this.graphics.arc(this.x+25, this.y+25,28,270*(Math.PI/180),0);
+                break;
+            case(2):
+                this.graphics.clear();
+                this.graphics.lineStyle(4, 0x00ff00);
+                this.graphics.arc(this.x+25, this.y+25,28,270*(Math.PI/180),90*(Math.PI/180));
+                break;
+            case(3):
+                this.graphics.clear();
+                this.graphics.lineStyle(4, 0x00ff00);
+                this.graphics.arc(this.x+25, this.y+25,28,270*(Math.PI/180),180*(Math.PI/180));
+                break;
+            case(4):
+                this.graphics.clear();
+                this.graphics.lineStyle(4, 0x00ff00);
+                this.graphics.drawCircle(this.x+25, this.y+25,56);
+                break;
+        };
     }
 };
