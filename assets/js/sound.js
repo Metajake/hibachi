@@ -1,5 +1,6 @@
 function SoundManager(){
     this.utinsels = [];
+    this.sizzling = []
 }
 
 SoundManager.prototype = {
@@ -10,6 +11,7 @@ SoundManager.prototype = {
         this.sharpenL3 = this.addSound('sharpen_long3',1,this.utinsels);
         this.sharpenS1 = this.addSound('sharpen_short1',1,this.utinsels);
         this.sharpenS2 = this.addSound('sharpen_short2',1,this.utinsels);
+        this.sizzle1 = this.addSound('sizzle01',1,this.sizzling);
     },
     addSound: function(key, vol, group){
         this.sound = new SoundObj(key, vol);

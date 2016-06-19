@@ -1,7 +1,7 @@
 function HungryManager(stage, chef, trackInfo){
     this.chef = chef;
-    this.startingPoint = game.width - 100;
-    this.endingPoint = 100;
+    this.startingPoint = game.width - 50;
+    this.endingPoint = 150;
     this.totalCustomers = 0;
     this.hungerCount = {};
     this.stage = stage;
@@ -57,7 +57,7 @@ HungryManager.prototype = {
 
 function Hungry(manager, originX, endX, stage, index){
     this.manager = manager;
-    this.animSprite = new AnimSprite(originX,515,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
+    this.animSprite = new AnimSprite(originX,550,"walkerGuy",[0],[5],4,1.2,stage.cropRectD);
     this.midSprite = new ModSprite(stage.colWidth*game.rnd.integerInRange(7,12),30,"hungryMid",{static:0,scale:[2.65,2.65],make:true,mask:stage.cropRectB});
     this.animSprite.walk = this.animSprite.sprite.animations.add('walk', [0,1,2,3,4]);
     this.destination = endX;

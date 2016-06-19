@@ -30,10 +30,11 @@ Main.prototype = {
         game.load.image('midBg', 'assets/img/midBg.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
-        game.load.spritesheet('chef', 'assets/img/chef.png', 48,48);
+        game.load.spritesheet('chefPortrait', 'assets/img/chef.png', 48,48);
         game.load.spritesheet('walkerGuy', 'assets/img/walkLeft_guy.png', 64,64);
-        game.load.spritesheet('oil', 'assets/img/walkLeft_guy.png', 64,64);
+        game.load.spritesheet('oilPour', 'assets/img/oilPour.png', 129,129);
         game.load.spritesheet('hungryMid', 'assets/img/hungryMid.png', 48,48);
+        game.load.spritesheet('leftHand', 'assets/img/leftHand.png', 48,48);
 
         game.load.audio('ivy', 'assets/mp3/ivy.mp3');
         game.load.audio('hype', 'assets/mp3/hype.mp3');
@@ -49,6 +50,7 @@ Main.prototype = {
         game.load.audio('sharpen_long3', 'assets/mp3/effects/sharpen_long3.mp3');
         game.load.audio('sharpen_short1', 'assets/mp3/effects/sharpen_short1.mp3');
         game.load.audio('sharpen_short2', 'assets/mp3/effects/sharpen_short2.mp3');
+        game.load.audio('sizzle01', 'assets/mp3/effects/sizzle01.mp3');
 
         game.load.bitmapFont('carrierCommand', 'assets/font/carrierCommand.png', 'assets/font/carrierCommand.xml');
 

@@ -24,10 +24,6 @@ InputConductor.prototype = {
         //--Get Quality of Input Timing
         this.qualityResult = compareTiming(this.mu.theTime, goal, qualityNumbers, qualityNames, type);
 
-        //--Select and Play random Sound effect
-        this.choice = this.sm.getRand(this.sm.utinsels);
-        this.choice.sound.play();
-
         //--Display Input Timing Quality
         this.tm.resultIndicator.shoot(this.qualityResult.sprite, 600, 100, location);
 
@@ -37,7 +33,9 @@ InputConductor.prototype = {
         //--Check Type (add food, trick, serve food, etc.)
         if(type == "iconBaseFood") {
             //--Add Food to grill
-            this.chef.addFood("noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2, ["shortcake"], /*isCooked*/100);
+            this.chef.addFood("noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2, ["shortcake"], /*isCooked*/100, /*start frames*/utils.arrayRange(0,14));
+            //this.randSound= this.sm.getRand(this.sm.sizzling);
+            //this.randSound.sound.play("",0,0.6,true);
         }else if(type == "iconServe"){
             //--Serve Food
             this.foodAmount = this.chef.serveFood();
@@ -46,8 +44,16 @@ InputConductor.prototype = {
                 this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
             }
         }else if(type=="iconTrick") {
-            //--Send Results to Input.Hit() for determining "combos"
+            //--Send Timing Result to input.Hit() for determining success, combos
             input.hit(this.qualityResult)
+
+            //--Select and Play random Sound effect
+            this.randSound = this.sm.getRand(this.sm.utinsels);
+            this.randSound.sound.play();
+
+            this.chef.basicTrickTween.start();
+        }else if(type == "iconAdvancedTrick"){
+            this.chef.advancedTrick(input);
         }
 
         //--Updage Grill Log
@@ -192,9 +198,7 @@ InputEnsemble.prototype = {
     hit: function(result){
         if(result.success == true){
             this.isHit = true;
-        }else{
-            this.comboCount --;
-        }
+        }else if(this.comboCount >0){this.comboCount --;}
     },
     checkCombo: function(){
         switch(this.comboCount){

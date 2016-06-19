@@ -53,5 +53,10 @@ function LevelStage(phaserStage){
 
     this.skyMini = gradient_bg(0x2D61a8, 0xe7a36E);
     this.grillBgMini = new ModSprite(0,this.windowD.position.y,this.skyMini,{scale:[1,.25],mask:this.cropRectD});
-    this.grillMini = new AnimSprite(60,460,"grillMini",[0],utils.arrayRange(1,9),4,4.8,this.cropRectD);
+    this.grillMini = new AnimSprite(120,535,"grillMini",[0],utils.arrayRange(1,9),4,4.8,this.cropRectD);
+
+    /////////Stage Groups?///////////////
+    this.foodGroup = game.add.group();
+    this.hands = game.add.group();
+    this.inputsGroup = game.add.group();
 }

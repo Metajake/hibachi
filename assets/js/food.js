@@ -1,7 +1,31 @@
 function Chef(stage) {
     this.stage = stage;
     this.grill = new Grill(this.stage);
-    this.sprite = new AnimSprite(40,5, "chef",[0,1],[0,1],1,3,this.stage.cropRectA);
+    this.portrait = new AnimSprite(120,70, "chefPortrait",[0,1],[0,1],1,3,this.stage.cropRectA);
+    this.leftHand = new AnimSprite(290,275, "leftHand",[0,0],[0,0],1,3.5,this.stage.cropRectC);
+    this.stage.hands.add(this.leftHand.sprite);
+    this.basicTrickTween = game.add.tween(this.leftHand.sprite);
+    this.basicTrickTween.to({x:this.leftHand.sprite.position.x +40,y:this.leftHand.sprite.position.y+25},250,Phaser.Easing.Circular.InOut,false, 0,0,true);
+    this.tricks = {
+        1:{
+            1:{
+                key: "oilPour",
+                scale:2,
+                frameLength:13,
+                speed:10
+            },
+            2:{
+                key: "oilPour",
+                scale:2,
+                frameLength:13,
+                speed:5
+            },
+        },
+        2:{
+            1:"1 0",
+            2:"1 1"
+        }
+    }
 }
 
 Chef.prototype = {
@@ -18,15 +42,49 @@ Chef.prototype = {
         }
         return this.number;
     },
-    addFood: function(name,speed, scale, value, combinationList, isCooked){
+    addFood: function(name,speed, scale, value, combinationList, isCooked, start){
         this.openPosition = this.checkOpenPosition();
         if(this.openPosition !== undefined){
-            addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked);
+            addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked, start);
             this.grill.positions[this.openPosition].currentFood = addedFood;
             this.grill.positions[this.openPosition].currentFoodName = addedFood.name;
         }
 
         this.grill.checkContains();
+    },
+    advancedTrick: function(input){
+        for(position in this.grill.positions){
+            this.currentPos = this.grill.positions[position];
+            if(this.currentPos.currentFoodName == 'advanced trick'){
+                if(this.currentPos.currentFood.step < Object.keys(this.currentPos.currentFood.trickSequence).length){
+                    this.currentPos.currentFood.animSprite.sprite.destroy();
+                    this.currentPos.currentFood.animSprite = new AnimSprite(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrick.trickSequence[this.advTrick.step].key,utils.arrayRange(0,this.advTrick.trickSequence[this.advTrick.step].frameLength),[this.advTrick.trickSequence[this.advTrick.step].frameLength],this.advTrick.trickSequence[this.advTrick.step].speed,this.advTrick.trickSequence[this.advTrick.step].scale,this.stage.cropRectC);
+                    this.stage.foodGroup.add(this.currentPos.currentFood.animSprite.sprite);
+                    this.currentPos.currentFood.step ++;
+                }else if(this.currentPos.currentFood.step == Object.keys(this.currentPos.currentFood.trickSequence).length){
+                    this.currentPos.currentFood.animSprite.sprite.destroy();
+                    this.currentPos.currentFood.animSprite = new SingleAnim(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrick.trickSequence[this.advTrick.step].key,this.advTrick.trickSequence[this.advTrick.step].speed,this.advTrick.trickSequence[this.advTrick.step].scale,this.stage.cropRectC);
+                    this.currentPos.currentFoodName = undefined;
+                    delete this.currentPos.currentFood
+                }
+                return
+            }
+
+        }
+        this.openPosition = this.checkOpenPosition();
+        if(this.openPosition !== undefined){
+            this.currentPos = this.grill.positions[this.openPosition];
+            this.advTrick = {step: 1};
+            this.trickSelection = game.rnd.integerInRange(1,1/*Object.keys(this.tricks).length*/);
+            this.advTrick.openPosition = this.openPosition;
+            this.advTrick.trickSequence = this.tricks[this.trickSelection];
+            this.advTrick.animSprite = new AnimSprite(this.currentPos.location[0],this.currentPos.location[1]-25,this.advTrick.trickSequence[this.advTrick.step].key,utils.arrayRange(0,this.advTrick.trickSequence[this.advTrick.step].frameLength),[this.advTrick.trickSequence[this.advTrick.step].frameLength],this.advTrick.trickSequence[this.advTrick.step].speed,this.advTrick.trickSequence[this.advTrick.step].scale,this.stage.cropRectC);
+            this.stage.foodGroup.add(this.advTrick.animSprite.sprite);
+            this.advTrick.step ++;
+            this.currentPos.currentFood = this.advTrick;
+            this.currentPos.currentFoodName = "advanced trick";
+        }
+        return this.advTrick
     },
     checkDone: function(){
         this.position = undefined;
@@ -73,15 +131,16 @@ Chef.prototype = {
     }
 };
 
-function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked){
+function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked, start){
     this.name = name;
     this.value = value;
     this.combinationList = combinationList;
     this.cooked = 0;
     this.maxCooked = maxCooked;
     this.isCooked = this.maxCooked - (this.maxCooked / 4);
-    this.animSprite = new AnimSprite(x,y,name,utils.arrayRange(0,14),[14],speed,scale, stage.cropRectC);
+    this.animSprite = new AnimSprite(x,y,name,start,[14],speed,scale, stage.cropRectC);
     this.animSprite.sprite.anchor.setTo(0.5,1);
+    stage.foodGroup.add(this.animSprite.sprite);
 }
 
 Food.prototype = {
@@ -181,7 +240,6 @@ Grill.prototype = {
     checkContains: function(){
         for (position in this.positions){
             if(this.positions[position].currentFoodName !== undefined){
-                log(this.positions[position].currentFoodName)
                 this.containsFood = true;
                 return
             }else{
@@ -218,7 +276,7 @@ Grill.prototype = {
     },
     cook: function(){
         for(food in this.positions){
-            if(this.positions[food].currentFoodName !== undefined){
+            if(this.positions[food].currentFoodName !== undefined && this.positions[food].currentFoodName !== 'advanced trick'){
                 this.positions[food].currentFood.cook()
                 if(this.positions[food].currentFood.cooked >= this.positions[food].currentFood.maxCooked){
                     this.positions[food].currentFood.animSprite.sprite.kill();

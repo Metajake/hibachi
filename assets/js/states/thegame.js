@@ -90,7 +90,7 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        game.debug.text("Trick Combo Count : "+this.ic.inputs.three.comboCount, 32, 32*3.5)
+        //game.debug.text("Trick Combo Count : "+this.ic.inputs.three.comboCount, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

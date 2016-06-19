@@ -83,12 +83,24 @@ function AnimSprite(x,y,key, start, idle, speed, scale, cropRect){
     this.sprite = game.add.sprite(x,y,key);
     this.sprite.smoothed = false;
     this.sprite.scale.setTo(scale, scale);
+    this.sprite.anchor.setTo(0.5)
     this.sprite.mask = cropRect;
     this.start = this.sprite.animations.add('start', start);
     this.idle = this.sprite.animations.add('idle', idle);
-    this.start.play(speed,false);
     this.start.onComplete.add(function(){this.idle.play(speed,true);},this);
+    this.start.play(speed,false);
     return this
+}
+
+function SingleAnim(x,y,key,speed,scale,cropRect){
+    this.sprite = game.add.sprite(x,y,key);
+    this.sprite.smoothed = false;
+    this.sprite.scale.setTo(scale,scale);
+    this.sprite.anchor.setTo(0.5);
+    this.sprite.mask = cropRect;
+    this.play = this.sprite.animations.add('play');
+    this.play.onComplete.add(function(){this.sprite.destroy();}, this);
+    this.play.play(speed,false);
 }
 
 function SlidingIndicator(x,y,distance,sprite){
