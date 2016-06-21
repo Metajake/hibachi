@@ -33,6 +33,7 @@ Main.prototype = {
         game.load.spritesheet('chefPortrait', 'assets/img/chef.png', 48,48);
         game.load.spritesheet('walkerGuy', 'assets/img/walkLeft_guy.png', 64,64);
         game.load.spritesheet('oilPour', 'assets/img/oilPour.png', 129,129);
+        game.load.spritesheet('fireFromOil', 'assets/img/fireFromOil.png', 153,153);
         game.load.spritesheet('hungryMid', 'assets/img/hungryMid.png', 48,48);
         game.load.spritesheet('leftHand', 'assets/img/leftHand.png', 48,48);
 

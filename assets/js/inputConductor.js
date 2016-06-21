@@ -62,6 +62,7 @@ InputConductor.prototype = {
         //--Update Grill Rep
         this.chef.grill.addRep(this.qualityResult.score);
 
+        log(this.chef.grill.positions);
 
         //--Set canHit to false if this is an "interval" note
         if(isInterval == true){input.canHit = false;};
