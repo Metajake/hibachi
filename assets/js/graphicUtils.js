@@ -118,5 +118,11 @@ SlidingIndicator.prototype.indicate = function(duration){
     this.m1 = game.add.tween(this.latestIndicator);
     this.m1.to({y:this.y+this.distance, alpha:1}, duration,Phaser.Easing.Linear.None);
     this.m1.onComplete.add(function(){this.indicators.remove(this.indicators.getBottom())},this);
-    this.m1.start()
+    this.m2 = game.add.tween(this.latestIndicator);
+    this.m2.to({alpha:1}, duration *.75,Phaser.Easing.Linear.None);
+    this.m3 = game.add.tween(this.latestIndicator);
+    this.m3.to({alpha:0}, duration *.25,Phaser.Easing.Linear.None);
+    this.m2.chain(this.m3);
+    this.m1.start();
+    this.m2.start()
 };

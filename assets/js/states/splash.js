@@ -37,24 +37,24 @@ Splash.prototype = {
 
     },
     createControls: function(){
+        //DONT STEAL R FROM BROWSER controls.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
         controls.W = {control:game.input.keyboard.addKey(Phaser.Keyboard.W),key:"buttonW"};
         controls.A = {control:game.input.keyboard.addKey(Phaser.Keyboard.A),key:"buttonA"};
         controls.S = {control:game.input.keyboard.addKey(Phaser.Keyboard.S),key:"buttonS"};
+        controls.F = {control:game.input.keyboard.addKey(Phaser.Keyboard.F),key:"buttonF"};
         controls.D = {control:game.input.keyboard.addKey(Phaser.Keyboard.D),key:"buttonD"};
         controls.E = {control:game.input.keyboard.addKey(Phaser.Keyboard.E),key:"buttonE"};
-        //DONT STEAL R FROM BROWSER controls.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
         controls.G = {control:game.input.keyboard.addKey(Phaser.Keyboard.G),key:"buttonG"};
         controls.UP = {control:game.input.keyboard.addKey(Phaser.Keyboard.UP),key:"buttonUP"};
         controls.LEFT = {control:game.input.keyboard.addKey(Phaser.Keyboard.LEFT),key:"buttonLEFT"};
-        //controls.RIGHT = {control:game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),key:"buttonRIGHT"};
+        controls.RIGHT = {control:game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),key:"buttonRIGHT"};
         controls.DOWN = {control:game.input.keyboard.addKey(Phaser.Keyboard.DOWN),key:"buttonDOWN"};
         controls.SPACE = {control:game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),key:"buttonSPACE"};
         controls.F = {control:game.input.keyboard.addKey(Phaser.Keyboard.F),key:"buttonF"};
         controls.P = {control:game.input.keyboard.addKey(Phaser.Keyboard.P),key:"buttonP"};
 
         controls.P.control.onUp.add(gofull);
-        controls.W.control.onDown.addOnce(function(){game.state.start('Game');});
-        controls.UP.control.onDown.addOnce(function(){game.state.start('Game');});
+        controls.S.control.onDown.addOnce(function(){game.state.start('Game');});
     },
     preload: function(){
         this.sky = gradient_bg(0x0D51a8, 0xe7a36E);
@@ -71,7 +71,7 @@ Splash.prototype = {
         game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
         game.stage.disableVisibilityChange = true;
         this.loadStatus.setText("Ready!");
-        this.startLabel = game.make.text(game.world.centerX, 450, 'Press W or UP', {fill: 'white'});
+        this.startLabel = game.make.text(game.world.centerX, 450, 'Press S', {fill: 'white'});
         utils.centerGameObjects([this.startLabel]);
         game.add.existing(this.startLabel);
 

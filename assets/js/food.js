@@ -22,8 +22,18 @@ function Chef(stage) {
             },
         },
         2:{
-            1:"1 0",
-            2:"1 1"
+            1:{
+                key: "oilPour",
+                scale:2,
+                frameLength:13,
+                speed:10
+            },
+            2:{
+                key: "fireFromOil",
+                scale:1.75,
+                frameLength:13,
+                speed:10
+            },
         }
     }
 }
@@ -54,35 +64,62 @@ Chef.prototype = {
         this.grill.checkContains();
     },
     advancedTrick: function(input){
+        //--Loop over all grill positions
         for(position in this.grill.positions){
+            //--Define Current Grill Loop position (for brevity)
             this.currentPos = this.grill.positions[position];
+            //--If Grill loop position type is an "advanced trick"...
             if(this.currentPos.contentType == 'advanced trick'){
+                //--Define step in 'advanced trick' sequence (for brevity)
+                this.advTrickStep = this.advTrick.trickSequence[this.advTrick.step];
+                //--...If there are more steps in the 'advanced trick' sequence
                 if(this.currentPos.content.step < Object.keys(this.currentPos.content.trickSequence).length){
+                    //--Destroy exsisting 'advanced trick' sprite (to make room for next step sprite)
                     this.currentPos.content.animSprite.sprite.destroy();
-                    this.currentPos.content.animSprite = new AnimSprite(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrick.trickSequence[this.advTrick.step].key,utils.arrayRange(0,this.advTrick.trickSequence[this.advTrick.step].frameLength),[this.advTrick.trickSequence[this.advTrick.step].frameLength],this.advTrick.trickSequence[this.advTrick.step].speed,this.advTrick.trickSequence[this.advTrick.step].scale,this.stage.cropRectC);
+                    //--Instantiate new animated sprite in 'advanced trick' sequence
+                    this.currentPos.content.animSprite = new AnimSprite(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrickStep.key,utils.arrayRange(0,this.advTrickStep.frameLength),[this.advTrickStep.frameLength],this.advTrickStep.speed,this.advTrickStep.scale,this.stage.cropRectC);
+                    //--Add new animated sprite to 'stage food group'
                     this.stage.foodGroup.add(this.currentPos.content.animSprite.sprite);
+                    //--Increase step in 'advanced trick' sequence
                     this.currentPos.content.step ++;
+                //--...if this is the last step in the 'advanced trick' sequence
                 }else if(this.currentPos.content.step == Object.keys(this.currentPos.content.trickSequence).length){
+                    //--Destroy exsisting 'advanced trick' sprite (to make room for next step sprite)
                     this.currentPos.content.animSprite.sprite.destroy();
-                    this.currentPos.content.animSprite = new SingleAnim(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrick.trickSequence[this.advTrick.step].key,this.advTrick.trickSequence[this.advTrick.step].speed,this.advTrick.trickSequence[this.advTrick.step].scale,this.stage.cropRectC);
+                    //--Instantiate new 'single sprite' in 'advanced trick' sequence
+                    this.currentPos.content.animSprite = new SingleAnim(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrickStep.key,this.advTrickStep.speed,this.advTrickStep.scale,this.stage.cropRectC);
+                    //--Define Grill loop position back to 'undefined'
                     this.currentPos.contentType = undefined;
+                    //--Delete 'advanced trick' object from Grill loop position
                     delete this.currentPos.content
                 }
                 return
             }
 
         }
+        //--If no 'advanced trick' exists on grill define next avaiable open position
         this.openPosition = this.checkOpenPosition();
+        //--If there is an open grill position
         if(this.openPosition !== undefined){
+            //--Define open grill position (for brevity)
             this.currentPos = this.grill.positions[this.openPosition];
+            //--Define 'advanced trick' object
             this.advTrick = {step: 1};
-            this.trickSelection = game.rnd.integerInRange(1,1/*Object.keys(this.tricks).length*/);
+            //--Define 'advanced trick' position as open grill position
             this.advTrick.openPosition = this.openPosition;
-            this.advTrick.trickSequence = this.tricks[this.trickSelection];
-            this.advTrick.animSprite = new AnimSprite(this.currentPos.location[0],this.currentPos.location[1]-25,this.advTrick.trickSequence[this.advTrick.step].key,utils.arrayRange(0,this.advTrick.trickSequence[this.advTrick.step].frameLength),[this.advTrick.trickSequence[this.advTrick.step].frameLength],this.advTrick.trickSequence[this.advTrick.step].speed,this.advTrick.trickSequence[this.advTrick.step].scale,this.stage.cropRectC);
+            //--Define 'advanced trick' sequence as random trick selection
+            this.advTrick.trickSequence = this.tricks[game.rnd.integerInRange(1,Object.keys(this.tricks).length)];
+            //--Define step in 'advanced trick' sequence (for brevity)
+            this.advTrickStep = this.advTrick.trickSequence[this.advTrick.step];
+            //--Instantiate first animated sprite in 'advanced trick' sequence
+            this.advTrick.animSprite = new AnimSprite(this.currentPos.location[0],this.currentPos.location[1]-25,this.advTrickStep.key,utils.arrayRange(0,this.advTrickStep.frameLength),[this.advTrickStep.frameLength],this.advTrickStep.speed,this.advTrickStep.scale,this.stage.cropRectC);
+            //--Add 'advanced trick' to stage food group
             this.stage.foodGroup.add(this.advTrick.animSprite.sprite);
+            //--Increase step in 'advanced trick' sequence
             this.advTrick.step ++;
+            //--Define Grill open position content as new advanced trick
             this.currentPos.content = this.advTrick;
+            //--Define Grill open position content type
             this.currentPos.contentType = "advanced trick";
         }
         return this.advTrick

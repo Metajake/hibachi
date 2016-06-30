@@ -2,7 +2,7 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
-        this.trackInfo = tracks.yamborghini;
+        this.trackInfo = tracks.iDriveBy;
         music.bgm.stop();
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
     },
@@ -42,7 +42,7 @@ Game.prototype = {
         this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
         this.musicObj.signalBeat.add(this.ic.beat, this.ic);
-        this.musicObj.signalInput.add(this.ic.resetHit, this.ic);
+        this.musicObj.signalReset.add(this.ic.resetHit, this.ic);
 
     },
     startRhythm: function(){
@@ -90,7 +90,7 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        //game.debug.text("Trick Combo Count : "+this.ic.inputs.three.comboCount, 32, 32*3.5)
+        //game.debug.text(this.musicObj.beat4.nextBeat-this.musicObj.theTime, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

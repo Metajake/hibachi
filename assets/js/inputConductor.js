@@ -6,16 +6,17 @@ function InputConductor(stage,chef, hm, mu, sm, tm){
     this.sm = sm;
     this.tm = tm;
     this.inputs = {
-        one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm),
-        two:new InputEnsemble("iconAdvancedTrick", this.stage.colWidth*7, this.stage.colWidth*9, 50, controls.D, this, this.mu.beat16, this.tm),
-        three: new InputEnsemble("iconTrick", this.stage.colWidth*8.5, this.stage.colWidth*9, 50, controls.LEFT, this, this.mu.beat32, this.tm, /*is interval*/true),
-        four:new InputEnsemble("iconServe", this.stage.colWidth*10, this.stage.colWidth*8.25, 100, controls.UP, this, this.mu.beat4, this.tm, false, /*is disabled*/true),
-        five:{},
-        six:{},
-        seven:{},
-        eight:{},
-        nine:{},
-        ten:{}
+        trick:new InputEnsemble("iconTrick", this.stage.colWidth*5.5, this.stage.colWidth*8.75, 50, controls.S, this, this.mu.beat32, this.tm, /*flash scale*/1.25),
+        cook: new InputEnsemble("iconBaseFood", this.stage.colWidth*7, this.stage.colWidth*8.75, 50, controls.D, this, this.mu.beat16, this.tm, 2, /*is interval*/true),
+        advTrick:new InputEnsemble("iconAdvancedTrick", this.stage.colWidth*8.5, this.stage.colWidth*8.75, 50, controls.F, this, this.mu.beat8, this.tm, 2),
+        serve:new InputEnsemble("iconServe", this.stage.colWidth*10, this.stage.colWidth*8.75, 100, controls.G, this, this.mu.beat4, this.tm, 2, false, /*is disabled*/true)
+        //one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm, 2),
+        //five:{},
+        //six:{},
+        //seven:{},
+        //eight:{},
+        //nine:{},
+        //ten:{}
     };
 };
 
@@ -32,6 +33,9 @@ InputConductor.prototype = {
 
         //--Check Type (add food, trick, serve food, etc.)
         if(type == "iconBaseFood") {
+            //--Send Timing Result to input.Hit() for determining success, combos
+            input.hit(this.qualityResult);
+
             //--Add Food to grill
             this.chef.addFood("noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2, ["shortcake"], /*isCooked*/100, /*start frames*/utils.arrayRange(0,14));
             //this.randSound= this.sm.getRand(this.sm.sizzling);
@@ -44,9 +48,6 @@ InputConductor.prototype = {
                 this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
             }
         }else if(type=="iconTrick") {
-            //--Send Timing Result to input.Hit() for determining success, combos
-            input.hit(this.qualityResult)
-
             //--Select and Play random Sound effect
             this.randSound = this.sm.getRand(this.sm.utinsels);
             this.randSound.sound.play();
@@ -62,17 +63,15 @@ InputConductor.prototype = {
         //--Update Grill Rep
         this.chef.grill.addRep(this.qualityResult.score);
 
-        log(this.chef.grill.positions);
-
         //--Set canHit to false if this is an "interval" note
         if(isInterval == true){input.canHit = false;};
         return this.qualityResult
     },
     beat: function(division){
-        //--"Beat" the Indicators depending on type
+        //--"Beat" the Indicators depending on type. (this function call is signaled by MusicObj.BeatObj)
         for (input in this.inputs){
-            if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == division){
-                this.inputs[input].beat(this.inputs[input].beatObj.duration, this.mu.trackInfo.bpm *.02, 1, 2)
+            if (this.inputs[input].beatObj.division == division){
+                this.inputs[input].beat(this.inputs[input].beatObj.duration, this.mu.trackInfo.bpm *.02, 1, this.inputs[input].flashScale)
             }
         }
 
@@ -89,52 +88,57 @@ InputConductor.prototype = {
                 this.inputs[input].canHit = true;
             }
         }
-        if(division == 8){
-            if(this.inputs.three.isHit == true && this.inputs.three.comboCount <= 3){
-                this.inputs.three.comboUncount = 0;
-                this.inputs.three.comboCount ++;
-            }else if(this.inputs.three.isHit == false && this.inputs.three.comboCount > 0){
-                this.inputs.three.comboUncount ++;
-                if(this.inputs.three.comboUncount == 8){
-                    this.inputs.three.comboCount --;
-                    this.inputs.three.comboUncount = 0;
+        if(division == 4){
+            if(this.inputs.cook.isHit == true && this.inputs.cook.comboCount <= 3){
+                this.inputs.cook.comboUncount = 0;
+                this.inputs.cook.comboCount ++;
+            }else if(this.inputs.cook.isHit == false && this.inputs.cook.comboCount > 0){
+                this.inputs.cook.comboUncount ++;
+                if(this.inputs.cook.comboUncount == 8){
+                    this.inputs.cook.comboCount --;
+                    this.inputs.cook.comboUncount = 0;
                 }
             }
-            this.inputs.three.checkCombo();
-            this.inputs.three.isHit = false;
+            this.inputs.cook.checkCombo();
+            this.inputs.cook.isHit = false;
         }
     },
     update: function(){
+        //Enable or Disable "Serve" input if grill has food and hungry are waiting
         for(hungry in this.hm.hungerCount){
             if(this.hm.hungerCount[hungry].waiting == true && this.chef.grill.containsFood == true){
-                this.inputs.four.control.enabled = true;
-                this.inputs.four.disabledSprite.visible = false;
-                this.inputs.four.si.indicators.alpha = 1;
+                this.inputs.serve.control.enabled = true;
+                this.inputs.serve.disabledSprite.visible = false;
+                this.inputs.serve.si.indicators.alpha = 1;
                 break;
             }else{
-                this.inputs.four.control.enabled = false;
-                this.inputs.four.disabledSprite.visible = true;
-                this.inputs.four.si.indicators.alpha = 0;
+                this.inputs.serve.control.enabled = false;
+                this.inputs.serve.disabledSprite.visible = true;
+                this.inputs.serve.si.indicators.alpha = 0;
                 break;
-            };
+            }
         }
+
+        //Disable "Cook" input if Grill is full
         if(this.chef.grill.isFull == true){
-            this.inputs.one.control.enabled = false;
-            this.inputs.one.disabledSprite.visible = true;
-            this.inputs.one.si.indicators.alpha = 0;
+            this.inputs.cook.control.enabled = false;
+            this.inputs.cook.disabledSprite.visible = true;
+            this.inputs.cook.si.indicators.alpha = 0;
         }else{
-            this.inputs.one.control.enabled = true;
-            this.inputs.one.disabledSprite.visible = false;
-            this.inputs.one.si.indicators.alpha = 1;
+            this.inputs.cook.control.enabled = true;
+            this.inputs.cook.disabledSprite.visible = false;
+            this.inputs.cook.si.indicators.alpha = 1;
         }
-        if(this.inputs.three.comboCount == 4){
-            this.inputs.two.control.enabled = true;
-            this.inputs.two.disabledSprite.visible = false;
-            this.inputs.two.si.indicators.alpha = 1;
+
+        //Enable "Advanced Trick" input if BasicTrick "success average" gets to 4
+        if(this.inputs.cook.comboCount == 4){
+            this.inputs.advTrick.control.enabled = true;
+            this.inputs.advTrick.disabledSprite.visible = false;
+            this.inputs.advTrick.si.indicators.alpha = 1;
         }else{
-            this.inputs.two.control.enabled = false;
-            this.inputs.two.disabledSprite.visible = true;
-            this.inputs.two.si.indicators.alpha = 0;
+            this.inputs.advTrick.control.enabled = false;
+            this.inputs.advTrick.disabledSprite.visible = true;
+            this.inputs.advTrick.si.indicators.alpha = 0;
         }
     },
     updateEnsemble: function(input, type, x, y, distance, control, beatObj){
@@ -153,11 +157,12 @@ InputConductor.prototype = {
     }
 };
 
-function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval, isDisabled){
+function InputEnsemble(type, x, y, distance, input, parent, beat, tm, flashScale, isInterval, isDisabled){
     this.x = x;
     this.y = y;
     this.type = type;
     this.beatObj = beat;
+    this.flashScale = flashScale;
     this.graphics = game.add.graphics(0,0);
     this.graphics.lineStyle(4, 0x00ff00);
     this.button = new ModSprite(x+25,y+25,input.key, {anchor:[.5,.5],alpha:1,scale:[1,1]});
@@ -169,7 +174,7 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, isInterval
     this.icon = new ModSprite(x,y, this.type, {scale:[1,1],make:true});
     this.iconTexture = this.icon.generateTexture();
     this.icon.destroy();
-    this.si = new SlidingIndicator(x,y-distance, distance, this.iconTexture);
+    this.si = new SlidingIndicator(x,y-distance, distance+25, this.iconTexture);
     this.canHit = true;
     this.comboCount = 0;
     this.comboUncount = 0;

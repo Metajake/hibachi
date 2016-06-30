@@ -27,6 +27,9 @@ Main.prototype = {
         game.load.image('buttonD', 'assets/img/buttonD.png');
         game.load.image('buttonUP', 'assets/img/buttonUP.png');
         game.load.image('buttonLEFT', 'assets/img/buttonLEFT.png');
+        game.load.image('buttonS', 'assets/img/buttonS.png');
+        game.load.image('buttonF', 'assets/img/buttonF.png');
+        game.load.image('buttonG', 'assets/img/buttonG.png');
         game.load.image('midBg', 'assets/img/midBg.png');
         game.load.spritesheet('grillMini', 'assets/img/grill_mini.png', 32,32);
         game.load.spritesheet('noodles', 'assets/img/noodles4.png', 50,50);
@@ -44,6 +47,7 @@ Main.prototype = {
         game.load.audio('work', 'assets/mp3/work.mp3');
         game.load.audio('btstu', 'assets/mp3/btstu.mp3');
         game.load.audio('yamborghini', 'assets/mp3/yamborghini.mp3');
+        game.load.audio('iDriveBy', 'assets/mp3/iDriveBy.mp3');
 
         game.load.audio('shking_soft_short1', 'assets/mp3/effects/shking_soft_short1.mp3');
         game.load.audio('sharpen_long1', 'assets/mp3/effects/sharpen_long1.mp3');
