@@ -2,13 +2,13 @@ Game = function(){};
 
 Game.prototype = {
     init: function(){
-        this.trackInfo = tracks.iDriveBy;
+        this.trackInfo = tracks.yamborghini;
         music.bgm.stop();
         //this.soundAnalyse = game.plugins.add(new Phaser.Plugin.SoundAnalyse(game));
     },
     loadControls: function(){
         this.SPACE = controls.SPACE.control.onDown.add(pause_game, this);
-        this.G = controls.G.control.onDown.add(step_game);
+        //this.G = controls.G.control.onDown.add(step_game);
         this.P = controls.P.control.onUp.add(gofull)
     },
     loadAudio: function(){
@@ -41,8 +41,9 @@ Game.prototype = {
 
         this.ic = new InputConductor(this.stage, this.chef, this.hm, this.musicObj, this.sm, this.tm);
 
-        this.musicObj.signalBeat.add(this.ic.beat, this.ic);
+        this.musicObj.signalSlide.add(this.ic.slide, this.ic);
         this.musicObj.signalReset.add(this.ic.resetHit, this.ic);
+        this.musicObj.signalFlash.add(this.ic.flash, this.ic);
 
     },
     startRhythm: function(){
@@ -69,6 +70,9 @@ Game.prototype = {
 
         this.createElements();
         this.startRhythm();
+
+        //log("hello")
+
     },
     update: function(){
         this.musicObj.update(music.bgm.currentTime);
@@ -90,7 +94,7 @@ Game.prototype = {
         //game.debug.geom(this.stage.p3);
         //game.debug.geom(this.im.leftStart);
 
-        //game.debug.text(this.musicObj.beat4.nextBeat-this.musicObj.theTime, 32, 32*3.5)
+        game.debug.text(this.chef.canTrick, 32, 32*3.5)
 
         //i=2;
         //for(hungry in this.hm.hungerCount){

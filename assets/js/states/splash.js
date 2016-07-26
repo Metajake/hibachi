@@ -39,12 +39,13 @@ Splash.prototype = {
     createControls: function(){
         //DONT STEAL R FROM BROWSER controls.R = game.input.keyboard.addKey(Phaser.Keyboard.R);
         controls.W = {control:game.input.keyboard.addKey(Phaser.Keyboard.W),key:"buttonW"};
+        controls.E = {control:game.input.keyboard.addKey(Phaser.Keyboard.E),key:"buttonE"};
         controls.A = {control:game.input.keyboard.addKey(Phaser.Keyboard.A),key:"buttonA"};
         controls.S = {control:game.input.keyboard.addKey(Phaser.Keyboard.S),key:"buttonS"};
-        controls.F = {control:game.input.keyboard.addKey(Phaser.Keyboard.F),key:"buttonF"};
         controls.D = {control:game.input.keyboard.addKey(Phaser.Keyboard.D),key:"buttonD"};
-        controls.E = {control:game.input.keyboard.addKey(Phaser.Keyboard.E),key:"buttonE"};
+        controls.F = {control:game.input.keyboard.addKey(Phaser.Keyboard.F),key:"buttonF"};
         controls.G = {control:game.input.keyboard.addKey(Phaser.Keyboard.G),key:"buttonG"};
+        controls.B = {control:game.input.keyboard.addKey(Phaser.Keyboard.B),key:"buttonB"};
         controls.UP = {control:game.input.keyboard.addKey(Phaser.Keyboard.UP),key:"buttonUP"};
         controls.LEFT = {control:game.input.keyboard.addKey(Phaser.Keyboard.LEFT),key:"buttonLEFT"};
         controls.RIGHT = {control:game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),key:"buttonRIGHT"};

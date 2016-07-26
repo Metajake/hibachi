@@ -6,6 +6,8 @@ function Chef(stage) {
     this.stage.hands.add(this.leftHand.sprite);
     this.basicTrickTween = game.add.tween(this.leftHand.sprite);
     this.basicTrickTween.to({x:this.leftHand.sprite.position.x +40,y:this.leftHand.sprite.position.y+25},250,Phaser.Easing.Circular.InOut,false, 0,0,true);
+    this.recipeCount = 0;
+    this.canTrick = true;
     this.tricks = {
         1:{
             1:{
@@ -35,7 +37,28 @@ function Chef(stage) {
                 speed:10
             },
         }
-    }
+    };
+    this.recipes = {
+        1:{
+            name: 'chickenAndFriedRice',
+            ingredients: {
+                1:{
+                    name:"noodles",
+                    steps:{
+                        1:{action:"add"},
+                        2:{action:"decorate",ingredient:"oil"},
+                    }
+                },
+                2:{
+                    name:"rice",
+                    steps:{
+                        1:{action:"add"},
+                        2:{action:"decorate",ingredient:"oil"},
+                    }
+                },
+            },
+        },
+    };
 }
 
 Chef.prototype = {
@@ -52,18 +75,69 @@ Chef.prototype = {
         }
         return this.number;
     },
+    //addFood: function(name,speed, scale, value, combinationList, isCooked, start){
+    //    this.openPosition = this.checkOpenPosition();
+    //    if(this.openPosition !== undefined){
+    //        addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked, start);
+    //        this.grill.positions[this.openPosition].content = addedFood;
+    //        this.grill.positions[this.openPosition].contentName = addedFood.name;
+    //        this.grill.positions[this.openPosition].contentType = "food";
+    //    }
+    //
+    //    this.grill.checkContains();
+    //},
     addFood: function(name,speed, scale, value, combinationList, isCooked, start){
+        //ARGUMENTS: "noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2, ["shortcake"], /*isCooked*/100, /*start frames*/utils.arrayRange(0,14)
+        log("adding recipe...");
+        this.recipeTitle = this.addRecipe();
+        log("Recipe Title: "+this.recipeTitle);
+
+        log("current recipes: "+this.grill.currentRecipes);
+
+
+        //for(position in this.grill.positions){
+        //    log(this.grill.positions[position].content.recipe);
+        //    if(this.grill.positions[position].contentType == 'food'){
+        //        log("food")
+        //    }
+        //}
+        for(recipe in this.grill.currentRecipes){
+            log("Current Recipe: "+this.grill.currentRecipes[recipe]);
+            //recipeChecker = 1;
+            //for(position in this.grill.positions){
+            //    locationContent = this.grill.positions[position].contentType;
+            //    if(locationContent == 'food'){
+            //        if(this.grill.positions[position].content.name == this.grill.currentRecipes[recipe].ingredients[recipeChecker].name){
+            //            log("the name of the food in this location matches the name of food in the current spot of the current recipe being checked")
+            //        }
+            //    }
+            //}
+        }
+
+        if(this.grill.currentRecipes.length !== 0){
+
+        }
+
         this.openPosition = this.checkOpenPosition();
         if(this.openPosition !== undefined){
-            addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], name, speed, scale, value, combinationList, this.stage, isCooked, start);
-            this.grill.positions[this.openPosition].content = addedFood;
+            addedFood = new Food(this.grill.positions[this.openPosition].location[0], this.grill.positions[this.openPosition ].location[1], "noodles", 8, 4,2, ["shortcake"],this.stage,100,utils.arrayRange(0,14),this.recipeTitle);
             this.grill.positions[this.openPosition].contentName = addedFood.name;
+            this.grill.positions[this.openPosition].content = addedFood;
             this.grill.positions[this.openPosition].contentType = "food";
         }
 
+
+        //--Set Grill.ContainsFood(for InputConductor Update conditionals)
         this.grill.checkContains();
     },
-    advancedTrick: function(input){
+    addRecipe: function(){
+        this.sequenceChoice = this.recipes[game.rnd.integerInRange(1,Object.keys(this.recipes).length)];
+        this.recipeTitle = this.sequenceChoice.name + this.recipeCount;
+        this.recipeCount ++;
+        this.grill.currentRecipes[this.recipeTitle] = this.sequenceChoice;
+        return this.recipeTitle;
+    },
+    advancedTrick: function(){
         //--Loop over all grill positions
         for(position in this.grill.positions){
             //--Define Current Grill Loop position (for brevity)
@@ -88,12 +162,19 @@ Chef.prototype = {
                     this.currentPos.content.animSprite.sprite.destroy();
                     //--Instantiate new 'single sprite' in 'advanced trick' sequence
                     this.currentPos.content.animSprite = new SingleAnim(this.grill.positions[this.advTrick.openPosition].location[0],this.grill.positions[this.advTrick.openPosition].location[1]-25,this.advTrickStep.key,this.advTrickStep.speed,this.advTrickStep.scale,this.stage.cropRectC);
-                    //--Define Grill loop position back to 'undefined'
-                    this.currentPos.contentType = undefined;
-                    //--Delete 'advanced trick' object from Grill loop position
-                    delete this.currentPos.content
+                    //--On Advanced Trick Single Animation complete, Remove Advanced Trick
+                    this.currentPos.content.animSprite.sprite.animations.currentAnim.onComplete.add(function(){
+                        //--reset Chef.canTrick to true
+                        this.canTrick = true;
+                        //--ReDefine Grill loop position back to 'undefined'
+                        this.currentPos.contentType = undefined;
+                        //--Destroy Advanced Trick last sprite
+                        this.currentPos.content.animSprite.sprite.destroy();
+                        //--Delete 'advanced trick' object from Grill loop position
+                        delete this.currentPos.content;
+                    },this);
                 }
-                return
+                return this.currentPos.content
             }
 
         }
@@ -104,7 +185,7 @@ Chef.prototype = {
             //--Define open grill position (for brevity)
             this.currentPos = this.grill.positions[this.openPosition];
             //--Define 'advanced trick' object
-            this.advTrick = {step: 1};
+            this.advTrick = {step: 1,complete:false};
             //--Define 'advanced trick' position as open grill position
             this.advTrick.openPosition = this.openPosition;
             //--Define 'advanced trick' sequence as random trick selection
@@ -144,6 +225,8 @@ Chef.prototype = {
         return this.position
     },
     serveFood: function(){
+        //--TODO: Remove Recipe's Entry from Grill.CurrentRecipes
+
         this.foodAmount = 0;
 
         //--determine food closest to it's cooked time
@@ -167,10 +250,10 @@ Chef.prototype = {
         //this.grill.checkFull();
 
         return this.foodAmount
-    }
+    },
 };
 
-function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked, start){
+function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked, start, recipe){
     this.name = name;
     this.value = value;
     this.combinationList = combinationList;
@@ -180,6 +263,7 @@ function Food(x,y,name,speed, scale,value, combinationList, stage, maxCooked, st
     this.animSprite = new AnimSprite(x,y,name,start,[14],speed,scale, stage.cropRectC);
     this.animSprite.sprite.anchor.setTo(0.5,1);
     stage.foodGroup.add(this.animSprite.sprite);
+    this.recipe = recipe;
 }
 
 Food.prototype = {
@@ -232,6 +316,7 @@ function Grill(stage){
     this.successTextShadow.tint = 0x000000;
     this.successText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*3.5, 'carrierCommand', 'Successful Hit Count:'+ this.log.successfulHits, 14);
     this.hitListText = game.add.bitmapText(this.stage.colWidth, this.stage.colWidth*4, 'carrierCommand', 'Recent:'+ this.log.hitList.slice(Math.max(this.log.hitList.length - 4, 0)), 10);
+    this.currentRecipes = [];
     this.positions = {
         one: {
             content: undefined,
@@ -319,6 +404,7 @@ Grill.prototype = {
                 if(this.positions[food].content.cooked >= this.positions[food].content.maxCooked){
                     this.positions[food].content.animSprite.sprite.kill();
                     delete this.positions[food].content;
+                    this.positions[food].contentType = '';
                     this.positions[food].contentName = undefined;
                     this.checkContains();
                 }

@@ -87,7 +87,13 @@ function AnimSprite(x,y,key, start, idle, speed, scale, cropRect){
     this.sprite.mask = cropRect;
     this.start = this.sprite.animations.add('start', start);
     this.idle = this.sprite.animations.add('idle', idle);
-    this.start.onComplete.add(function(){this.idle.play(speed,true);},this);
+    this.start.onStart.add(function(){
+        //log("animSprite playing");
+    },this);
+    this.start.onComplete.add(function(){
+        //log("animSprite Done");
+        this.idle.play(speed,true);
+    },this);
     this.start.play(speed,false);
     return this
 }
@@ -99,7 +105,6 @@ function SingleAnim(x,y,key,speed,scale,cropRect){
     this.sprite.anchor.setTo(0.5);
     this.sprite.mask = cropRect;
     this.play = this.sprite.animations.add('play');
-    this.play.onComplete.add(function(){this.sprite.destroy();}, this);
     this.play.play(speed,false);
 }
 

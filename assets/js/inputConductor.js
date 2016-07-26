@@ -6,11 +6,12 @@ function InputConductor(stage,chef, hm, mu, sm, tm){
     this.sm = sm;
     this.tm = tm;
     this.inputs = {
-        trick:new InputEnsemble("iconTrick", this.stage.colWidth*5.5, this.stage.colWidth*8.75, 50, controls.S, this, this.mu.beat32, this.tm, /*flash scale*/1.25),
-        cook: new InputEnsemble("iconBaseFood", this.stage.colWidth*7, this.stage.colWidth*8.75, 50, controls.D, this, this.mu.beat16, this.tm, 2, /*is interval*/true),
-        advTrick:new InputEnsemble("iconAdvancedTrick", this.stage.colWidth*8.5, this.stage.colWidth*8.75, 50, controls.F, this, this.mu.beat8, this.tm, 2),
-        serve:new InputEnsemble("iconServe", this.stage.colWidth*10, this.stage.colWidth*8.75, 100, controls.G, this, this.mu.beat4, this.tm, 2, false, /*is disabled*/true)
-        //one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm, 2),
+        trick:new InputEnsemble("iconTrick", this.stage.colWidth*8, this.stage.colWidth*9.25,/*remove this. its the same for all*/ 50, controls.S, this, this.mu.beat16two, this.tm, /*flash scale*/1.5,/*slide*/false),
+        cook: new InputEnsemble("iconAddFood", this.stage.colWidth*6.5, this.stage.colWidth*8.5, 50, controls.A, this, this.mu.beat4, this.tm, 2, true),
+        step: new InputEnsemble("iconStepFood", this.stage.colWidth*8, this.stage.colWidth*7.75, 50, controls.W, this, this.mu.beat8, this.tm, 2, true, /*is interval*/true),
+        //advTrick:new InputEnsemble("iconAdvancedTrick", this.stage.colWidth*8.5, this.stage.colWidth*8.75, 50, controls.G, this, this.mu.beat4, this.tm, 2),
+        serve:new InputEnsemble("iconServe", this.stage.colWidth*9.5, this.stage.colWidth*8.5, 50, controls.D, this, this.mu.beat4, this.tm, 2, true, false, /*is disabled*/true)
+        //one:new InputEnsemble("iconBaseFood", this.stage.colWidth*5.5, this.stage.colWidth*8.25, 50, controls.W, this, this.mu.beat8, this.tm, 2, true),
         //five:{},
         //six:{},
         //seven:{},
@@ -32,12 +33,13 @@ InputConductor.prototype = {
         this.hungerCountPos = this.hm.checkHungriest();
 
         //--Check Type (add food, trick, serve food, etc.)
-        if(type == "iconBaseFood") {
-            //--Send Timing Result to input.Hit() for determining success, combos
-            input.hit(this.qualityResult);
-
+        if(type == "iconAddFood") {
             //--Add Food to grill
-            this.chef.addFood("noodles",/*animation Speed*/ 8,/*scale*/ 4,/*value*/ 2, ["shortcake"], /*isCooked*/100, /*start frames*/utils.arrayRange(0,14));
+            if(this.chef.grill.isFull !== true){
+                this.chef.addFood();
+
+            };
+
             //this.randSound= this.sm.getRand(this.sm.sizzling);
             //this.randSound.sound.play("",0,0.6,true);
         }else if(type == "iconServe"){
@@ -48,13 +50,20 @@ InputConductor.prototype = {
                 this.hm.hungerCount[this.hungerCountPos].feed(this.foodAmount, this.qualityResult.score);
             }
         }else if(type=="iconTrick") {
+            //--Send Timing Result to input.Hit() for determining success, combos
+            input.hit(this.qualityResult, this.chef);
+
             //--Select and Play random Sound effect
             this.randSound = this.sm.getRand(this.sm.utinsels);
             this.randSound.sound.play();
 
             this.chef.basicTrickTween.start();
-        }else if(type == "iconAdvancedTrick"){
-            this.chef.advancedTrick(input);
+        }
+        else if(type == "iconAdvancedTrick"){
+            //--TEMP DISABLED (?)
+            //this.inputs.trick.comboCount = 0;
+
+            //this.chef.advancedTrick();
         }
 
         //--Updage Grill Log
@@ -67,11 +76,11 @@ InputConductor.prototype = {
         if(isInterval == true){input.canHit = false;};
         return this.qualityResult
     },
-    beat: function(division){
+    slide: function(division){
         //--"Beat" the Indicators depending on type. (this function call is signaled by MusicObj.BeatObj)
         for (input in this.inputs){
             if (this.inputs[input].beatObj.division == division){
-                this.inputs[input].beat(this.inputs[input].beatObj.duration, this.mu.trackInfo.bpm *.02, 1, this.inputs[input].flashScale)
+                this.inputs[input].slide(this.inputs[input].beatObj.duration, this.mu.trackInfo.bpm *.02, 1, this.inputs[input].flashScale)
             }
         }
 
@@ -82,42 +91,56 @@ InputConductor.prototype = {
         //    this.removeEnsemble("three")
         //}
     },
+    flash: function(division){
+        //--"Flash" the Indicators depending on type. (this function call is signaled by MusicObj.BeatObj)
+        for (input in this.inputs){
+            if (this.inputs[input].beatObj.division == division){
+                this.inputs[input].flash(this.mu.trackInfo.bpm *.02, 1, this.inputs[input].flashScale)
+            }
+        }
+    },
     resetHit: function(division){
         for (input in this.inputs){
             if (this.inputs[input].beatObj !== undefined && this.inputs[input].beatObj.division == division){
                 this.inputs[input].canHit = true;
             }
         }
-        if(division == 4){
-            if(this.inputs.cook.isHit == true && this.inputs.cook.comboCount <= 3){
-                this.inputs.cook.comboUncount = 0;
-                this.inputs.cook.comboCount ++;
-            }else if(this.inputs.cook.isHit == false && this.inputs.cook.comboCount > 0){
-                this.inputs.cook.comboUncount ++;
-                if(this.inputs.cook.comboUncount == 8){
-                    this.inputs.cook.comboCount --;
-                    this.inputs.cook.comboUncount = 0;
-                }
-            }
-            this.inputs.cook.checkCombo();
-            this.inputs.cook.isHit = false;
-        }
+        //AND CHANGE THIS TO this.inputs.comboCount !!!!!!!
+        //if(division == 4){
+        //    if(this.inputs.trick.isHit == true && this.inputs.trick.comboCount <= 3){
+        //        this.inputs.trick.comboUncount = 0;
+        //        this.inputs.trick.comboCount ++;
+        //    }else if(this.inputs.trick.isHit == false && this.inputs.trick.comboCount > 0){
+        //        this.inputs.trick.comboUncount ++;
+        //        if(this.inputs.trick.comboUncount == 8){
+        //            this.inputs.trick.comboCount --;
+        //            this.inputs.trick.comboUncount = 0;
+        //        }
+        //    }
+        //    this.inputs.trick.checkCombo(this.inputs.trick.comboCount);
+        //    this.inputs.trick.isHit = false;
+        //}
     },
     update: function(){
         //Enable or Disable "Serve" input if grill has food and hungry are waiting
-        for(hungry in this.hm.hungerCount){
-            if(this.hm.hungerCount[hungry].waiting == true && this.chef.grill.containsFood == true){
-                this.inputs.serve.control.enabled = true;
-                this.inputs.serve.disabledSprite.visible = false;
-                this.inputs.serve.si.indicators.alpha = 1;
-                break;
+        //TEMP DISABLING //for(hungry in this.hm.hungerCount){
+        //    if(this.hm.hungerCount[hungry].waiting == true && this.chef.grill.containsFood == true){
+            if(this.chef.grill.containsFood == true){
+                this.inputs.serve.enable();
+                this.inputs.step.enable();
+                //this.inputs.serve.control.enabled = true;
+                //this.inputs.serve.disabledSprite.visible = false;
+                //this.inputs.serve.si.indicators.alpha = 1;
+                //break;
             }else{
-                this.inputs.serve.control.enabled = false;
-                this.inputs.serve.disabledSprite.visible = true;
-                this.inputs.serve.si.indicators.alpha = 0;
-                break;
+                this.inputs.serve.disable();
+                this.inputs.step.disable();
+                //this.inputs.serve.control.enabled = false;
+                //this.inputs.serve.disabledSprite.visible = true;
+                //this.inputs.serve.si.indicators.alpha = 0;
+                //break;
             }
-        }
+        //}
 
         //Disable "Cook" input if Grill is full
         if(this.chef.grill.isFull == true){
@@ -131,15 +154,17 @@ InputConductor.prototype = {
         }
 
         //Enable "Advanced Trick" input if BasicTrick "success average" gets to 4
-        if(this.inputs.cook.comboCount == 4){
-            this.inputs.advTrick.control.enabled = true;
-            this.inputs.advTrick.disabledSprite.visible = false;
-            this.inputs.advTrick.si.indicators.alpha = 1;
-        }else{
-            this.inputs.advTrick.control.enabled = false;
-            this.inputs.advTrick.disabledSprite.visible = true;
-            this.inputs.advTrick.si.indicators.alpha = 0;
-        }
+        //if(this.inputs.trick.comboCount == 4){
+        //    this.inputs.trick.type = "iconAdvancedTrick";
+            //this.inputs.advTrick.control.enabled = true;
+            //this.inputs.advTrick.disabledSprite.visible = false;
+            //this.inputs.advTrick.si.indicators.alpha = 1;
+        //}else{
+        //    this.inputs.trick.type = "iconTrick";
+            //this.inputs.advTrick.control.enabled = false;
+            //this.inputs.advTrick.disabledSprite.visible = true;
+            //this.inputs.advTrick.si.indicators.alpha = 0;
+        //}
     },
     updateEnsemble: function(input, type, x, y, distance, control, beatObj){
         this.inputs[input].input._destroy();
@@ -157,7 +182,7 @@ InputConductor.prototype = {
     }
 };
 
-function InputEnsemble(type, x, y, distance, input, parent, beat, tm, flashScale, isInterval, isDisabled){
+function InputEnsemble(type, x, y, distance, input, parent, beat, tm, flashScale, toSlide, isInterval, isDisabled){
     this.x = x;
     this.y = y;
     this.type = type;
@@ -180,6 +205,7 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, flashScale
     this.comboUncount = 0;
     this.isHit = false;
     this.control = input.control;
+    this.toSlide = toSlide;
     if(typeof(isDisabled) !== 'undefined'){
         this.control.enabled = false;
         this.disabledSprite.visible = true;
@@ -195,19 +221,53 @@ function InputEnsemble(type, x, y, distance, input, parent, beat, tm, flashScale
 }
 
 InputEnsemble.prototype = {
-    beat: function(beatObjDuration, duration, alpha, scale){
-        this.si.indicate(beatObjDuration);
+    slide: function(beatObjDuration){
+        if(this.toSlide){
+            this.si.indicate(beatObjDuration);
+        }
+    },
+    flash: function(duration, alpha, scale){
         if(this.control.enabled == true){
             flash(this.button, duration, alpha, scale)
         }
     },
-    hit: function(result){
+    hit: function(result, chef){
         if(result.success == true){
-            this.isHit = true;
-        }else if(this.comboCount >0){this.comboCount --;}
+            //this.isHit = true;
+            if(chef.canTrick == true){
+                this.advTrickResult = chef.advancedTrick();
+                chef.canTrick = false;
+            }
+
+            if(typeof(this.advTrickResult.animSprite) !== 'undefined'){
+                this.advTrickResult.animSprite.sprite.animations.currentAnim.onComplete.add(function(){
+                    chef.canTrick = true;
+                },this);
+            };
+        }
+
+        //else if(result.success == false && this.comboCount >0){
+        //    log("was hit and combo count greated then zero");
+        //    //this.comboCount --;
+        //}
+
+        //if(this.isHit == true && this.comboCount <= 3){
+        //    this.comboUncount = 0;
+        //    this.comboCount ++;
+        //}
+        //else if(this.isHit == false && this.comboCount > 0){
+        //    this.inputs.trick.comboUncount ++;
+        //    if(this.inputs.trick.comboUncount == 8){
+        //        this.inputs.trick.comboCount --;
+        //        this.inputs.trick.comboUncount = 0;
+        //    }
+        //}
+        //this.checkCombo(this.comboCount);
+        //this.isHit = false;
     },
-    checkCombo: function(){
-        switch(this.comboCount){
+    checkCombo: function(comboCount){
+        //switch(this.comboCount){
+        switch(comboCount){
             case(0):
                 this.graphics.clear();
                 break;
@@ -232,5 +292,15 @@ InputEnsemble.prototype = {
                 this.graphics.drawCircle(this.x+25, this.y+25,56);
                 break;
         };
-    }
+    },
+    enable: function(){
+        this.control.enabled = true;
+        this.disabledSprite.visible = false;
+        this.si.indicators.alpha = 1;
+    },
+    disable: function(){
+        this.control.enabled = false;
+        this.disabledSprite.visible = true;
+        this.si.indicators.alpha = 0;
+    },
 };
